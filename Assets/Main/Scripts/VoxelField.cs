@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
+using Random = UnityEngine.Random;
 
-public class Voxel{
+
+public class VoxelField{
 
     private float[,,] voxel;
     private int size;
 
-    public Voxel(int size)
+    public VoxelField(int size)
     {
         voxel = new float[size, size, size];
         this.size = size;
@@ -100,5 +103,46 @@ public class Voxel{
         if (voxel[xPos, yPos + 1, zPos] <= 0) binaryIndex += 128;
 
         return binaryIndex;
+    }
+
+    public void changeDensityAt(Vector3 position, float radius, Func<float, float, float> manipulationFunction)
+    {
+        // 1. get bounding box around position
+        int[,] boundingIndices = {
+                    {(int)-radius, (int)radius},
+                    {(int)-radius, (int)radius},
+                    {(int)-radius, (int)radius}
+                };
+        // 1.1: check outOfBounds for indices
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                if (boundingIndices[i, j] < 0)
+                {
+                    boundingIndices[i, j] = 0;
+                }
+                if (boundingIndices[i, j] >= size)
+                {
+                    boundingIndices[i, j] = size - 1;
+                }
+            }
+        }
+
+        //2. for each point in box, apply function
+        for (int x = boundingIndices[0, 0]; x < boundingIndices[0, 1]; x++)
+        {
+            for (int y = boundingIndices[1, 0]; y < boundingIndices[1, 1]; y++)
+            {
+                for (int z = boundingIndices[2, 0]; z < boundingIndices[2, 1]; z++)
+                {
+                    float dist = Vector3.Distance(new Vector3(x,y,z), position);
+                    if (dist <= radius)
+                    {
+                        voxel[x,y,z] = manipulationFunction(voxel[x, y, z], dist);
+                    }
+                }
+            }
+        }
     }
 }
