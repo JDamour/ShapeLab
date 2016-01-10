@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class VoxelManager : MonoBehaviour {
@@ -32,7 +33,35 @@ public class VoxelManager : MonoBehaviour {
             voxel.createRandomGrid();
             marchingCubes();
         }
-	}
+        if (Input.GetKeyUp("1"))
+        {
+            int radius = 10;
+            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return Mathf.Cos(curRadius/(float)radius) * curDensity; };
+            voxel.changeDensityAt(new Vector3(0,0,0), radius, currentDeformFunction);
+            marchingCubes();
+        }
+        if (Input.GetKeyUp("2"))
+        {
+            int radius = 10;
+            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return (1+Mathf.Cos(curRadius / (float)radius)) * curDensity; };
+            voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
+            marchingCubes();
+        }
+        if (Input.GetKeyUp("3"))
+        {
+            int radius = 10;
+            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return Mathf.Cos(curRadius / (float)radius) + curDensity; };
+            voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
+            marchingCubes();
+        }
+        if (Input.GetKeyUp("4"))
+        {
+            int radius = 10;
+            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return curDensity - Mathf.Cos(curRadius / (float)radius); };
+            voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
+            marchingCubes();
+        }
+    }
 
     private void marchingCubes()
     {
