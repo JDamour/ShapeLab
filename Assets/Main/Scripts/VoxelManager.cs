@@ -8,14 +8,14 @@ public class VoxelManager : MonoBehaviour {
 
     public VoxelObject voxelObject;
 
-    private Voxel voxel;
+    private VoxelField voxel;
     private LookUpTables lookUpTables;
     private float isolevel = 0f;
 
 	// Use this for initialization
 	void Start () {
         lookUpTables = new LookUpTables();
-        voxel = new Voxel(size);
+        voxel = new VoxelField(size);
         voxel.createSphere(size / 2);
         marchingCubes();
     }
