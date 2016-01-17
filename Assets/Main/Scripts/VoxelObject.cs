@@ -7,7 +7,6 @@ public class VoxelObject : MonoBehaviour {
     private Mesh mesh;
     private MeshFilter meshFilter;
 
-    private List<Vector3> vertices;
     private List<Vector2> uv;
     private List<int> triangles;
 
@@ -60,7 +59,6 @@ public class VoxelObject : MonoBehaviour {
 
     public void resetMesh()
     {
-        vertices = new List<Vector3>();
         uv = new List<Vector2>();
         triangles = new List<int>();
         mesh = new Mesh();

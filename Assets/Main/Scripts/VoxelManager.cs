@@ -6,8 +6,10 @@ public class VoxelManager : MonoBehaviour {
 
     public float scaling;
     public int size;
+    public Transform eyePos;
 
     public VoxelObject voxelObject;
+    public PointCloudObject pointCloudObject;
 
     private VoxelField voxel;
     private LookUpTables lookUpTables;
@@ -18,7 +20,7 @@ public class VoxelManager : MonoBehaviour {
         lookUpTables = new LookUpTables();
         voxel = new VoxelField(size);
         voxel.createSphere(size / 2);
-        marchingCubes();
+        updateMesh();
     }
 	
 	// Update is called once per frame
@@ -26,41 +28,67 @@ public class VoxelManager : MonoBehaviour {
         if (Input.GetKeyUp("s"))
         {
             voxel.createSphere(size / 2);
-            marchingCubes();
+            updateMesh();
         }
         if (Input.GetKeyUp("r"))
         {
             voxel.createRandomGrid();
-            marchingCubes();
+            updateMesh();
         }
         if (Input.GetKeyUp("1"))
         {
             int radius = 10;
             Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return Mathf.Cos(curRadius/(float)radius) * curDensity; };
             voxel.changeDensityAt(new Vector3(0,0,0), radius, currentDeformFunction);
-            marchingCubes();
+            updateMesh();
         }
         if (Input.GetKeyUp("2"))
         {
             int radius = 10;
             Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return (1+Mathf.Cos(curRadius / (float)radius)) * curDensity; };
             voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
-            marchingCubes();
+            updateMesh();
         }
         if (Input.GetKeyUp("3"))
         {
             int radius = 10;
             Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return Mathf.Cos(curRadius / (float)radius) + curDensity; };
             voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
-            marchingCubes();
+            updateMesh();
         }
         if (Input.GetKeyUp("4"))
         {
             int radius = 10;
             Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return curDensity - Mathf.Cos(curRadius / (float)radius); };
             voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
-            marchingCubes();
+            updateMesh();
         }
+    }
+
+    public void updateMesh()
+    {
+        pointCloud();
+        //marchingCubes();
+    }
+
+    private void pointCloud()
+    {
+        Debug.Log("Create new Point Mesh");
+        pointCloudObject.resetCloud();
+
+
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                for (int z = 0; z < size; z++)
+                {
+                    if(voxel.getValue(x,y,z) < 0f)
+                    {
+                        Vector3.Distance(eyePos.position, new Vector3(x,y,z));
+                        float color = Mathf.Max(0f,Mathf.Min(1f,1-(Vector3.Distance(eyePos.position, new Vector3(x, y, z))/ Vector3.Distance(eyePos.position, new Vector3(size, size, size))))); 
+                        pointCloudObject.addVertices(new Vector3(x,y,z), color);
+                    }
+                }
+        pointCloudObject.updateCloud();
     }
 
     private void marchingCubes()
