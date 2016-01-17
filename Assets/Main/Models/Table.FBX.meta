@@ -7,14 +7,25 @@ ModelImporter:
   fileIDToRecycleName:
     100000: //RootNode
     100002: TableFoot
+    100004: OVR Camera
+    100006: Table
+    100008: TableExport
     400000: //RootNode
     400002: TableFoot
+    400004: OVR Camera
+    400006: Table
+    400008: TableExport
     2300000: //RootNode
     2300002: TableFoot
+    2300004: Table
+    2300006: TableExport
     3300000: //RootNode
     3300002: TableFoot
+    3300004: Table
+    3300006: TableExport
     4300000: Table
     4300002: TableFoot
+    4300004: TableExport
     9500000: //RootNode
   materials:
     importMaterials: 1
