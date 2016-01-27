@@ -1,0 +1,22 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+int dimension;
+
+StructuredBuffer<float> voxel;
+
+RWStructuredBuffer<float3> normalBuffer;
+
+[numthreads(8,8,8)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	int idx = id.x + id.y * dimension + id.z * dimension * dimension;
+
+	float v = voxel[id.x + id.y * dimension + id.z * dimension * dimension];
+	
+	float dx = v - voxel[(id.x+1) + id.y * dimension + id.z * dimension * dimension];
+	float dy = v - voxel[id.x + (id.y+1) * dimension + id.z * dimension * dimension];
+	float dz = v - voxel[id.x + id.y * dimension + (id.z+1) * dimension * dimension];
+	
+	normalBuffer[idx] = normalize(float3(dx,dy,dz));
+}

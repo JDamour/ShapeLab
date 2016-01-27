@@ -1,0 +1,124 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Vert{
+	float3 position;
+	float3 normal;
+};
+
+int dimension;
+float isolevel;
+
+StructuredBuffer<int> triangleConnectionTable;
+StructuredBuffer<int> cubeEdgeFlags;
+//StructuredBuffer<float3> normals;
+StructuredBuffer<float> voxel;
+
+RWStructuredBuffer<Vert> vertexBuffer;
+
+uint getCubeIndex(int id0, int id1, int id2, int id3, int id4, int id5, int id6, int id7){
+
+	//TODO: write with step(a,x) --> 0 if x < a ; 1 if x >= a ;
+	// get binaryIndex for cube
+	int cubeIndex = 0;
+	if (voxel[id0] <= 0) cubeIndex += 1;
+    if (voxel[id1] <= 0) cubeIndex += 2;
+    if (voxel[id2] <= 0) cubeIndex += 4;
+    if (voxel[id3] <= 0) cubeIndex += 8;
+    if (voxel[id4] <= 0) cubeIndex += 16;
+    if (voxel[id5] <= 0) cubeIndex += 32;
+    if (voxel[id6] <= 0) cubeIndex += 64;
+    if (voxel[id7] <= 0) cubeIndex += 128;
+
+	return cubeIndex;
+}
+
+float3 vertexInterpolate(float isolevel, float3 p1, float3 p2, float v1, float v2){
+	if (abs(isolevel - v1) < 0.00001)
+		return p1;
+	if (abs(isolevel - v2) < 0.00001)
+		return p2;
+    if (abs(v1 - v2) < 0.00001)
+        return p1;
+    float mu = (isolevel - v1) / (v2 - v1);
+    float3 p;
+    p.x = p1.x + mu * (p2.x - p1.x);
+    p.y = p1.y + mu * (p2.y - p1.y);
+    p.z = p1.z + mu * (p2.z - p1.z);
+
+    return p;
+}
+
+float3 calculateNormal(float3 vec1, float3 vec2, float3 vec3){
+
+	float3 edge1 = vec2 - vec1;
+	float3 edge2 = vec3 - vec1;
+
+	return cross(edge1, edge2);
+}
+
+[numthreads(8,8,8)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	uint bufferIndex = id.x + id.y * dimension + id.z * dimension * dimension;
+
+	// get Id for all voxel in cube
+	uint id0 = id.x + id.y * dimension + (id.z+1) * dimension * dimension;
+	uint id1 = (id.x + 1) + id.y*dimension + (id.z+1) * dimension * dimension;
+	uint id2 = (id.x + 1) + id.y*dimension + id.z * dimension * dimension;
+	uint id3 = id.x + id.y * dimension + id.z * dimension * dimension;
+	uint id4 = id.x + (id.y+1) * dimension + (id.z+1) * dimension * dimension;
+	uint id5 = (id.x + 1) + (id.y+1) * dimension + (id.z+1) * dimension * dimension;
+	uint id6 = (id.x + 1) + (id.y+1) * dimension + id.z * dimension * dimension;
+	uint id7 = id.x + (id.y+1) * dimension + id.z * dimension * dimension;
+
+	//get Position for all voxel in cube
+	float3 vertices[8];
+	vertices[0] = float3(id.x, id.y, id.z+1);
+	vertices[1] = float3(id.x+1, id.y, id.z+1);
+	vertices[2] = float3(id.x+1, id.y, id.z);
+	vertices[3] = float3(id.x, id.y, id.z);
+	vertices[4] = float3(id.x, id.y+1, id.z+1);
+	vertices[5] = float3(id.x+1, id.y+1, id.z+1);
+	vertices[6] = float3(id.x+1, id.y+1, id.z);
+	vertices[7] = float3(id.x, id.y+1, id.z);
+
+	int cubeIndex = getCubeIndex(id0, id1, id2, id3, id4, id5, id6, id7);
+	int edgeFlags = cubeEdgeFlags[cubeIndex];
+
+	if(edgeFlags == 0) return;
+
+	//get vertices positions at isolevel on the edges
+	float3 vertList[12];
+	vertList[0] = vertexInterpolate(isolevel, vertices[0], vertices[1], voxel[id0], voxel[id1]);
+    vertList[1] = vertexInterpolate(isolevel, vertices[1], vertices[2], voxel[id1], voxel[id2]);
+    vertList[2] = vertexInterpolate(isolevel, vertices[2], vertices[3], voxel[id2], voxel[id3]);
+    vertList[3] = vertexInterpolate(isolevel, vertices[3], vertices[0], voxel[id3], voxel[id0]);
+    vertList[4] = vertexInterpolate(isolevel, vertices[4], vertices[5], voxel[id4], voxel[id5]);
+    vertList[5] = vertexInterpolate(isolevel, vertices[5], vertices[6], voxel[id5], voxel[id6]);
+    vertList[6] = vertexInterpolate(isolevel, vertices[6], vertices[7], voxel[id6], voxel[id7]);
+    vertList[7] = vertexInterpolate(isolevel, vertices[7], vertices[4], voxel[id7], voxel[id4]);
+    vertList[8] = vertexInterpolate(isolevel, vertices[0], vertices[4], voxel[id0], voxel[id4]);
+    vertList[9] = vertexInterpolate(isolevel, vertices[1], vertices[5], voxel[id1], voxel[id5]);
+    vertList[10] = vertexInterpolate(isolevel, vertices[2], vertices[6], voxel[id2], voxel[id6]);
+    vertList[11] = vertexInterpolate(isolevel, vertices[3], vertices[7], voxel[id3], voxel[id7]); 
+	
+	for (uint i = 0; triangleConnectionTable[cubeIndex * 16 + i] != -1; i += 3){
+		Vert vert1;
+		Vert vert2;
+		Vert vert3;
+
+		vert1.position = vertList[triangleConnectionTable[cubeIndex * 16 + i]];
+		vert2.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+1]];
+		vert3.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+2]];
+
+		vert1.normal = vert2.normal = vert3.normal = calculateNormal(vert1.position, vert2.position, vert3.position);
+		//vert1.normal = vert2.normal = vert3.normal = normalize(float3(id.x, id.y, id.z)); 
+
+		vertexBuffer[bufferIndex * 15 + i] = vert1;
+		vertexBuffer[bufferIndex * 15 + i+1] = vert2;
+		vertexBuffer[bufferIndex * 15 + i+2] = vert3;
+	}
+}
+
+

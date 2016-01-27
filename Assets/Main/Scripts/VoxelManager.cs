@@ -10,6 +10,7 @@ public class VoxelManager : MonoBehaviour {
 
     public VoxelObject voxelObject;
     public PointCloudObject pointCloudObject;
+    public VoxelObjectGPU voxelObjectGPU;
 
     private VoxelField voxel;
     private LookUpTables lookUpTables;
@@ -19,7 +20,7 @@ public class VoxelManager : MonoBehaviour {
 	void Start () {
         lookUpTables = new LookUpTables();
         voxel = new VoxelField(size);
-        voxel.createSphere(size / 2);
+        voxel.createSphere(size / 3);
         updateMesh();
     }
 	
@@ -67,8 +68,9 @@ public class VoxelManager : MonoBehaviour {
 
     public void updateMesh()
     {
-        pointCloud();
+        //pointCloud();
         //marchingCubes();
+        marchingCubesGPU();
     }
 
     private void pointCloud()
@@ -89,6 +91,11 @@ public class VoxelManager : MonoBehaviour {
                     }
                 }
         pointCloudObject.updateCloud();
+    }
+
+    private void marchingCubesGPU()
+    {
+        voxelObjectGPU.updateMesh(voxel);
     }
 
     private void marchingCubes()

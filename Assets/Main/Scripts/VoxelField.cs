@@ -72,6 +72,11 @@ public class VoxelField{
         Debug.Log("VOXEL: Generated (Almost) Sphere");
     }
 
+    public float[,,] getField()
+    {
+        return voxel;
+    }
+
     public float getValue(int x, int y, int z)
     {
         return voxel[x, y, z];
