@@ -12,38 +12,22 @@ public class VoxelObjectGPU : MonoBehaviour {
     
     public float scaling;
 
-    public ComputeShader normalsComputeShader;
+    public ComputeShader normalsShader;
+    public ComputeShader scultpingShader;
     public ComputeShader voxelComputeShader;
     public ComputeShader sphereShader;
 
     public Material drawBuffer;
 
     const int N = 64;
+
     const int SIZE = N * N * N * 3 * 5;
 
     private ComputeBuffer voxelBuffer, normalBuffer, vertexBuffer;
     private ComputeBuffer edgeTable, triTable;
 
-    /*private Mesh mesh;
-    private MeshFilter meshFilter;*/
-
-    /*private Vert[] vertBufferList;
-    private List<Vector3> vertices;
-    private List<Vector3> normals;
-    private List<int> triangles;*/
-
-
     // Use this for initialization
     void Start () {
-        /*meshFilter = GetComponent<MeshFilter>();
-        mesh = new Mesh();
-        meshFilter.mesh = mesh;*/
-
-        //vertBufferList = new Vert[];
-        /*vertices = new List<Vector3>();
-        normals = new List<Vector3>();
-        triangles = new List<int>();*/
-
         //set buffer data for lookup tables
         edgeTable = new ComputeBuffer(256, sizeof(int));
         edgeTable.SetData(edgeTableLookUp);
@@ -58,40 +42,41 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     public void updateMesh(VoxelField voxel)
     {
-        float[] voxelArray = new float[(N + 1) * (N + 1) * (N + 1)];
-        for (int x = 0; x < N+1; x++)
-            for (int y = 0; y < N + 1; y++)
-                for (int z = 0; z < N + 1; z++)
-                {
-                    int id = x + y * (N + 1) + z * (N + 1) * (N + 1);
-                    voxelArray[id] = voxel.getValue(x,y,z);
-                }
-
         Debug.Log("Update Voxel Buffer");
+        //send the current voxel field to the gpu
         voxelBuffer.SetData(voxel.getField());
+
+        //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(SIZE, sizeof(float) * 6);
-        //voxelBuffer = new ComputeBuffer((N + 1) * (N + 1) * (N + 1), sizeof(float));
-        /*
-        //calculate normals
-        normalsComputeShader.SetInt("dimension", N);
-        normalsComputeShader.SetBuffer(0, "voxel", voxelBuffer);
-        normalsComputeShader.SetBuffer(0, "normalBuffer", normalBuffer);
-        */
+
+        //create a sphere on GPU
         /*
         sphereShader.SetInt("dimension", N);
         sphereShader.SetFloat("radius", N / 3);
         sphereShader.SetBuffer(0, "voxel", voxelBuffer);
         voxelComputeShader.Dispatch(0, N / 8, N / 8, N / 8); */
 
-        //calculate vertices
+        /*
+        //calculate normals
+        normalsShader.SetInt("dimension", N);
+        normalsShader.SetBuffer(0, "voxel", voxelBuffer);
+        normalsShader.SetBuffer(0, "normalBuffer", normalBuffer);
+        */
+
+        //modifying voxelfield on the GPU
+
+        //
+
+        //calculate new vertices in vertexBuffer
+        voxelComputeShader.SetFloat("scale", scaling);
         voxelComputeShader.SetInt("dimension", N+1);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
+        voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
+        voxelComputeShader.SetBuffer(0, "triangleConnectionTable", triTable);
         voxelComputeShader.SetBuffer(0, "voxel", voxelBuffer);
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-        voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
-        voxelComputeShader.SetBuffer(0, "triangleConnectionTable", triTable);
         voxelComputeShader.Dispatch(0, N/8, N/8, N/8);
     }
 
@@ -100,7 +85,6 @@ public class VoxelObjectGPU : MonoBehaviour {
         //Since mesh is in a buffer need to use DrawProcedual called from OnPostRender or OnRenderObject
         drawBuffer.SetBuffer("vertexBuffer", vertexBuffer);
         drawBuffer.SetPass(0);
-
         Graphics.DrawProcedural(MeshTopology.Triangles, SIZE);
     }
 
