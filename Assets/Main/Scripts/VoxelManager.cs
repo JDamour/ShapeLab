@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using Leap;
 
 public class VoxelManager : MonoBehaviour {
 
@@ -16,8 +17,14 @@ public class VoxelManager : MonoBehaviour {
     private LookUpTables lookUpTables;
     private float isolevel = 0f;
 
-	// Use this for initialization
-	void Start () {
+    private Controller m_leapController;
+    public HandController handController;
+
+
+    // Use this for initialization
+    void Start () {
+        //m_leapController = handController.GetLeapController();
+
         lookUpTables = new LookUpTables();
         voxel = new VoxelField(size);
         voxel.createSphere(size / 3);
@@ -26,6 +33,17 @@ public class VoxelManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            Frame frame = m_leapController.Frame();
+            //Get TipPosition of the Tool
+            Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+            tipPosition *= handController.transform.localScale.x; //scale position with hand movement
+            tipPosition += handController.transform.position;
+
+            //voxelObjectGPU.setModPosition(tipPosition);
+            updateMesh();
+        }
         if (Input.GetKeyUp("s"))
         {
             voxel.createSphere(size / 2);
