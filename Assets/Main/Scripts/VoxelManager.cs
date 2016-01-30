@@ -35,18 +35,38 @@ public class VoxelManager : MonoBehaviour {
 	void Update () {
         if (Input.GetKeyUp(KeyCode.Space))
         {
+            /*
             Frame frame = m_leapController.Frame();
             //Get TipPosition of the Tool
             Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
             tipPosition *= handController.transform.localScale.x; //scale position with hand movement
             tipPosition += handController.transform.position;
-
+            */
             //voxelObjectGPU.setModPosition(tipPosition);
+            voxelObjectGPU.newModification(new Vector3(1,1,1), VoxelObjectGPU.MODACTION.ADD);
+            updateMesh();
+        }
+        if (Input.GetKeyUp(KeyCode.LeftAlt))
+        {
+            /*
+            Frame frame = m_leapController.Frame();
+            //Get TipPosition of the Tool
+            Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+            tipPosition *= handController.transform.localScale.x; //scale position with hand movement
+            tipPosition += handController.transform.position;
+            */
+            //voxelObjectGPU.setModPosition(tipPosition);
+            voxelObjectGPU.newModification(new Vector3(1, 1, 1), VoxelObjectGPU.MODACTION.SUBSTRACT);
             updateMesh();
         }
         if (Input.GetKeyUp("s"))
         {
             voxel.createSphere(size / 2);
+            updateMesh();
+        }
+        if (Input.GetKeyUp("b"))
+        {
+            voxel.createBlock();
             updateMesh();
         }
         if (Input.GetKeyUp("r"))

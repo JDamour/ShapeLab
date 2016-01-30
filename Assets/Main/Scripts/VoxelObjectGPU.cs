@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class VoxelObjectGPU : MonoBehaviour {
 
@@ -9,13 +10,20 @@ public class VoxelObjectGPU : MonoBehaviour {
         Vector3 position;
         Vector3 normal;
     };
+    public enum MODACTION
+    {
+        SUBSTRACT,
+        ADD
+    };
     
     public float scaling;
+    public float modRange = 20.0f;
 
     public ComputeShader normalsShader;
     public ComputeShader scultpingShader;
     public ComputeShader voxelComputeShader;
     public ComputeShader sphereShader;
+    public ComputeShader voxelModifierShader;
 
     public Material drawBuffer;
 
@@ -25,9 +33,13 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     private ComputeBuffer voxelBuffer, normalBuffer, vertexBuffer;
     private ComputeBuffer edgeTable, triTable;
+    private Vector3 modCenter;
+    private Boolean applyModification;
+    private MODACTION kernelName;
 
     // Use this for initialization
     void Start () {
+        applyModification = false;
         //set buffer data for lookup tables
         edgeTable = new ComputeBuffer(256, sizeof(int));
         edgeTable.SetData(edgeTableLookUp);
@@ -40,15 +52,60 @@ public class VoxelObjectGPU : MonoBehaviour {
         //normalBuffer = new ComputeBuffer((N + 1) * (N + 1) * (N + 1), sizeof(float)*3);
     }
 
+    internal void newModification(Vector3 tipPosition, MODACTION useKernelIndex)
+    {
+        kernelName = useKernelIndex;
+        modCenter = tipPosition;
+        applyModification = true;
+    }
+
     public void updateMesh(VoxelField voxel)
     {
-        Debug.Log("Update Voxel Buffer");
-        //send the current voxel field to the gpu
-        voxelBuffer.SetData(voxel.getField());
+        //Debug.Log("Update Voxel Buffer");
 
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(SIZE, sizeof(float) * 6);
+
+        if (applyModification)
+        {
+            applyModification = false;
+
+            Debug.Log("pre change:");
+            float[] tmp = new float[(N+1)* (N + 1)* (N + 1)];
+            //voxelBuffer.GetData(tmp);
+            //dumpData(tmp);
+            
+            voxelModifierShader.SetFloat("MIN_DENSITY", -1.0f);
+            voxelModifierShader.SetFloat("MAX_DENSITY", 1.0f);
+            voxelModifierShader.SetFloat("cosStrength", 0.1f);
+            voxelModifierShader.SetFloat("modRange", 20.0f);
+            voxelModifierShader.SetInt("dimension", N+1);
+            
+            voxelModifierShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
+            //voxelModifierShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
+            voxelModifierShader.SetVector("modCenter", new Vector4(N / 2, N / 2, 0, 1));
+            String kernelName = "";
+            switch (this.kernelName)
+            {
+                case MODACTION.SUBSTRACT:
+                    kernelName = "eliasModificator";
+                    voxelModifierShader.SetInt("sign", -1);
+                    break;
+                case MODACTION.ADD:
+                    kernelName = "eliasModificator";
+                    voxelModifierShader.SetInt("sign", 1);
+                    break;
+            }
+            voxelModifierShader.SetBuffer(voxelModifierShader.FindKernel(kernelName), "voxel", voxelBuffer);
+            voxelModifierShader.Dispatch(voxelModifierShader.FindKernel(kernelName), N / 8, N / 8, N / 8);
+        } else
+        {
+                    //send the current voxel field to the gpu
+
+            voxelBuffer.SetData(voxel.getField());
+
+        }
 
         //create a sphere on GPU
         /*
@@ -78,6 +135,28 @@ public class VoxelObjectGPU : MonoBehaviour {
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
         voxelComputeShader.Dispatch(0, N/8, N/8, N/8);
+    }
+
+    private void dumpData(float[] buffercontent)
+    {
+        String logString = "";
+        for (int i = buffercontent.Length/3; i < 2/3*buffercontent.Length;i++){
+            logString += buffercontent[i] + ",";
+            
+        }
+        Debug.Log(logString);
+    }
+
+    private Vector4 calculateBoundingBox(Vector3 modCenter, float modRange)
+    {
+        Vector4 offset = new Vector4(0,0,0,0);
+        //todo
+        /*
+        offset.x = (float)Math.Floor(modCenter.x - modRange);
+        offset.y = (float)Math.Floor(modCenter.y - modRange);
+        offset.z = (float)Math.Floor(modCenter.z - modRange);
+        */
+        return offset;
     }
 
     void OnRenderObject()

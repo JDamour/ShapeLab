@@ -1,0 +1,44 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel eliasModificator
+
+float MIN_DENSITY;
+float MAX_DENSITY;
+
+float cosStrength;
+float modRange;
+int dimension;
+int sign;
+float4 modCenter;
+float4 Bounding_offSet;
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWStructuredBuffer<float> voxel;
+
+[numthreads(8,8,8)]
+void eliasModificator (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
+		return;
+	// this voxel will be changed in this iteration
+	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
+	float newDensity;
+	float4 voxelPos = {id.x, id.y, id.z, 1.0};
+	float dist = distance(voxelPos, modCenter);
+
+	if(dist > modRange){
+		return;
+	}
+	
+	newDensity = voxel[voxelIndex] + sign * cos(dist/modRange)*cosStrength;
+
+	//newDensity = voxel[voxelIndex] - 0.1;
+
+	if(newDensity<MIN_DENSITY)
+		newDensity = MIN_DENSITY;
+	if(newDensity>MAX_DENSITY)
+		newDensity = MAX_DENSITY;
+
+	voxel[voxelIndex] = newDensity;
+}
+

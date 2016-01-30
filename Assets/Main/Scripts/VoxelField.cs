@@ -72,6 +72,26 @@ public class VoxelField{
         Debug.Log("VOXEL: Generated (Almost) Sphere");
     }
 
+    public void createBlock()
+    {
+
+        voxel = new float[size, size, size];
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                for (int z = 0; z < size; z++)
+                {
+                    if (x == 0 || x == size - 1 || y == 0 || y == size - 1 || z == 0 || z == size - 1)
+                    {
+                        voxel[x, y, z] = -1f;
+                    }
+                    else
+                    {
+                        voxel[x, y, z] = 1f;
+                    }
+                }
+                    
+    }
+
     public float[,,] getField()
     {
         return voxel;
