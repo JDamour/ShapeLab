@@ -17,6 +17,7 @@ public class VoxelManager : MonoBehaviour {
     private LookUpTables lookUpTables;
     private float isolevel = 0f;
 
+
     private Controller m_leapController;
     public HandController handController;
 
@@ -28,11 +29,11 @@ public class VoxelManager : MonoBehaviour {
         lookUpTables = new LookUpTables();
         voxel = new VoxelField(size);
         voxel.createSphere(size / 3);
-        updateMesh();
+        initMesh();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         if (Input.GetKeyUp(KeyCode.Space))
         {
             /*
@@ -43,7 +44,10 @@ public class VoxelManager : MonoBehaviour {
             tipPosition += handController.transform.position;
             */
             //voxelObjectGPU.setModPosition(tipPosition);
-            voxelObjectGPU.newModification(new Vector3(1,1,1), VoxelObjectGPU.MODACTION.ADD);
+            Vector3 position = new Vector3(1, 1, 1);
+            float modRange = 10.0f;
+            //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
+            voxelObjectGPU.newModification(position, ModificationManager.ACTION.ADD);
             updateMesh();
         }
         if (Input.GetKeyUp(KeyCode.LeftAlt))
@@ -56,7 +60,7 @@ public class VoxelManager : MonoBehaviour {
             tipPosition += handController.transform.position;
             */
             //voxelObjectGPU.setModPosition(tipPosition);
-            voxelObjectGPU.newModification(new Vector3(1, 1, 1), VoxelObjectGPU.MODACTION.SUBSTRACT);
+            voxelObjectGPU.newModification(new Vector3(1, 1, 1), ModificationManager.ACTION.SUBSTRACT);
             updateMesh();
         }
         if (Input.GetKeyUp("s"))
@@ -104,18 +108,23 @@ public class VoxelManager : MonoBehaviour {
         }
     }
 
+    private void initMesh()
+    {
+        voxelObjectGPU.initMesh(voxel);
+    }
+
     public void updateMesh()
     {
         //pointCloud();
         //marchingCubes();
-        marchingCubesGPU();
+        //marchingCubesGPU();
+        voxelObjectGPU.updateMesh(voxel);
     }
 
     private void pointCloud()
     {
         Debug.Log("Create new Point Mesh");
         pointCloudObject.resetCloud();
-
 
         for (int x = 0; x < size; x++)
             for (int y = 0; y < size; y++)
@@ -129,11 +138,6 @@ public class VoxelManager : MonoBehaviour {
                     }
                 }
         pointCloudObject.updateCloud();
-    }
-
-    private void marchingCubesGPU()
-    {
-        voxelObjectGPU.updateMesh(voxel);
     }
 
     private void marchingCubes()

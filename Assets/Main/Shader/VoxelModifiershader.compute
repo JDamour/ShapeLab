@@ -1,5 +1,5 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel eliasModificator
+#pragma kernel densityModificator
 
 float MIN_DENSITY;
 float MAX_DENSITY;
@@ -16,7 +16,7 @@ float4 Bounding_offSet;
 RWStructuredBuffer<float> voxel;
 
 [numthreads(8,8,8)]
-void eliasModificator (uint3 id : SV_DispatchThreadID)
+void densityModificator (uint3 id : SV_DispatchThreadID)
 {
     if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
 		return;
