@@ -7,7 +7,8 @@ public class ModificationManager {
     {
         SUBSTRACT,
         ADD,
-        SMOOTH
+        SMOOTH,
+        NONE
     };
 
     public ComputeShader DensityModShader;

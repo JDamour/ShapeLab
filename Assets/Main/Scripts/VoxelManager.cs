@@ -24,7 +24,7 @@ public class VoxelManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        //m_leapController = handController.GetLeapController();
+        m_leapController = handController.GetLeapController();
 
         lookUpTables = new LookUpTables();
         voxel = new VoxelField(size);
@@ -36,56 +36,61 @@ public class VoxelManager : MonoBehaviour {
     void Update () {
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            /*
+            
             Frame frame = m_leapController.Frame();
             //Get TipPosition of the Tool
             Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
             tipPosition *= handController.transform.localScale.x; //scale position with hand movement
             tipPosition += handController.transform.position;
-            */
+            Debug.Log("adding at: "+tipPosition.x+";"+ tipPosition.y+";"+ tipPosition.z);
             //voxelObjectGPU.setModPosition(tipPosition);
-            Vector3 position = new Vector3(1, 1, 1);
-            float modRange = 10.0f;
+            tipPosition = new Vector3(1, 1, 1);
             //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
-            voxelObjectGPU.newModification(position, ModificationManager.ACTION.ADD);
-            updateMesh();
-        }
-        if (Input.GetKeyUp(KeyCode.LeftControl))
-        {
-           
-            //voxelObjectGPU.setModPosition(tipPosition);
-            Vector3 position = new Vector3(1, 1, 1);
-            //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
-            voxelObjectGPU.newModification(position, ModificationManager.ACTION.SMOOTH);
+            voxelObjectGPU.updateMesh(tipPosition, ModificationManager.ACTION.ADD);
             updateMesh();
         }
         if (Input.GetKeyUp(KeyCode.LeftAlt))
         {
-            /*
+            
             Frame frame = m_leapController.Frame();
             //Get TipPosition of the Tool
             Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
             tipPosition *= handController.transform.localScale.x; //scale position with hand movement
             tipPosition += handController.transform.position;
-            */
+            
             //voxelObjectGPU.setModPosition(tipPosition);
-            voxelObjectGPU.newModification(new Vector3(1, 1, 1), ModificationManager.ACTION.SUBSTRACT);
+            tipPosition = new Vector3(1, 1, 1);
+
+            voxelObjectGPU.updateMesh(tipPosition, ModificationManager.ACTION.SUBSTRACT);
+
+            //voxelObjectGPU.newModification(new Vector3(1, 1, 1), ModificationManager.ACTION.SUBSTRACT);
+            updateMesh();
+        }
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+
+            //voxelObjectGPU.setModPosition(tipPosition);
+            Vector3 position = new Vector3(1, 1, 1);
+            //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
+            voxelObjectGPU.updateMesh(position, ModificationManager.ACTION.SMOOTH);
+
+            //voxelObjectGPU.newModification(position, ModificationManager.ACTION.SMOOTH);
             updateMesh();
         }
         if (Input.GetKeyUp("s"))
         {
             voxel.createSphere(size / 2);
-            updateMesh();
+            initMesh();
         }
         if (Input.GetKeyUp("b"))
         {
             voxel.createBlock();
-            updateMesh();
+            initMesh();
         }
         if (Input.GetKeyUp("r"))
         {
             voxel.createRandomGrid();
-            updateMesh();
+            initMesh();
         }
         if (Input.GetKeyUp("1"))
         {
@@ -127,7 +132,7 @@ public class VoxelManager : MonoBehaviour {
         //pointCloud();
         //marchingCubes();
         //marchingCubesGPU();
-        voxelObjectGPU.updateMesh(voxel);
+        voxelObjectGPU.updateMesh(new Vector3(0,0,0), ModificationManager.ACTION.NONE);
     }
 
     private void pointCloud()
