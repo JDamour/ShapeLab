@@ -1,9 +1,10 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel eliasModificator
+#pragma kernel densityModificator
 
 float MIN_DENSITY;
 float MAX_DENSITY;
 
+float toolPower;
 float cosStrength;
 float modRange;
 int dimension;
@@ -16,7 +17,7 @@ float4 Bounding_offSet;
 RWStructuredBuffer<float> voxel;
 
 [numthreads(8,8,8)]
-void eliasModificator (uint3 id : SV_DispatchThreadID)
+void densityModificator (uint3 id : SV_DispatchThreadID)
 {
     if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
 		return;
@@ -30,7 +31,7 @@ void eliasModificator (uint3 id : SV_DispatchThreadID)
 		return;
 	}
 	
-	newDensity = voxel[voxelIndex] + sign * cos(dist/modRange)*cosStrength;
+	newDensity = voxel[voxelIndex] + sign * cos(dist/modRange)*cosStrength*toolPower;
 
 	//newDensity = voxel[voxelIndex] - 0.1;
 
@@ -42,3 +43,44 @@ void eliasModificator (uint3 id : SV_DispatchThreadID)
 	voxel[voxelIndex] = newDensity;
 }
 
+#pragma kernel smoothModificator
+
+[numthreads(8,8,8)]
+void smoothModificator (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
+		return;
+	
+	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
+
+	if(voxel[voxelIndex] > 0){
+		return;
+	}
+	//get sourrounding voxels desities
+	uint indecies[6] = {
+		id.x+1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
+		id.x-1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
+		id.x + (id.y+1) * (dimension) + id.z * (dimension) * (dimension),
+		id.x + (id.y-1) * (dimension) + id.z * (dimension) * (dimension),
+		id.x + id.y * (dimension) + (id.z-1) * (dimension) * (dimension),
+		id.x + id.y * (dimension) + (id.z+1) * (dimension) * (dimension),
+	};
+
+
+	float newDensity = (voxel[voxelIndex]+
+						voxel[indecies[0]] + 
+						voxel[indecies[1]] + 
+						voxel[indecies[2]] + 
+						voxel[indecies[3]] + 
+						voxel[indecies[4]] + 
+						voxel[indecies[5]] 
+						)/7.0f;
+
+	
+	if(newDensity<MIN_DENSITY)
+		newDensity = MIN_DENSITY;
+	if(newDensity>MAX_DENSITY)
+		newDensity = MAX_DENSITY;
+
+	voxel[voxelIndex] = newDensity;
+}
