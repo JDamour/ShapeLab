@@ -6,7 +6,8 @@ public class ModificationManager {
     public enum ACTION
     {
         SUBSTRACT,
-        ADD
+        ADD,
+        SMOOTH
     };
 
     public ComputeShader DensityModShader;
@@ -18,6 +19,7 @@ public class ModificationManager {
         DensityModShader = modShader;
 
         // set up shader vars
+        DensityModShader.SetFloat("toolPower", 1.0f);
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
         DensityModShader.SetFloat("cosStrength", 0.1f);
@@ -30,8 +32,9 @@ public class ModificationManager {
 
         DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
         DensityModShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
-        
+
         //set up modification specific vars
+        String kernelName = "densityModificator";
         switch (modAction)
         {
             case ACTION.SUBSTRACT:
@@ -40,11 +43,14 @@ public class ModificationManager {
             case ACTION.ADD:
                 DensityModShader.SetInt("sign", 1);
                 break;
+            case ACTION.SMOOTH:
+                kernelName = "smoothModificator";
+                break;
         }
         //setup buffer containing densities
-        DensityModShader.SetBuffer(DensityModShader.FindKernel("densityModificator"), "voxel", voxelBuffer);
+        DensityModShader.SetBuffer(DensityModShader.FindKernel(kernelName), "voxel", voxelBuffer);
         //run shader
-        DensityModShader.Dispatch(DensityModShader.FindKernel("densityModificator"), dimension / 8, dimension / 8, dimension / 8);
+        DensityModShader.Dispatch(DensityModShader.FindKernel(kernelName), dimension / 8, dimension / 8, dimension / 8);
     }
 
     private Vector4 calculateBoundingBox(Vector3 modCenter, float modRange)
@@ -59,4 +65,9 @@ public class ModificationManager {
         return offset;
     }
 
+    public void SetToolPower(float power)
+    {
+        DensityModShader.SetFloat("toolPower", power);
+
+    }
 }

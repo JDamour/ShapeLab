@@ -50,6 +50,15 @@ public class VoxelManager : MonoBehaviour {
             voxelObjectGPU.newModification(position, ModificationManager.ACTION.ADD);
             updateMesh();
         }
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+           
+            //voxelObjectGPU.setModPosition(tipPosition);
+            Vector3 position = new Vector3(1, 1, 1);
+            //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
+            voxelObjectGPU.newModification(position, ModificationManager.ACTION.SMOOTH);
+            updateMesh();
+        }
         if (Input.GetKeyUp(KeyCode.LeftAlt))
         {
             /*
