@@ -7,7 +7,6 @@ using System;
 public class ToolManager : MonoBehaviour
 {
 
-    public HandController leaphandController;
     public HandController handController;
     public ToolModel[] toolModels;
 
@@ -36,7 +35,9 @@ public class ToolManager : MonoBehaviour
     {
         Frame frame = m_leapController.Frame();
 
-
+        Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+        tipPosition *= handController.transform.localScale.x; //scale position with hand movement
+        tipPosition += handController.transform.position;
     }
 
     public void setPushTool()
