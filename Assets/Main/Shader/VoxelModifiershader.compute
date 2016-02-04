@@ -53,7 +53,7 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 	
 	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
 
-	if(voxel[voxelIndex] > 0){
+	if(voxel[voxelIndex] > 0.5f){
 		return;
 	}
 	//get sourrounding voxels desities
@@ -67,14 +67,14 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 	};
 
 
-	float newDensity = (voxel[voxelIndex]+
+	float newDensity = (voxel[voxelIndex]*5.0f+
 						voxel[indecies[0]] + 
 						voxel[indecies[1]] + 
 						voxel[indecies[2]] + 
 						voxel[indecies[3]] + 
 						voxel[indecies[4]] + 
 						voxel[indecies[5]] 
-						)/7.0f;
+						)/11.0f;
 
 	
 	if(newDensity<MIN_DENSITY)

@@ -52,6 +52,7 @@ public class VoxelObjectGPU : MonoBehaviour {
 
         //initiate buffer
         voxelBuffer = new ComputeBuffer((N + 1) * (N + 1) * (N + 1), sizeof(float));
+        modManager.setDensityBuffer(voxelBuffer);
         vertexBuffer = new ComputeBuffer(SIZE, sizeof(float)*6);
         //normalBuffer = new ComputeBuffer((N + 1) * (N + 1) * (N + 1), sizeof(float)*3);
     }
@@ -62,6 +63,10 @@ public class VoxelObjectGPU : MonoBehaviour {
         modCenter = tipPosition;
         applyModification = true;
     }*/
+    internal ModificationManager getModificationManager()
+    {
+        return modManager;
+    }
 
     internal ComputeBuffer getVoxelBuffer()
     {
@@ -76,7 +81,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(SIZE, sizeof(float) * 6);
 
-        modManager.modify(new Vector3(N/2, N/2, 0), modRange, voxelBuffer, useKernelIndex);
+        modManager.modify(new Vector3(N/2, N/2, 0), modRange, null, useKernelIndex);
 
 
         //create a sphere on GPU

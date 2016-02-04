@@ -12,6 +12,7 @@ public class ModificationManager {
     };
 
     public ComputeShader DensityModShader;
+    private ComputeBuffer densityBuffer;
     private int dimension;
 
     public ModificationManager(ComputeShader modShader, int N)
@@ -23,9 +24,14 @@ public class ModificationManager {
         DensityModShader.SetFloat("toolPower", 1.0f);
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
-        DensityModShader.SetFloat("cosStrength", 0.1f);
+        DensityModShader.SetFloat("cosStrength", 0.08f);
         DensityModShader.SetFloat("modRange", 20.0f);
         DensityModShader.SetInt("dimension", dimension + 1);
+    }
+
+    internal void setDensityBuffer(ComputeBuffer voxelBuffer)
+    {
+        densityBuffer = voxelBuffer;
     }
 
     internal void modify(Vector3 modCenter, float modRange, ComputeBuffer voxelBuffer, ACTION modAction)
@@ -49,7 +55,7 @@ public class ModificationManager {
                 break;
         }
         //setup buffer containing densities
-        DensityModShader.SetBuffer(DensityModShader.FindKernel(kernelName), "voxel", voxelBuffer);
+        DensityModShader.SetBuffer(DensityModShader.FindKernel(kernelName), "voxel", densityBuffer);
         //run shader
         DensityModShader.Dispatch(DensityModShader.FindKernel(kernelName), dimension / 8, dimension / 8, dimension / 8);
     }

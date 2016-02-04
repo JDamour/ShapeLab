@@ -20,6 +20,16 @@ public class VoxelManager : MonoBehaviour {
 
     private Controller m_leapController;
     public HandController handController;
+    private ModificationManager.ACTION currentTool;
+
+    private enum INTEND
+    {
+        MOD,
+        CREATERND,
+        CREATEBLOCK,
+        CREATESPHERE,
+        NONE
+    }
 
 
     // Use this for initialization
@@ -34,92 +44,74 @@ public class VoxelManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            
-            Frame frame = m_leapController.Frame();
-            //Get TipPosition of the Tool
-            Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
-            tipPosition *= handController.transform.localScale.x; //scale position with hand movement
-            tipPosition += handController.transform.position;
-            Debug.Log("adding at: "+tipPosition.x+";"+ tipPosition.y+";"+ tipPosition.z);
-            //voxelObjectGPU.setModPosition(tipPosition);
-            tipPosition = new Vector3(1, 1, 1);
-            //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
-            voxelObjectGPU.updateMesh(tipPosition, ModificationManager.ACTION.ADD);
-            updateMesh();
-        }
-        if (Input.GetKeyUp(KeyCode.LeftAlt))
-        {
-            
-            Frame frame = m_leapController.Frame();
-            //Get TipPosition of the Tool
-            Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
-            tipPosition *= handController.transform.localScale.x; //scale position with hand movement
-            tipPosition += handController.transform.position;
-            
-            //voxelObjectGPU.setModPosition(tipPosition);
-            tipPosition = new Vector3(1, 1, 1);
+        switch (getIntent()) {
+            case INTEND.CREATESPHERE:
+                voxel.createSphere(size / 2);
+                initMesh();
+                break;
+            case INTEND.CREATERND:
+                voxel.createRandomGrid();
+                initMesh();
+                break;
+            case INTEND.CREATEBLOCK:
+                voxel.createBlock();
+                initMesh();
+                break;
+            case INTEND.MOD:
+                // first, get position from leap
+                Frame frame = m_leapController.Frame();
+                Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+                tipPosition *= handController.transform.localScale.x; //scale position with hand movement
+                tipPosition += handController.transform.position;
 
-            voxelObjectGPU.updateMesh(tipPosition, ModificationManager.ACTION.SUBSTRACT);
+                Debug.Log("modding at: " + tipPosition.x + ";" + tipPosition.y + ";" + tipPosition.z);
 
-            //voxelObjectGPU.newModification(new Vector3(1, 1, 1), ModificationManager.ACTION.SUBSTRACT);
-            updateMesh();
+                //voxelObjectGPU.setModPosition(tipPosition);
+                tipPosition = new Vector3(1, 1, 1); //TODO, for debugging
+                //apply modification
+                voxelObjectGPU.updateMesh(tipPosition, currentTool);
+                //render new vertices
+                updateMesh();
+                break;
         }
-        if (Input.GetKeyUp(KeyCode.LeftControl))
-        {
-
-            //voxelObjectGPU.setModPosition(tipPosition);
-            Vector3 position = new Vector3(1, 1, 1);
-            //modManager.modify(position, modRange, voxelObjectGPU.getVoxelBuffer(), ModificationManager.ACTION.ADD);
-            voxelObjectGPU.updateMesh(position, ModificationManager.ACTION.SMOOTH);
-
-            //voxelObjectGPU.newModification(position, ModificationManager.ACTION.SMOOTH);
-            updateMesh();
-        }
-        if (Input.GetKeyUp("s"))
-        {
-            voxel.createSphere(size / 2);
-            initMesh();
-        }
-        if (Input.GetKeyUp("b"))
-        {
-            voxel.createBlock();
-            initMesh();
-        }
-        if (Input.GetKeyUp("r"))
-        {
-            voxel.createRandomGrid();
-            initMesh();
-        }
+        
         if (Input.GetKeyUp("1"))
         {
-            int radius = 10;
-            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return Mathf.Cos(curRadius/(float)radius) * curDensity; };
-            voxel.changeDensityAt(new Vector3(0,0,0), radius, currentDeformFunction);
-            updateMesh();
+            currentTool = ModificationManager.ACTION.ADD;
+            Debug.Log("Current tool now is: ADD");
         }
         if (Input.GetKeyUp("2"))
         {
-            int radius = 10;
-            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return (1+Mathf.Cos(curRadius / (float)radius)) * curDensity; };
-            voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
-            updateMesh();
+            currentTool = ModificationManager.ACTION.SUBSTRACT;
+            Debug.Log("Current tool now is: SUBSTRACT");
         }
         if (Input.GetKeyUp("3"))
         {
-            int radius = 10;
-            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return Mathf.Cos(curRadius / (float)radius) + curDensity; };
-            voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
-            updateMesh();
+            currentTool = ModificationManager.ACTION.SMOOTH;
+            Debug.Log("Current tool now is: SMOOTH");
         }
-        if (Input.GetKeyUp("4"))
+    }
+
+    private INTEND getIntent()
+    {
+        //TODO erkennung, wann objekt berührt wird
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            int radius = 10;
-            Func<float, float, float> currentDeformFunction = delegate (float curRadius, float curDensity) { return curDensity - Mathf.Cos(curRadius / (float)radius); };
-            voxel.changeDensityAt(new Vector3(0, 0, 0), radius, currentDeformFunction);
-            updateMesh();
+            return INTEND.MOD;
         }
+        if (Input.GetKeyUp("s"))
+        {
+            return INTEND.CREATESPHERE;
+        }
+        if (Input.GetKeyUp("b"))
+        {
+            return INTEND.CREATEBLOCK;
+        }
+        if (Input.GetKeyUp("r"))
+        {
+            return INTEND.CREATERND;
+        }
+        return INTEND.NONE;
     }
 
     private void initMesh()
