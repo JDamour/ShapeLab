@@ -7,7 +7,9 @@ struct Vert{
 };
 
 int dimension;
+int cubeDimension;
 float isolevel;
+float scale;
 
 StructuredBuffer<int> triangleConnectionTable;
 StructuredBuffer<int> cubeEdgeFlags;
@@ -62,7 +64,7 @@ float3 calculateNormal(float3 vec1, float3 vec2, float3 vec3){
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
 	//TODO: handle dimension better
-	uint bufferIndex = id.x + id.y * (dimension-1) + id.z * (dimension-1) * (dimension-1);
+	uint bufferIndex = id.x + id.y * cubeDimension + id.z * cubeDimension * cubeDimension;
 
 	// get Id for all voxel in cube
 	uint id0 = id.x + id.y * dimension + (id.z+1) * dimension * dimension;
@@ -110,11 +112,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 		Vert vert2;
 		Vert vert3;
 
-		vert1.position = vertList[triangleConnectionTable[cubeIndex * 16 + i]];
-		vert2.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+1]];
-		vert3.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+2]];
+		vert1.position = vertList[triangleConnectionTable[cubeIndex * 16 + i]] * scale;
+		vert2.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+1]] * scale;
+		vert3.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+2]] * scale;
 
-		vert1.normal = vert2.normal = vert3.normal = calculateNormal(vert1.position, vert2.position, vert3.position);
+		vert1.normal = vert2.normal = vert3.normal = normalize(calculateNormal(vert1.position, vert2.position, vert3.position));
 
 		vertexBuffer[bufferIndex * 15 + i] = vert1;
 		vertexBuffer[bufferIndex * 15 + i+1] = vert2;

@@ -127,6 +127,10 @@ Material:
         first:
           name: _Metallic
         second: 0
+      data:
+        first:
+          name: _shininess
+        second: 2.11
     m_Colors:
       data:
         first:
@@ -136,3 +140,11 @@ Material:
         first:
           name: _Color
         second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _color
+        second: {r: 0.45588237, g: 0.20562112, b: 0.09050606, a: 1}
+      data:
+        first:
+          name: _lightDir
+        second: {r: 0.08, g: -0.14, b: 0.4, a: 1}

@@ -5,44 +5,47 @@ using System;
 
 public class VoxelObjectGPU : MonoBehaviour {
 
-    struct Vert
-    {
-        Vector3 position;
-        Vector3 normal;
-    };
     public enum MODACTION
     {
         SUBSTRACT,
         ADD
     };
     
-    public float scaling;
+    private float scaling;
     public float modRange = 20.0f;
 
     public ComputeShader normalsShader;
-    public ComputeShader scultpingShader;
     public ComputeShader voxelComputeShader;
     public ComputeShader sphereShader;
     public ComputeShader voxelModifierShader;
 
     public Material drawBuffer;
 
-    const int N = 64;
-
-    const int SIZE = N * N * N * 3 * 5;
+    private int voxelCubeSize;
+    private int voxelFieldSize;
+    private int maxVerticesSize;
 
     private ComputeBuffer voxelBuffer, normalBuffer, vertexBuffer;
     private ComputeBuffer edgeTable, triTable;
+
     private Vector3 modCenter;
     private Boolean applyModification;
     private ModificationManager.ACTION modAction;
 
     ModificationManager modManager;
 
+    //data set by the voxelmanager --> needs to be set before the Start() - method
+    public void setInitData(int dimension, float scaling)
+    {
+        voxelCubeSize = dimension;
+        voxelFieldSize = voxelCubeSize + 1;
+        maxVerticesSize = voxelCubeSize * voxelCubeSize * voxelCubeSize * 3 * 5;
+        this.scaling = scaling;
+    }
     // Use this for initialization
     void Start () {
         applyModification = false;
-        modManager = new ModificationManager(voxelModifierShader, N);
+        modManager = new ModificationManager(voxelModifierShader, voxelCubeSize);
 
         //set buffer data for lookup tables
         edgeTable = new ComputeBuffer(256, sizeof(int));
@@ -51,10 +54,10 @@ public class VoxelObjectGPU : MonoBehaviour {
         triTable.SetData(triTableLookUp);
 
         //initiate buffer
-        voxelBuffer = new ComputeBuffer((N + 1) * (N + 1) * (N + 1), sizeof(float));
+        voxelBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(float));
         modManager.setDensityBuffer(voxelBuffer);
-        vertexBuffer = new ComputeBuffer(SIZE, sizeof(float)*6);
-        //normalBuffer = new ComputeBuffer((N + 1) * (N + 1) * (N + 1), sizeof(float)*3);
+        vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float)*6);
+        //normalBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize* voxelFieldSize, sizeof(float)*3);
     }
     /*
     internal void newModification()
@@ -79,17 +82,16 @@ public class VoxelObjectGPU : MonoBehaviour {
 
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
-        vertexBuffer = new ComputeBuffer(SIZE, sizeof(float) * 6);
+        vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
 
-        modManager.modify(new Vector3(N/2, N/2, 0), modRange, null, useKernelIndex);
-
+        modManager.modify(new Vector3(voxelCubeSize/2, voxelCubeSize/2, 0), modRange, null, useKernelIndex);
 
         //create a sphere on GPU
         /*
         sphereShader.SetInt("dimension", N);
         sphereShader.SetFloat("radius", N / 3);
         sphereShader.SetBuffer(0, "voxel", voxelBuffer);
-        voxelComputeShader.Dispatch(0, N / 8, N / 8, N / 8); */
+        sphereShader.Dispatch(0, N / 8, N / 8, N / 8); */
 
         /*
         //calculate normals
@@ -98,20 +100,16 @@ public class VoxelObjectGPU : MonoBehaviour {
         normalsShader.SetBuffer(0, "normalBuffer", normalBuffer);
         */
 
-        //modifying voxelfield on the GPU
-
-        //
-
         //calculate new vertices in vertexBuffer
         voxelComputeShader.SetFloat("scale", scaling);
-        voxelComputeShader.SetInt("dimension", N+1);
+        voxelComputeShader.SetInt("dimension", voxelFieldSize);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
         voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
         voxelComputeShader.SetBuffer(0, "triangleConnectionTable", triTable);
         voxelComputeShader.SetBuffer(0, "voxel", voxelBuffer);
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-        voxelComputeShader.Dispatch(0, N/8, N/8, N/8);
+        voxelComputeShader.Dispatch(0, voxelCubeSize/8, voxelCubeSize/8, voxelCubeSize/8);
     }
 
     public void initMesh(VoxelField voxel)
@@ -120,21 +118,22 @@ public class VoxelObjectGPU : MonoBehaviour {
 
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
-        vertexBuffer = new ComputeBuffer(SIZE, sizeof(float) * 6);
+        vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
        
         //send the current voxel field to the gpu
         voxelBuffer.SetData(voxel.getField());
 
         //calculate new vertices in vertexBuffer
         voxelComputeShader.SetFloat("scale", scaling);
-        voxelComputeShader.SetInt("dimension", N + 1);
+        voxelComputeShader.SetInt("cubeDimension", voxelCubeSize);
+        voxelComputeShader.SetInt("dimension", voxelCubeSize + 1);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
         voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
         voxelComputeShader.SetBuffer(0, "triangleConnectionTable", triTable);
         voxelComputeShader.SetBuffer(0, "voxel", voxelBuffer);
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-        voxelComputeShader.Dispatch(0, N / 8, N / 8, N / 8);
+        voxelComputeShader.Dispatch(0, voxelCubeSize / 8, voxelCubeSize / 8, voxelCubeSize / 8);
     }
 
     void OnRenderObject()
@@ -142,7 +141,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         //Since mesh is in a buffer need to use DrawProcedual called from OnPostRender or OnRenderObject
         drawBuffer.SetBuffer("vertexBuffer", vertexBuffer);
         drawBuffer.SetPass(0);
-        Graphics.DrawProcedural(MeshTopology.Triangles, SIZE);
+        Graphics.DrawProcedural(MeshTopology.Triangles, maxVerticesSize);
     }
 
     void OnDestroy()
