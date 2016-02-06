@@ -53,9 +53,12 @@ public class ModificationManager {
         {
             case ACTION.SUBSTRACT:
                 DensityModShader.SetInt("sign", -1);
+                Debug.Log("subtracting");
                 break;
             case ACTION.ADD:
                 DensityModShader.SetInt("sign", 1);
+                Debug.Log("adding");
+
                 break;
             case ACTION.SMOOTH:
                 kernelName = "smoothModificator";

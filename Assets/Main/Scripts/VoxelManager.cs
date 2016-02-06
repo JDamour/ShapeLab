@@ -72,18 +72,7 @@ public class VoxelManager : MonoBehaviour {
                 voxel.createBlock();
                 initMesh();
                 break;
-            case INTEND.INCREASETOOLRANGE:
-                voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
-                break;
-            case INTEND.REDUCETOOLRANGE:
-                voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
-                break;
-            case INTEND.INCREASETOOLSTRENGTH:
-                voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
-                break;
-            case INTEND.REDUCETOOLSTRENGTH:
-                voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
-                break;
+            
             case INTEND.MOD:
                 Frame frame = m_leapController.Frame();
                 Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
@@ -142,19 +131,27 @@ public class VoxelManager : MonoBehaviour {
         }
         if (Input.GetAxis("AnalogCrossHorizontal") < 0)
         {
-            return INTEND.REDUCETOOLRANGE;
+            voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
+            //return INTEND.REDUCETOOLRANGE;
+
         }
         if (Input.GetAxis("AnalogCrossHorizontal") > 0)
         {
-            return INTEND.INCREASETOOLRANGE;
+            voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
+
+           // return INTEND.INCREASETOOLRANGE;
         }
         if (Input.GetAxis("AnalogCrossVertical") < 0)
         {
-            return INTEND.REDUCETOOLSTRENGTH;
+            //return INTEND.REDUCETOOLSTRENGTH;
+            voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
+
         }
         if (Input.GetAxis("AnalogCrossVertical") > 0)
         {
-            return INTEND.INCREASETOOLSTRENGTH;
+            voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
+
+            //return INTEND.INCREASETOOLSTRENGTH;
         }
         if (Input.GetButton("ModButton"))
         {
