@@ -159,15 +159,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 32
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 32
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -20
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalRotation.x
@@ -282,19 +282,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 475348, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 15
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 475348, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalScale.x
-      value: 80
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 475348, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalScale.y
-      value: 80
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 475348, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_LocalScale.z
-      value: 80
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11453054, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: mirrorZAxis
@@ -302,6 +302,18 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11453054, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: isHeadMounted
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
+      propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -392,7 +404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8ad587ce0514da4abb1b8e2fbc9160f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectSize: 64
+  objectSize: 1
   voxelCubeSize: 72
   eyePos: {fileID: 439116206}
   voxelObjectGPU: {fileID: 723655124}
