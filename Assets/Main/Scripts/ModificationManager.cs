@@ -53,11 +53,11 @@ public class ModificationManager {
         {
             case ACTION.SUBSTRACT:
                 DensityModShader.SetInt("sign", -1);
-                Debug.Log("subtracting");
+                //Debug.Log("subtracting");
                 break;
             case ACTION.ADD:
                 DensityModShader.SetInt("sign", 1);
-                Debug.Log("adding");
+                //Debug.Log("adding");
 
                 break;
             case ACTION.SMOOTH:
@@ -85,15 +85,16 @@ public class ModificationManager {
     public void SetToolPower(float power)
     {
         DensityModShader.SetFloat("toolPower", power);
-
     }
     public void ChangeToolRange(float rangeChange)
     {
         Debug.Log("Range changed by "+rangeChange + ", \tnew Value: " + this.modRange);
+        //todo max /min
         this.modRange += rangeChange;
     }
     public void ChangeToolStrength(float powerChange)
     {
+        //todo max /min
         Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
         this.modPower += powerChange;
     }

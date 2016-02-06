@@ -37,7 +37,7 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 		return;
 	}
 	
-	newDensity = voxel[voxelIndex] + sign * pow(abs(cosStrength*cos(dist/modRange*PI)),toolPower);
+	newDensity = voxel[voxelIndex] + sign * pow(abs(toolPower*cos(dist/modRange*PI)),cosStrength);
 
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
@@ -51,7 +51,11 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 		return;
 	
 	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
+	float dist = distance(voxelPos, modCenter);
 
+	if(dist > modRange){
+		return;
+	}
 	if(voxel[voxelIndex] > 0.5f){
 		return;
 	}
@@ -66,14 +70,14 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 	};
 
 
-	float newDensity = (voxel[voxelIndex]*5.0f+
+	float newDensity = (voxel[voxelIndex]*10.0f+
 						voxel[indecies[0]] + 
 						voxel[indecies[1]] + 
 						voxel[indecies[2]] + 
 						voxel[indecies[3]] + 
 						voxel[indecies[4]] + 
 						voxel[indecies[5]] 
-						)/11.0f;
+						)/16.0f;
 
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
