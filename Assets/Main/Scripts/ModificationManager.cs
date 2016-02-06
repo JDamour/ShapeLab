@@ -16,21 +16,21 @@ public class ModificationManager {
     private ComputeBuffer boolReturnBuffer;
     private int dimension;
 
-    private float modRange = 20.0f;
+    private float modRange = 5.0f;
     private float modPower = 1.0f;
 
     public ModificationManager(ComputeShader modShader, int N, float scale)
     {
         dimension = N;
         DensityModShader = modShader;
-        boolReturnBuffer = new ComputeBuffer(1, sizeof(bool));
+//        boolReturnBuffer = new ComputeBuffer(1, sizeof(bool));
 
         // set up shader vars
-        DensityModShader.SetFloat("toolPower", 1.0f);
+        DensityModShader.SetFloat("toolPower", modPower);
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
         DensityModShader.SetFloat("cosStrength", 0.08f);
-        DensityModShader.SetFloat("modRange", 5.0f);
+        DensityModShader.SetFloat("modRange", modRange);
         DensityModShader.SetInt("dimension", dimension + 1);
     }
 
@@ -120,6 +120,6 @@ public class ModificationManager {
     internal void destroy()
     {
         densityBuffer.Release();
-        boolReturnBuffer.Release();
+        //boolReturnBuffer.Release();
     }
 }

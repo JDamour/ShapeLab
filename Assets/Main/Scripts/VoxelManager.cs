@@ -55,6 +55,8 @@ public class VoxelManager : MonoBehaviour {
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh();
+        currentTool = ModificationManager.ACTION.ADD;
+
     }
 
     // Update is called once per frame

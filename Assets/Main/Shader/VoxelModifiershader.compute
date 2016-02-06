@@ -39,8 +39,6 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 	
 	newDensity = voxel[voxelIndex] + sign * pow(abs(cosStrength*cos(dist/modRange*PI)),toolPower);
 
-	//newDensity = voxel[voxelIndex] - 0.1;
-
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
 
@@ -78,22 +76,4 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 						)/11.0f;
 
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
-}
-
-#pragma kernel isPositionInObject
-
-[numthreads(8,8,8)]
-void isPositionInObject (uint3 id : SV_DispatchThreadID)
-{
-    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
-		return;
-
-	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
-	
-	float4 voxelPos = {id.x, id.y, id.z, 1.0};
-	if(10.5f > distance(voxelPos, tipPosition)){
-		//if(voxel[voxelIndex] < 0){
-			retVal[0] = true;	
-		//}	
-	}
 }
