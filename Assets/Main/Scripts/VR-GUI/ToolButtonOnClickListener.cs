@@ -18,7 +18,9 @@ public class ToolButtonOnClickListener : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (toolButtonToggle.ToggleState == true)
+        bool toggleState = toolButtonToggle.ToggleState;
+
+        if (toggleState)
         {
             toolButtonToggle.ButtonTurnsOff();
         }
@@ -26,5 +28,7 @@ public class ToolButtonOnClickListener : MonoBehaviour {
         {
             toolButtonToggle.ButtonTurnsOn();
         }
+
+        toolButtonToggle.ToggleState = !toggleState;
     }
 }
