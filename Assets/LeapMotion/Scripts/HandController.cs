@@ -96,7 +96,7 @@ public class HandController : MonoBehaviour {
   /** The list of all hand physics objects owned by this HandController.*/
   protected Dictionary<int, HandModel> hand_physics_;
   /** The list of all tool objects owned by this HandController.*/
-  protected Dictionary<int, ToolModel> tools_;
+  public Dictionary<int, ToolModel> tools_;
 
   private bool flag_initialized_ = false;
   private long prev_graphics_id_ = 0;
@@ -278,17 +278,28 @@ public class HandController : MonoBehaviour {
     return tool_model;
   }
 
-  /** 
-  * Updates tools based on tracking data in the specified Leap ToolList object.
-  * Active ToolModel instances are updated if the tool they represent is still
-  * present in the Leap ToolList; otherwise, the ToolModel is removed. If new
-  * Leap Tool objects are present in the Leap ToolList, new ToolModels are 
-  * created and added to the HandController tool list. 
-  * @param all_tools The dictionary containing the ToolModels to update.
-  * @param leap_tools The list of tools from the a Leap Frame instance.
-  * @param model The ToolModel instance to use for new tools.
-  */
-  protected void UpdateToolModels(Dictionary<int, ToolModel> all_tools,
+    //always call when changing the tool prefab
+    public void destroyCurrentTools()
+    {
+        List<int> ids_to_check = new List<int>(tools_.Keys);
+        for (int i = 0; i < ids_to_check.Count; ++i)
+        {
+            Destroy(tools_[ids_to_check[i]].gameObject);
+            tools_.Remove(ids_to_check[i]);
+        }
+    }
+
+    /** 
+    * Updates tools based on tracking data in the specified Leap ToolList object.
+    * Active ToolModel instances are updated if the tool they represent is still
+    * present in the Leap ToolList; otherwise, the ToolModel is removed. If new
+    * Leap Tool objects are present in the Leap ToolList, new ToolModels are 
+    * created and added to the HandController tool list. 
+    * @param all_tools The dictionary containing the ToolModels to update.
+    * @param leap_tools The list of tools from the a Leap Frame instance.
+    * @param model The ToolModel instance to use for new tools.
+    */
+    protected void UpdateToolModels(Dictionary<int, ToolModel> all_tools,
                                   ToolList leap_tools, ToolModel model) {
     List<int> ids_to_check = new List<int>(all_tools.Keys);
 

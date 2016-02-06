@@ -7,10 +7,13 @@ float MAX_DENSITY;
 float toolPower;
 float cosStrength;
 float modRange;
-int dimension;
+uint dimension;
 int sign;
 float4 modCenter;
 float4 Bounding_offSet;
+
+//static
+float PI = 3.14159265;
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
@@ -31,16 +34,16 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 		return;
 	}
 	
-	newDensity = voxel[voxelIndex] + sign * cos(dist/modRange)*cosStrength*toolPower;
+	newDensity = voxel[voxelIndex] + sign * pow(abs(cosStrength*cos(dist/modRange*PI)),toolPower);
 
 	//newDensity = voxel[voxelIndex] - 0.1;
 
-	if(newDensity<MIN_DENSITY)
-		newDensity = MIN_DENSITY;
-	if(newDensity>MAX_DENSITY)
-		newDensity = MAX_DENSITY;
+	//if(newDensity<MIN_DENSITY)
+	//	newDensity = MIN_DENSITY;
+	//if(newDensity>MAX_DENSITY)
+	//	newDensity = MAX_DENSITY;
 
-	voxel[voxelIndex] = newDensity;
+	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
 
 #pragma kernel smoothModificator

@@ -21,6 +21,8 @@ public class VoxelManager : MonoBehaviour {
     public HandController handController;
     private ModificationManager.ACTION currentTool;
 
+    public ToolModel[] toolModels;
+
     private enum INTEND
     {
         MOD,
@@ -53,9 +55,11 @@ public class VoxelManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        
+
         switch (getIntent()) {
             case INTEND.CREATESPHERE:
-                voxel.createSphere(voxelFieldSize / 2);
+                voxel.createSphere(voxelFieldSize / 3);
                 initMesh();
                 break;
             case INTEND.CREATERND:
@@ -67,44 +71,54 @@ public class VoxelManager : MonoBehaviour {
                 initMesh();
                 break;
             case INTEND.MOD:
-                // first, get position from leap
                 Frame frame = m_leapController.Frame();
                 Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
-                tipPosition *= handController.transform.localScale.x; //scale position with hand movement
-                tipPosition += handController.transform.position;
-
-                Debug.Log("modding at: " + tipPosition.x + ";" + tipPosition.y + ";" + tipPosition.z);
-
+                //tipPosition *= handController.transform.localScale.x; //scale position with hand movement
+                //tipPosition += handController.transform.position;
+                tipPosition = handController.transform.TransformPoint(tipPosition);
                 //voxelObjectGPU.setModPosition(tipPosition);
-                tipPosition = new Vector3(1, 1, 1); //TODO, for debugging
-                //apply modification
-                voxelObjectGPU.updateMesh(tipPosition, currentTool);
-                //render new vertices
-                updateMesh();
+                //tipPosition = new Vector3(1, 1, 1); //TODO, for debugging
+               
+                //only modify if there is a tool
+                if (frame.Tools[0] != null)
+                {
+                    Debug.Log("modding at: " + tipPosition.x + ";" + tipPosition.y + ";" + tipPosition.z);
+
+                    //apply modification
+                    voxelObjectGPU.updateMesh(tipPosition/scaling, currentTool);
+                    //render new vertices
+                    updateMesh();
+                }
                 break;
         }
         
         if (Input.GetKeyUp("1"))
         {
             currentTool = ModificationManager.ACTION.ADD;
+            handController.toolModel = toolModels[0];
             Debug.Log("Current tool now is: ADD");
+            handController.destroyCurrentTools();
         }
         if (Input.GetKeyUp("2"))
         {
             currentTool = ModificationManager.ACTION.SUBSTRACT;
+            handController.toolModel = toolModels[1];
             Debug.Log("Current tool now is: SUBSTRACT");
+            handController.destroyCurrentTools();
         }
         if (Input.GetKeyUp("3"))
         {
             currentTool = ModificationManager.ACTION.SMOOTH;
+            handController.toolModel = toolModels[2];
             Debug.Log("Current tool now is: SMOOTH");
+            handController.destroyCurrentTools();
         }
     }
 
     private INTEND getIntent()
     {
         //TODO erkennung, wann objekt berührt wird
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetButton("Jump"))
         {
             return INTEND.MOD;
         }

@@ -84,7 +84,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
 
-        modManager.modify(new Vector3(voxelCubeSize/2, voxelCubeSize/2, 0), modRange, null, useKernelIndex);
+        modManager.modify(modCenter, modRange, null, useKernelIndex);
 
         //create a sphere on GPU
         /*

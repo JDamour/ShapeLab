@@ -118,7 +118,7 @@ public class LeapCameraAlignment : MonoBehaviour {
         }
       }
 
-      Debug.LogWarning("Could not calculate valid timestamp. Returning 0.");
+      //Debug.LogWarning("Could not calculate valid timestamp. Returning 0.");
       return 0;
     }
   }

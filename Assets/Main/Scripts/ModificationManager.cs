@@ -25,7 +25,7 @@ public class ModificationManager {
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
         DensityModShader.SetFloat("cosStrength", 0.08f);
-        DensityModShader.SetFloat("modRange", 20.0f);
+        DensityModShader.SetFloat("modRange", 5.0f);
         DensityModShader.SetInt("dimension", dimension + 1);
     }
 
@@ -39,6 +39,7 @@ public class ModificationManager {
 
         DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
         DensityModShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
+        DensityModShader.SetFloat("modRange", modRange);
 
         //set up modification specific vars
         String kernelName = "densityModificator";
