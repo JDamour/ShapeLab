@@ -73,11 +73,8 @@ public class VoxelManager : MonoBehaviour {
             case INTEND.MOD:
                 Frame frame = m_leapController.Frame();
                 Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
-                //tipPosition *= handController.transform.localScale.x; //scale position with hand movement
-                //tipPosition += handController.transform.position;
+
                 tipPosition = handController.transform.TransformPoint(tipPosition);
-                //voxelObjectGPU.setModPosition(tipPosition);
-                //tipPosition = new Vector3(1, 1, 1); //TODO, for debugging
                
                 //only modify if there is a tool
                 if (frame.Tools[0] != null)

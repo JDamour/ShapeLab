@@ -15,7 +15,7 @@ public class ModificationManager {
     private ComputeBuffer densityBuffer;
     private int dimension;
 
-    public ModificationManager(ComputeShader modShader, int N)
+    public ModificationManager(ComputeShader modShader, int N, float scale)
     {
         dimension = N;
         DensityModShader = modShader;

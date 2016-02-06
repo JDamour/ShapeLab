@@ -38,11 +38,6 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 
 	//newDensity = voxel[voxelIndex] - 0.1;
 
-	//if(newDensity<MIN_DENSITY)
-	//	newDensity = MIN_DENSITY;
-	//if(newDensity>MAX_DENSITY)
-	//	newDensity = MAX_DENSITY;
-
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
 
@@ -79,11 +74,5 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 						voxel[indecies[5]] 
 						)/11.0f;
 
-	
-	if(newDensity<MIN_DENSITY)
-		newDensity = MIN_DENSITY;
-	if(newDensity>MAX_DENSITY)
-		newDensity = MAX_DENSITY;
-
-	voxel[voxelIndex] = newDensity;
+	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }

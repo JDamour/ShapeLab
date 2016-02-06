@@ -45,7 +45,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     // Use this for initialization
     void Start () {
         applyModification = false;
-        modManager = new ModificationManager(voxelModifierShader, voxelCubeSize);
+        modManager = new ModificationManager(voxelModifierShader, voxelCubeSize, scaling);
 
         //set buffer data for lookup tables
         edgeTable = new ComputeBuffer(256, sizeof(int));
