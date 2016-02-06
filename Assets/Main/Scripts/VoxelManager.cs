@@ -29,6 +29,10 @@ public class VoxelManager : MonoBehaviour {
         CREATERND,
         CREATEBLOCK,
         CREATESPHERE,
+        REDUCETOOLRANGE,
+        INCREASETOOLRANGE,
+        REDUCETOOLSTRENGTH,
+        INCREASETOOLSTRENGTH,
         NONE
     }
 
@@ -55,8 +59,6 @@ public class VoxelManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        
-
         switch (getIntent()) {
             case INTEND.CREATESPHERE:
                 voxel.createSphere(voxelFieldSize / 3);
@@ -69,6 +71,18 @@ public class VoxelManager : MonoBehaviour {
             case INTEND.CREATEBLOCK:
                 voxel.createBlock();
                 initMesh();
+                break;
+            case INTEND.INCREASETOOLRANGE:
+                voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
+                break;
+            case INTEND.REDUCETOOLRANGE:
+                voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
+                break;
+            case INTEND.INCREASETOOLSTRENGTH:
+                voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
+                break;
+            case INTEND.REDUCETOOLSTRENGTH:
+                voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
                 break;
             case INTEND.MOD:
                 Frame frame = m_leapController.Frame();
@@ -115,6 +129,37 @@ public class VoxelManager : MonoBehaviour {
     private INTEND getIntent()
     {
         //TODO erkennung, wann objekt berührt wird
+
+        if (Input.GetAxis("StickVertical") != 0)
+        {
+            //todo rotate object Around X axis
+            Debug.Log("StickVertical: " + Input.GetAxis("StickVertical"));
+        }
+        if (Input.GetAxis("StickHorizontal") != 0)
+        {
+            //todo rotate object around Y axis
+            Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
+        }
+        if (Input.GetAxis("AnalogCrossHorizontal") < 0)
+        {
+            return INTEND.REDUCETOOLRANGE;
+        }
+        if (Input.GetAxis("AnalogCrossHorizontal") > 0)
+        {
+            return INTEND.INCREASETOOLRANGE;
+        }
+        if (Input.GetAxis("AnalogCrossVertical") < 0)
+        {
+            return INTEND.REDUCETOOLSTRENGTH;
+        }
+        if (Input.GetAxis("AnalogCrossVertical") > 0)
+        {
+            return INTEND.INCREASETOOLSTRENGTH;
+        }
+        if (Input.GetButton("ModButton"))
+        {
+            return INTEND.MOD;
+        }
         if (Input.GetButton("Jump"))
         {
             return INTEND.MOD;

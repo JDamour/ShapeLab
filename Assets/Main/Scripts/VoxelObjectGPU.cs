@@ -12,7 +12,6 @@ public class VoxelObjectGPU : MonoBehaviour {
     };
     
     private float scaling;
-    public float modRange = 20.0f;
 
     public ComputeShader normalsShader;
     public ComputeShader voxelComputeShader;
@@ -84,7 +83,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
 
-        modManager.modify(modCenter, modRange, null, useKernelIndex);
+        modManager.modify(modCenter, useKernelIndex);
 
         //create a sphere on GPU
         /*
@@ -147,6 +146,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     void OnDestroy()
     {
         //MUST release buffers.
+        modManager.destroy();
         vertexBuffer.Release();
         voxelBuffer.Release();
         edgeTable.Release();

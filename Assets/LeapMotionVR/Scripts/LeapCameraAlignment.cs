@@ -443,7 +443,7 @@ public class LeapCameraAlignment : MonoBehaviour {
       if (!(IsFinite (virtualBaseline) &&
         virtualBaseline.magnitude > float.Epsilon)) {
         // Unmodified camera positions
-        Debug.LogWarning ("Bad camera separation = " + virtualBaseline + " -> skip alignment");
+        //Debug.LogWarning ("Bad camera separation = " + virtualBaseline + " -> skip alignment");
         eyeAlignment.ipd = 0f;
         return;
       }

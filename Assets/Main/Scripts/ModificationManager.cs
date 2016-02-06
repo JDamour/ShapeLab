@@ -13,12 +13,17 @@ public class ModificationManager {
 
     public ComputeShader DensityModShader;
     private ComputeBuffer densityBuffer;
+    private ComputeBuffer boolReturnBuffer;
     private int dimension;
+
+    private float modRange = 20.0f;
+    private float modPower = 1.0f;
 
     public ModificationManager(ComputeShader modShader, int N, float scale)
     {
         dimension = N;
         DensityModShader = modShader;
+        boolReturnBuffer = new ComputeBuffer(1, sizeof(bool));
 
         // set up shader vars
         DensityModShader.SetFloat("toolPower", 1.0f);
@@ -34,11 +39,12 @@ public class ModificationManager {
         densityBuffer = voxelBuffer;
     }
 
-    internal void modify(Vector3 modCenter, float modRange, ComputeBuffer voxelBuffer, ACTION modAction)
+    internal void modify(Vector3 modCenter, ACTION modAction)
     {
 
         DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
         DensityModShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
+        DensityModShader.SetFloat("toolPower", modPower);
         DensityModShader.SetFloat("modRange", modRange);
 
         //set up modification specific vars
@@ -77,5 +83,40 @@ public class ModificationManager {
     {
         DensityModShader.SetFloat("toolPower", power);
 
+    }
+    public void ChangeToolRange(float rangeChange)
+    {
+        Debug.Log("Range changed by "+rangeChange + ", \tnew Value: " + this.modRange);
+        this.modRange += rangeChange;
+    }
+    public void ChangeToolStrength(float powerChange)
+    {
+        Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
+        this.modPower += powerChange;
+    }
+    /*
+    internal bool isPositionInObject(Vector3 tipPosition)
+    {
+        bool[] retVal = new bool[1];
+        retVal[0] = false;
+        DensityModShader.SetVector("tipPosition", new Vector4(tipPosition.x, tipPosition.y, tipPosition.z, 1));
+        //boolReturnBuffer.Dispose();
+
+        boolReturnBuffer.SetData(retVal);
+        DensityModShader.SetBuffer(DensityModShader.FindKernel("isPositionInObject"), "boolReturn", boolReturnBuffer);
+        //run shader
+        DensityModShader.Dispatch(DensityModShader.FindKernel("isPositionInObject"), dimension / 8, dimension / 8, dimension / 8);
+        boolReturnBuffer.GetData(retVal);
+        //boolReturnBuffer.Release();
+
+        if (retVal[0])
+            Debug.Log("retVal is:"+retVal[0].ToString());
+        return retVal[0];
+    }*/
+
+    internal void destroy()
+    {
+        densityBuffer.Release();
+        boolReturnBuffer.Release();
     }
 }

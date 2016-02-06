@@ -82,11 +82,11 @@ public class VoxelField{
                 {
                     if (x == 0 || x == size - 1 || y == 0 || y == size - 1 || z == 0 || z == size - 1)
                     {
-                        voxel[x, y, z] = -1f;
+                        voxel[x, y, z] = 1f;
                     }
                     else
                     {
-                        voxel[x, y, z] = 1f;
+                        voxel[x, y, z] = -1f;
                     }
                 }
                     
