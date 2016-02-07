@@ -11,19 +11,21 @@ public class ModificationManager {
         NONE
     };
 
-    public ComputeShader DensityModShader;
+    private ComputeShader DensityModShader;
     private ComputeBuffer densityBuffer;
-    private ComputeBuffer boolReturnBuffer;
-    private int dimension;
 
+    private int dimension;
     private float modRange = 5.0f;
     private float modPower = 1.0f;
+    private float MAX_RANGE = 50.0f;
+    private float MIN_RANGE = 1.0f;
+    private float MAX_TOOL_POWER = 2.0f;
+    private float MIN_TOOL_POWER = 0.4f;
 
     public ModificationManager(ComputeShader modShader, int N, float scale)
     {
         dimension = N;
         DensityModShader = modShader;
-//        boolReturnBuffer = new ComputeBuffer(1, sizeof(bool));
 
         // set up shader vars
         DensityModShader.SetFloat("toolPower", modPower);
@@ -47,21 +49,21 @@ public class ModificationManager {
         DensityModShader.SetFloat("toolPower", modPower);
         DensityModShader.SetFloat("modRange", modRange);
 
-        //set up modification specific vars
-        String kernelName = "densityModificator";
+        //set up modification specific vars and kernel name
+        String kernelName = "";
         switch (modAction)
         {
-            case ACTION.SUBSTRACT:
-                DensityModShader.SetInt("sign", -1);
-                //Debug.Log("subtracting");
-                break;
             case ACTION.ADD:
+                DensityModShader.SetInt("sign", -1);
+                kernelName = "densityModificator";
+                break;
+            case ACTION.SUBSTRACT:
                 DensityModShader.SetInt("sign", 1);
-                //Debug.Log("adding");
-
+                kernelName = "densityModificator";
                 break;
             case ACTION.SMOOTH:
-                kernelName = "smoothModificator";
+                //kernelName = "smoothModificator";
+                kernelName = "smooth3x3Modificator";
                 break;
         }
         //setup buffer containing densities
@@ -86,41 +88,25 @@ public class ModificationManager {
     {
         DensityModShader.SetFloat("toolPower", power);
     }
+
     public void ChangeToolRange(float rangeChange)
     {
+        //todo UI text with tool range
         Debug.Log("Range changed by "+rangeChange + ", \tnew Value: " + this.modRange);
-        //todo max /min
         this.modRange += rangeChange;
+        this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
     }
+
     public void ChangeToolStrength(float powerChange)
     {
-        //todo max /min
+        //todo UI text with tool power
         Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
         this.modPower += powerChange;
+        this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
     }
-    /*
-    internal bool isPositionInObject(Vector3 tipPosition)
-    {
-        bool[] retVal = new bool[1];
-        retVal[0] = false;
-        DensityModShader.SetVector("tipPosition", new Vector4(tipPosition.x, tipPosition.y, tipPosition.z, 1));
-        //boolReturnBuffer.Dispose();
-
-        boolReturnBuffer.SetData(retVal);
-        DensityModShader.SetBuffer(DensityModShader.FindKernel("isPositionInObject"), "boolReturn", boolReturnBuffer);
-        //run shader
-        DensityModShader.Dispatch(DensityModShader.FindKernel("isPositionInObject"), dimension / 8, dimension / 8, dimension / 8);
-        boolReturnBuffer.GetData(retVal);
-        //boolReturnBuffer.Release();
-
-        if (retVal[0])
-            Debug.Log("retVal is:"+retVal[0].ToString());
-        return retVal[0];
-    }*/
 
     internal void destroy()
     {
         densityBuffer.Release();
-        //boolReturnBuffer.Release();
     }
 }

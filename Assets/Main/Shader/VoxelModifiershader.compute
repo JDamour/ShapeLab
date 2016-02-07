@@ -37,7 +37,7 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 		return;
 	}
 	
-	newDensity = voxel[voxelIndex] + sign * pow(abs(toolPower*cos(dist/modRange*PI)),cosStrength);
+	newDensity = voxel[voxelIndex] + sign * pow(abs(cosStrength*cos(dist/modRange*PI)),toolPower);
 
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
@@ -51,14 +51,13 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 		return;
 	
 	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
+	float4 voxelPos = {id.x, id.y, id.z, 1.0};
 	float dist = distance(voxelPos, modCenter);
 
 	if(dist > modRange){
 		return;
 	}
-	if(voxel[voxelIndex] > 0.5f){
-		return;
-	}
+
 	//get sourrounding voxels desities
 	uint indecies[6] = {
 		id.x+1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
@@ -68,16 +67,125 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 		id.x + id.y * (dimension) + (id.z-1) * (dimension) * (dimension),
 		id.x + id.y * (dimension) + (id.z+1) * (dimension) * (dimension),
 	};
-
-
-	float newDensity = (voxel[voxelIndex]*10.0f+
+	
+	float newDensity = (voxel[voxelIndex]*(10.0f*toolPower)+
 						voxel[indecies[0]] + 
 						voxel[indecies[1]] + 
 						voxel[indecies[2]] + 
 						voxel[indecies[3]] + 
 						voxel[indecies[4]] + 
 						voxel[indecies[5]] 
-						)/16.0f;
-
+						)/(7.0f+10.0f*toolPower);
+	if(newDensity > 0 && voxel[voxelIndex] < 0){
+		voxel[voxelIndex] = 0.001f;
+		return;
+	}
+	if(newDensity < 0 && voxel[voxelIndex] > 0){
+		voxel[voxelIndex] = -0.001f;
+		return;
+	}
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
+	
+}
+
+#pragma kernel smooth3x3Modificator
+
+[numthreads(8,8,8)]
+void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
+		return;
+	
+	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
+	float4 voxelPos = {id.x, id.y, id.z, 1.0};
+	float dist = distance(voxelPos, modCenter);
+
+	if(dist > modRange){
+		return;
+	}
+
+	//get sourrounding voxels desities
+	uint indecies[3*3*3] = {
+		(id.x+1) + (id.y+1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x) + (id.y+1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x-1) + (id.y+1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+
+		(id.x+1) + (id.y) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x) + (id.y) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x-1) + (id.y) * (dimension) + (id.z+1) * (dimension) * (dimension),
+
+		(id.x+1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x+1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+
+
+		(id.x+1) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x-1) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
+
+		(id.x+1) + (id.y) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x) + (id.y) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x-1) + (id.y) * (dimension) + (id.z) * (dimension) * (dimension),
+
+		(id.x+1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x+1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
+
+
+		(id.x+1) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x-1) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+
+		(id.x+1) + (id.y) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x) + (id.y) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x-1) + (id.y) * (dimension) + (id.z-1) * (dimension) * (dimension),
+
+		(id.x+1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x+1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+	};
+	
+	float indexWeight[3*3*3] = {
+		0.3f,
+		0.5f,
+		0.3f,
+		0.5f,
+		1.0f,
+		0.5f,
+		0.3f,
+		0.5f,
+		0.3f,
+
+		0.5f,
+		1.0f,
+		0.5f,
+		1.0f,
+		10.0f,
+		1.0f,
+		0.5f,
+		1.0f,
+		0.5f,
+
+		0.3f,
+		0.5f,
+		0.3f,
+		0.5f,
+		1.0f,
+		0.5f,
+		0.3f,
+		0.5f,
+		0.3f,
+	};
+
+	float newDensity = 0;
+	float allWeights = 0;
+	for(uint i=0;i<3*3*3;i++){
+		newDensity += voxel[indecies[i]]*indexWeight[i];
+		allWeights += indexWeight[i];
+	}
+	newDensity /= allWeights;
+
+	
+	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
+	
 }

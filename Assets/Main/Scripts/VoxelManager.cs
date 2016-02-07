@@ -76,21 +76,25 @@ public class VoxelManager : MonoBehaviour {
                 break;
             
             case INTEND.MOD:
-                Frame frame = m_leapController.Frame();
-                Vector3 tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+                Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
+                if (m_leapController.IsConnected) {
+                    Frame frame = m_leapController.Frame();
+                    if (frame.Tools.Count == 0) //only modify if there is a tool
+                        return;
 
-                tipPosition = handController.transform.TransformPoint(tipPosition);
-               
-                //only modify if there is a tool
-                if (frame.Tools[0] != null)
-                {
-                    Debug.Log("modding at: " + tipPosition.x + ";" + tipPosition.y + ";" + tipPosition.z);
-
-                    //apply modification
-                    voxelObjectGPU.updateMesh(tipPosition/scaling, currentTool);
-                    //render new vertices
-                    updateMesh();
+                    tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+                    tipPosition = handController.transform.TransformPoint(tipPosition);
+                    
+                } else {
+                    // for testing purposes
+                    Debug.Log("modding at: " + tipPosition.x / scaling + ";" + tipPosition.y / scaling + ";" + tipPosition.z / scaling);
                 }
+
+                //apply modification
+                voxelObjectGPU.updateMesh(tipPosition / scaling, currentTool);
+                //render new vertices
+                updateMesh();
+
                 break;
         }
         
@@ -131,35 +135,31 @@ public class VoxelManager : MonoBehaviour {
             //todo rotate object around Y axis
             Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
         }
-        if (Input.GetAxis("AnalogCrossHorizontal") < 0)
+        if (Input.GetAxis("AnalogCrossHorizontal") < 0 ||
+            Input.GetKey(KeyCode.LeftArrow))
         {
+            // reducing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
-            //return INTEND.REDUCETOOLRANGE;
-
         }
-        if (Input.GetAxis("AnalogCrossHorizontal") > 0)
+        if (Input.GetAxis("AnalogCrossHorizontal") > 0 ||
+            Input.GetKey(KeyCode.RightArrow))
         {
+            // increasing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
-
-           // return INTEND.INCREASETOOLRANGE;
         }
-        if (Input.GetAxis("AnalogCrossVertical") < 0)
+        if (Input.GetAxis("AnalogCrossVertical") < 0 ||
+            Input.GetKey(KeyCode.DownArrow))
         {
-            //return INTEND.REDUCETOOLSTRENGTH;
-            voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
-
+            // reducing tool strength
+            voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.005f);
         }
-        if (Input.GetAxis("AnalogCrossVertical") > 0)
+        if (Input.GetAxis("AnalogCrossVertical") > 0 ||
+            Input.GetKey(KeyCode.UpArrow))
         {
-            voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
-
-            //return INTEND.INCREASETOOLSTRENGTH;
+            // increasing tool strength
+            voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
         }
-        if (Input.GetButton("ModButton"))
-        {
-            return INTEND.MOD;
-        }
-        if (Input.GetButton("Jump"))
+        if (Input.GetButton("ModButton") || Input.GetButton("Jump"))
         {
             return INTEND.MOD;
         }
