@@ -36,8 +36,8 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 	if(dist > modRange){
 		return;
 	}
-	
-	newDensity = voxel[voxelIndex] + sign * pow(abs(cosStrength*cos(dist/modRange*PI)),toolPower);
+	newDensity = voxel[voxelIndex];
+	newDensity += sign * pow(abs(toolPower * cos(dist/modRange)), cosStrength);
 	if(newDensity > 0 && voxel[voxelIndex] < 0){
 		voxel[voxelIndex] = 0.001f;
 		return;
@@ -123,7 +123,7 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 
 		(id.x+1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
 		(id.x) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x+1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(id.x-1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
 
 
 		(id.x+1) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
@@ -136,7 +136,7 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 
 		(id.x+1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
 		(id.x) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x+1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
+		(id.x-1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
 
 
 		(id.x+1) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
@@ -149,7 +149,7 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 
 		(id.x+1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
 		(id.x) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x+1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(id.x-1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
 	};
 	
 	float indexWeight[3*3*3] = {
@@ -167,7 +167,7 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 		1.0f,
 		0.5f,
 		1.0f,
-		10.0f,
+		1.0f+sin(dist/(modRange))*50.0f * toolPower, //dist==0:sin(0)=>max influence of sourrounding voxels
 		1.0f,
 		0.5f,
 		1.0f,

@@ -19,8 +19,8 @@ public class ModificationManager {
     private float modPower = 1.0f;
     private float MAX_RANGE = 50.0f;
     private float MIN_RANGE = 1.0f;
-    private float MAX_TOOL_POWER = 2.0f;
-    private float MIN_TOOL_POWER = 0.4f;
+    private float MAX_TOOL_POWER = 1.25f;
+    private float MIN_TOOL_POWER = 0.75f;
 
     public ModificationManager(ComputeShader modShader, int N, float scale)
     {
@@ -31,7 +31,7 @@ public class ModificationManager {
         DensityModShader.SetFloat("toolPower", modPower);
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
-        DensityModShader.SetFloat("cosStrength", 0.08f);
+        DensityModShader.SetFloat("cosStrength", 20.0f);
         DensityModShader.SetFloat("modRange", modRange);
         DensityModShader.SetInt("dimension", dimension + 1);
     }
