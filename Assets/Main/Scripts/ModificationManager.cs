@@ -97,12 +97,22 @@ public class ModificationManager {
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
     }
 
+    public float getToolRadius()
+    {
+        return modRange;
+    }
+
     public void ChangeToolStrength(float powerChange)
     {
         //todo UI text with tool power
         Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
         this.modPower += powerChange;
         this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
+    }
+
+    public float getToolStrength()
+    {
+        return modPower;
     }
 
     internal void destroy()

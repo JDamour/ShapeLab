@@ -6,11 +6,11 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: DrawBuffer
-  m_Shader: {fileID: 4800000, guid: 6c8f6b04c6505ef468cc53be64300e14, type: 3}
+  m_Name: ToolSphere
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
@@ -127,10 +127,6 @@ Material:
         first:
           name: _Metallic
         second: 0
-      data:
-        first:
-          name: _shininess
-        second: 2.11
     m_Colors:
       data:
         first:
@@ -139,12 +135,4 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _color
-        second: {r: 0.875, g: 0.623813, b: 0.50827205, a: 1}
-      data:
-        first:
-          name: _lightDir
-        second: {r: 0.08, g: -0.14, b: 0.4, a: 1}
+        second: {r: 1, g: 0, b: 0, a: 1}

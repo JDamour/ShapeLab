@@ -9,6 +9,8 @@ Shader "Custom/DrawBuffer"
 	}
 	SubShader
 	{
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
+		//Blend SrcAlpha OneMinusSrcAlpha
 		Pass
 		{
 			Cull front

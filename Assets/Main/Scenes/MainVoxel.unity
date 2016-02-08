@@ -151,39 +151,87 @@ Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 321123066}
+    m_TransformParent: {fileID: 508766955}
     m_Modifications:
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0.6409024
+      value: 0.7286
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -0.80593324
+      value: -0.627
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 1.0167065
+      value: 1.4237
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0.65328157
+      value: 0.60758805
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0.27059805
+      value: 0.3617138
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalRotation.z
-      value: 0.27059802
+      value: 0.3617138
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.6532815
+      value: 0.60758793
       objectReference: {fileID: 0}
     - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 145622, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Name
+      value: ToggleButtonPull
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.09999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 11487938, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Text
+      value: 'Add Tool
+
+        activate'
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.19999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 22415646, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 478864, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 489636, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11491330, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Text
+      value: 'Add Tool
+
+'
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: toolButtons
+      value: 
+      objectReference: {fileID: 508766956}
+    - target: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: tool
+      value: Pull
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
@@ -196,6 +244,142 @@ Transform:
 Transform:
   m_PrefabParentObject: {fileID: 410996, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
   m_PrefabInternal: {fileID: 663819518}
+--- !u!1 &508766954
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 508766955}
+  - 114: {fileID: 508766956}
+  m_Layer: 0
+  m_Name: ToolButtons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &508766955
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 508766954}
+  m_LocalRotation: {x: 0.0047835885, y: -0.006306166, z: 0.079942524, w: 0.99676806}
+  m_LocalPosition: {x: -0.61, y: 0.56, z: -0.98}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_Children:
+  - {fileID: 711427185}
+  - {fileID: 554451165}
+  - {fileID: 1270518883}
+  m_Father: {fileID: 321123066}
+  m_RootOrder: 1
+--- !u!114 &508766956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 508766954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 653c913680485e84e90fc93fd9e76ba8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 787525643}
+  pullToolButton: {fileID: 1469998617}
+  pushToolButton: {fileID: 2080973968}
+  smoothToolButton: {fileID: 1764729168}
+--- !u!4 &554451165 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+  m_PrefabInternal: {fileID: 1662879323}
+--- !u!1001 &617985684
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 508766955}
+    m_Modifications:
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0.729
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -0.627
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1.1405
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.60758805
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0.3617138
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0.3617138
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.60758793
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 145622, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Name
+      value: ToggleButtonSmooth
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.19999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11487938, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Text
+      value: 'Smooth Tool
+
+        active'
+      objectReference: {fileID: 0}
+    - target: {fileID: 478864, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 489636, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11491330, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Text
+      value: 'Smooth Tool
+
+'
+      objectReference: {fileID: 0}
+    - target: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: tool
+      value: Smooth
+      objectReference: {fileID: 0}
+    - target: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: toolButtons
+      value: 
+      objectReference: {fileID: 508766956}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &663819518
 Prefab:
   m_ObjectHideFlags: 0
@@ -312,7 +496,7 @@ Prefab:
     - target: {fileID: 11453054, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: toolModel
       value: 
-      objectReference: {fileID: 11476104, guid: 229f227e0f3959e4aba8da01aa2c149f,
+      objectReference: {fileID: 11444656, guid: ff0b46d56dacdf04fb3e67588abcc72c,
         type: 2}
     - target: {fileID: 11453054, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: handMovementScale.x
@@ -369,6 +553,10 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
   m_IsPrefabParent: 0
+--- !u!4 &711427185 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+  m_PrefabInternal: {fileID: 132433217}
 --- !u!1 &723655122
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +596,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fc946231499824abc02749e732edd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modRange: 3
   normalsShader: {fileID: 0}
   voxelComputeShader: {fileID: 7200000, guid: 558cfcb561724c74f90ea39aec729b33, type: 3}
   sphereShader: {fileID: 7200000, guid: 4136a36669f89a54899f6c9b374c86a8, type: 3}
@@ -455,14 +642,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectSize: 1
-  voxelCubeSize: 72
+  voxelCubeSize: 64
   eyePos: {fileID: 439116206}
   voxelObjectGPU: {fileID: 723655124}
   handController: {fileID: 1685078488}
-  toolModels:
-  - {fileID: 11476104, guid: 229f227e0f3959e4aba8da01aa2c149f, type: 2}
-  - {fileID: 11472470, guid: 7d469a6390251194fa4b1c28547d49b8, type: 2}
-  - {fileID: 11430772, guid: 1a73011d31045f045807d20df6145783, type: 2}
+  tool: {fileID: 11477104, guid: ff0b46d56dacdf04fb3e67588abcc72c, type: 2}
+  toolMaterial: {fileID: 2100000, guid: 8248fc8c6d1dd714fbf4ad101ab91f16, type: 2}
+  pushToolColor: {r: 0.83823526, g: 0.39446363, b: 0.39446363, a: 0}
+  pullToolColor: {r: 0.3810106, g: 0.7794118, b: 0.366782, a: 0}
+  smoothToolColor: {r: 1, g: 1, b: 1, a: 0}
+--- !u!4 &1270518883 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+  m_PrefabInternal: {fileID: 617985684}
 --- !u!1001 &1356578444
 Prefab:
   m_ObjectHideFlags: 0
@@ -514,8 +706,104 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 182172, guid: df45aa61328d60b4c9fda6cf605b325e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: df45aa61328d60b4c9fda6cf605b325e, type: 2}
+  m_IsPrefabParent: 0
+--- !u!114 &1469998617 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41,
+    type: 2}
+  m_PrefabInternal: {fileID: 132433217}
+  m_Script: {fileID: 11500000, guid: a41f60a8d17aa1b43b562a4bc75b88f0, type: 3}
+--- !u!1001 &1662879323
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 508766955}
+    m_Modifications:
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0.7286
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -0.627
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1.2856
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.6075879
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0.36171412
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0.36171412
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.60758775
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 145622, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Name
+      value: ToggleButtonPush
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.19999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 455188, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0.10000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 11487938, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Text
+      value: 'Delete Tool
+
+        active'
+      objectReference: {fileID: 0}
+    - target: {fileID: 478864, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 489636, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11491330, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: m_Text
+      value: 'Delete Tool
+
+'
+      objectReference: {fileID: 0}
+    - target: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: tool
+      value: Push
+      objectReference: {fileID: 0}
+    - target: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
+      propertyPath: toolButtons
+      value: 
+      objectReference: {fileID: 508766956}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
   m_IsPrefabParent: 0
 --- !u!114 &1685078488 stripped
 MonoBehaviour:
@@ -523,3 +811,15 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 663819518}
   m_Script: {fileID: 11500000, guid: 2c4e0350c46ae405b8db39262c18b8f5, type: 3}
+--- !u!114 &1764729168 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41,
+    type: 2}
+  m_PrefabInternal: {fileID: 617985684}
+  m_Script: {fileID: 11500000, guid: a41f60a8d17aa1b43b562a4bc75b88f0, type: 3}
+--- !u!114 &2080973968 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11433792, guid: 911a7a73513ee4141be8de22bb88cd41,
+    type: 2}
+  m_PrefabInternal: {fileID: 1662879323}
+  m_Script: {fileID: 11500000, guid: a41f60a8d17aa1b43b562a4bc75b88f0, type: 3}

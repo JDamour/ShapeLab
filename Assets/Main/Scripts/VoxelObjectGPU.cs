@@ -31,7 +31,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     private Boolean applyModification;
     private ModificationManager.ACTION modAction;
 
-    ModificationManager modManager;
+    public ModificationManager modManager;
 
     //data set by the voxelmanager --> needs to be set before the Start() - method
     public void setInitData(int dimension, float scaling)
@@ -75,15 +75,16 @@ public class VoxelObjectGPU : MonoBehaviour {
         return this.voxelBuffer;
     }
 
-    public void updateMesh(Vector3 modCenter, ModificationManager.ACTION useKernelIndex)
+    public void updateMesh(Vector3 modCenter, ModificationManager.ACTION useKernelIndex, Vector3 rotation)
     {
         //Debug.Log("Update Voxel Buffer");
 
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
-
-        modManager.modify(modCenter, useKernelIndex);
+        if (modCenter != new Vector3(0, 0, 0)) { 
+            modManager.modify(modCenter, useKernelIndex);
+        }
 
         //create a sphere on GPU
         /*
@@ -100,6 +101,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         */
 
         //calculate new vertices in vertexBuffer
+        voxelComputeShader.SetVector("rotation", new Vector4(rotation.x, rotation.y, rotation.z, 1));
         voxelComputeShader.SetFloat("scale", scaling);
         voxelComputeShader.SetInt("dimension", voxelFieldSize);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
@@ -111,7 +113,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.Dispatch(0, voxelCubeSize/8, voxelCubeSize/8, voxelCubeSize/8);
     }
 
-    public void initMesh(VoxelField voxel)
+    public void initMesh(VoxelField voxel, Vector3 rotation)
     {
         //Debug.Log("Update Voxel Buffer");
 
@@ -123,6 +125,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelBuffer.SetData(voxel.getField());
 
         //calculate new vertices in vertexBuffer
+        voxelComputeShader.SetVector("rotation", rotation);
         voxelComputeShader.SetFloat("scale", scaling);
         voxelComputeShader.SetInt("cubeDimension", voxelCubeSize);
         voxelComputeShader.SetInt("dimension", voxelCubeSize + 1);

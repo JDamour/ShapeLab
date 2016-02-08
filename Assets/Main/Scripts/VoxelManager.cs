@@ -21,7 +21,15 @@ public class VoxelManager : MonoBehaviour {
     public HandController handController;
     private ModificationManager.ACTION currentTool;
 
-    public ToolModel[] toolModels;
+    public SphereTool tool;
+    private SphereTool currentToolObject;
+    public Material toolMaterial;
+
+    public Color pushToolColor;
+    public Color pullToolColor;
+    public Color smoothToolColor;
+
+    private Vector3 rotation;
 
     private enum INTEND
     {
@@ -39,6 +47,7 @@ public class VoxelManager : MonoBehaviour {
     // initialization before the start() methods are called
     void Awake()
     {
+        rotation = new Vector3(0f,0f,0f);
         if(voxelCubeSize%8 != 0)
         {
             Debug.Log("The dimension of the voxelCubeField has to be a multiple of 8");
@@ -52,10 +61,11 @@ public class VoxelManager : MonoBehaviour {
     void Start () {
         m_leapController = handController.GetLeapController();
 
+        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh();
-        currentTool = ModificationManager.ACTION.ADD;
+        setPullTool();
 
     }
 
@@ -91,33 +101,27 @@ public class VoxelManager : MonoBehaviour {
                 }
 
                 //apply modification
-                voxelObjectGPU.updateMesh(tipPosition / scaling, currentTool);
+                voxelObjectGPU.updateMesh(tipPosition / scaling, currentTool, rotation);
                 //render new vertices
-                updateMesh();
+                //updateMesh();
 
+                break;
+            case INTEND.NONE:
+                updateMesh();
                 break;
         }
         
         if (Input.GetKeyUp("1"))
         {
-            currentTool = ModificationManager.ACTION.ADD;
-            handController.toolModel = toolModels[0];
-            Debug.Log("Current tool now is: ADD");
-            handController.destroyCurrentTools();
+            setPullTool(); 
         }
         if (Input.GetKeyUp("2"))
         {
-            currentTool = ModificationManager.ACTION.SUBSTRACT;
-            handController.toolModel = toolModels[1];
-            Debug.Log("Current tool now is: SUBSTRACT");
-            handController.destroyCurrentTools();
+            setPushTool();
         }
         if (Input.GetKeyUp("3"))
         {
-            currentTool = ModificationManager.ACTION.SMOOTH;
-            handController.toolModel = toolModels[2];
-            Debug.Log("Current tool now is: SMOOTH");
-            handController.destroyCurrentTools();
+            setSmoothTool();     
         }
     }
 
@@ -127,25 +131,44 @@ public class VoxelManager : MonoBehaviour {
 
         if (Input.GetAxis("StickVertical") != 0)
         {
+            if (Input.GetAxis("StickVertical") > 0) { 
+                rotation.x = (rotation.x + 1 + 360) %360;
+            }
+            else
+            {
+                rotation.x = (rotation.x - 1 + 360) %360;
+            }
             //todo rotate object Around X axis
             Debug.Log("StickVertical: " + Input.GetAxis("StickVertical"));
+            Debug.Log("Rotation X: " + rotation.x);
         }
         if (Input.GetAxis("StickHorizontal") != 0)
         {
+            if (Input.GetAxis("StickHorizontal") > 0)
+            {
+                rotation.y = (rotation.y + 1 + 360)%360;
+            }
+            else
+            {
+                rotation.y = (rotation.y - 1 + 360) %360;
+            }
             //todo rotate object around Y axis
             Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
+            Debug.Log("Rotation Y: " + rotation.y);
         }
         if (Input.GetAxis("AnalogCrossHorizontal") < 0 ||
             Input.GetKey(KeyCode.LeftArrow))
         {
             // reducing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
+            toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         }
         if (Input.GetAxis("AnalogCrossHorizontal") > 0 ||
             Input.GetKey(KeyCode.RightArrow))
         {
             // increasing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
+            toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         }
         if (Input.GetAxis("AnalogCrossVertical") < 0 ||
             Input.GetKey(KeyCode.DownArrow))
@@ -180,11 +203,37 @@ public class VoxelManager : MonoBehaviour {
 
     private void initMesh()
     {
-        voxelObjectGPU.initMesh(voxel);
+        voxelObjectGPU.initMesh(voxel, rotation);
     }
 
     public void updateMesh()
     {
-        voxelObjectGPU.updateMesh(new Vector3(0,0,0), ModificationManager.ACTION.NONE);
+        voxelObjectGPU.updateMesh(new Vector3(0,0,0), ModificationManager.ACTION.NONE, rotation);
+    }
+
+    protected Vector3 getRotatedPosition()
+    {
+        return new Vector3();
+    }
+
+    public void setPushTool()
+    {
+        toolMaterial.SetColor("_Color",pushToolColor);
+        currentTool = ModificationManager.ACTION.SUBSTRACT;
+        Debug.Log("Current tool now is: SUBSTRACT");
+    }
+
+    public void setPullTool()
+    {
+        toolMaterial.SetColor("_Color", pullToolColor);
+        currentTool = ModificationManager.ACTION.ADD;
+        Debug.Log("Current tool now is: ADD");
+    }
+
+    public void setSmoothTool()
+    {
+        toolMaterial.SetColor("_Color", smoothToolColor);
+        currentTool = ModificationManager.ACTION.SMOOTH;
+        Debug.Log("Current tool now is: SMOOTH"); 
     }
 }

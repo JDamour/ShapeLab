@@ -3,32 +3,51 @@ using System.Collections;
 
 public class ToolButtonOnClickListener : MonoBehaviour {
 
+    public ToolButtons toolButtons;
+    public string tool;
     private ToolButtonToggle toolButtonToggle;
 
     // Use this for initialization
     void Start () {
         toolButtonToggle = this.GetComponent<ToolButtonToggle>();
-
     }
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
     void OnTriggerEnter(Collider other)
+    {
+        if(tool == "Push")
+        {
+            toolButtons.setPushTool();
+        }
+        if (tool == "Pull")
+        {
+            toolButtons.setPullTool();
+        }
+        if (tool == "Smooth")
+        {
+            toolButtons.setSmoothTool();
+        }
+    }
+
+    public void changeState(bool active)
     {
         bool toggleState = toolButtonToggle.ToggleState;
 
-        if (toggleState)
+        if(toggleState == active)
         {
-            toolButtonToggle.ButtonTurnsOff();
+            return;
         }
-        else
+        if (toggleState != active)
         {
-            toolButtonToggle.ButtonTurnsOn();
-        }
+            if (toggleState)
+            {
+                toolButtonToggle.ButtonTurnsOff();
+            }
+            else
+            {
+                toolButtonToggle.ButtonTurnsOn();
+            }
 
-        toolButtonToggle.ToggleState = !toggleState;
+            toolButtonToggle.ToggleState = !toggleState;
+        }
     }
 }

@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: DrawBuffer
-  m_Shader: {fileID: 4800000, guid: 6c8f6b04c6505ef468cc53be64300e14, type: 3}
+  m_Name: ToolRadius
+  m_Shader: {fileID: 4800000, guid: 0864926b56f52af4da54a0569bd5b2a0, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: 2000
@@ -81,6 +81,10 @@ Material:
     m_Floats:
       data:
         first:
+          name: _Radius
+        second: 5
+      data:
+        first:
           name: _SrcBlend
         second: 1
       data:
@@ -129,8 +133,8 @@ Material:
         second: 0
       data:
         first:
-          name: _shininess
-        second: 2.11
+          name: _Transparency
+        second: 1
     m_Colors:
       data:
         first:
@@ -139,12 +143,4 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _color
-        second: {r: 0.875, g: 0.623813, b: 0.50827205, a: 1}
-      data:
-        first:
-          name: _lightDir
-        second: {r: 0.08, g: -0.14, b: 0.4, a: 1}
+        second: {r: 1, g: 1, b: 1, a: 0}

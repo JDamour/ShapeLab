@@ -6,6 +6,7 @@ struct Vert{
 	float3 normal;
 };
 
+float4 rotation;
 int dimension;
 int cubeDimension;
 float isolevel;
@@ -17,6 +18,8 @@ StructuredBuffer<int> cubeEdgeFlags;
 StructuredBuffer<float> voxel;
 
 RWStructuredBuffer<Vert> vertexBuffer;
+
+float PI = 3.14159265;
 
 uint getCubeIndex(int id0, int id1, int id2, int id3, int id4, int id5, int id6, int id7){
 
@@ -58,6 +61,37 @@ float3 calculateNormal(float3 vec1, float3 vec2, float3 vec3){
 	float3 edge2 = vec3 - vec1;
 
 	return cross(edge1, edge2);
+}
+
+float3 rotateVertex(float3 vert){
+	float sizeOffset = scale * dimension/2;
+
+	float3 tempVert;
+	tempVert.x = vert.x - sizeOffset;
+	tempVert.y = vert.y - sizeOffset;
+	tempVert.z = vert.z - sizeOffset;
+
+	//angle -> gradients
+	float rotationX = rotation.x/180*PI;
+	float rotationY = rotation.y/180*PI;
+
+	//X-axis rotation
+	float3 xRotVert;
+	xRotVert.x = 1*tempVert.x; 
+	xRotVert.y = cos(rotationX)*tempVert.y - sin(rotationX)*tempVert.z;
+	xRotVert.z = sin(rotationX)*tempVert.y + cos(rotationX)*tempVert.z;
+
+	//Y-axis rotation
+	float3 yRotVert;
+	yRotVert.x = cos(rotationY)*xRotVert.x + sin(rotationY)*xRotVert.z;
+	yRotVert.y = 1*xRotVert.y;
+	yRotVert.z = -sin(rotationY)*xRotVert.x + cos(rotationY)*xRotVert.z;
+
+	tempVert.x = yRotVert.x + sizeOffset;
+	tempVert.y = yRotVert.y + sizeOffset;
+	tempVert.z = yRotVert.z + sizeOffset;
+
+	return tempVert;
 }
 
 [numthreads(8,8,8)]
@@ -112,9 +146,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 		Vert vert2;
 		Vert vert3;
 
-		vert1.position = vertList[triangleConnectionTable[cubeIndex * 16 + i]] * scale;
-		vert2.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+1]] * scale;
-		vert3.position = vertList[triangleConnectionTable[cubeIndex * 16 + i+2]] * scale;
+		vert1.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i]] * scale);
+		vert2.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i+1]] * scale);
+		vert3.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i+2]] * scale);
 
 		vert1.normal = vert2.normal = vert3.normal = normalize(calculateNormal(vert1.position, vert2.position, vert3.position));
 
