@@ -125,7 +125,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelBuffer.SetData(voxel.getField());
 
         //calculate new vertices in vertexBuffer
-        voxelComputeShader.SetVector("rotation", rotation);
+        voxelComputeShader.SetVector("rotation", new Vector4(rotation.x, rotation.y, rotation.z, 1));
         voxelComputeShader.SetFloat("scale", scaling);
         voxelComputeShader.SetInt("cubeDimension", voxelCubeSize);
         voxelComputeShader.SetInt("dimension", voxelCubeSize + 1);

@@ -103,7 +103,7 @@ public class VoxelManager : MonoBehaviour {
                 //apply modification
                 voxelObjectGPU.updateMesh(tipPosition / scaling, currentTool, rotation);
                 //render new vertices
-                //updateMesh();
+                updateMesh();
 
                 break;
             case INTEND.NONE:

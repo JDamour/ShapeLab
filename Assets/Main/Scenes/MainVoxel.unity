@@ -646,7 +646,7 @@ MonoBehaviour:
   eyePos: {fileID: 439116206}
   voxelObjectGPU: {fileID: 723655124}
   handController: {fileID: 1685078488}
-  tool: {fileID: 11477104, guid: ff0b46d56dacdf04fb3e67588abcc72c, type: 2}
+  tool: {fileID: 0}
   toolMaterial: {fileID: 2100000, guid: 8248fc8c6d1dd714fbf4ad101ab91f16, type: 2}
   pushToolColor: {r: 0.83823526, g: 0.39446363, b: 0.39446363, a: 0}
   pullToolColor: {r: 0.3810106, g: 0.7794118, b: 0.366782, a: 0}

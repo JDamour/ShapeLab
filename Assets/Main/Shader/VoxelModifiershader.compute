@@ -38,7 +38,14 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 	}
 	
 	newDensity = voxel[voxelIndex] + sign * pow(abs(cosStrength*cos(dist/modRange*PI)),toolPower);
-
+	if(newDensity > 0 && voxel[voxelIndex] < 0){
+		voxel[voxelIndex] = 0.001f;
+		return;
+	}
+	if(newDensity < 0 && voxel[voxelIndex] > 0){
+		voxel[voxelIndex] = -0.001f;
+		return;
+	}
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
 
@@ -60,8 +67,8 @@ void smoothModificator (uint3 id : SV_DispatchThreadID)
 
 	//get sourrounding voxels desities
 	uint indecies[6] = {
-		id.x+1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
-		id.x-1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
+		id.x+ 1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
+		id.x-1  + (id.y) * (dimension) + id.z * (dimension) * (dimension),
 		id.x + (id.y+1) * (dimension) + id.z * (dimension) * (dimension),
 		id.x + (id.y-1) * (dimension) + id.z * (dimension) * (dimension),
 		id.x + id.y * (dimension) + (id.z-1) * (dimension) * (dimension),
