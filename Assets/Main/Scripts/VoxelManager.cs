@@ -101,7 +101,7 @@ public class VoxelManager : MonoBehaviour {
                 }
 
                 //apply modification
-                voxelObjectGPU.updateMesh(tipPosition / scaling, currentTool, rotation);
+                voxelObjectGPU.updateMesh(getRotatedPosition(tipPosition / scaling), currentTool, rotation);
                 //render new vertices
                 updateMesh();
 
@@ -211,9 +211,32 @@ public class VoxelManager : MonoBehaviour {
         voxelObjectGPU.updateMesh(new Vector3(0,0,0), ModificationManager.ACTION.NONE, rotation);
     }
 
-    protected Vector3 getRotatedPosition()
+    protected Vector3 getRotatedPosition(Vector3 position)
     {
-        return new Vector3();
+        Debug.Log("position before"+ position);
+        Vector3 tempPos = position - new Vector3(voxelCubeSize / 2, voxelCubeSize / 2, voxelCubeSize / 2);
+
+        float rotationX = -rotation.x / 180 * (float)Math.PI;
+        float rotationY = -rotation.y / 180 * (float)Math.PI;
+        //Y-axis rotation
+        Vector3 rotationYpos;
+        rotationYpos.x = Mathf.Cos(rotationY) * tempPos.x + Mathf.Sin(rotationY) * tempPos.z;
+        rotationYpos.y = tempPos.y;
+        rotationYpos.z = -Mathf.Sin(rotationY) * tempPos.x + Mathf.Cos(rotationY) * tempPos.z;
+
+        //X-axis rotation
+        Vector3 rotationXpos;
+        rotationXpos.x = tempPos.x;
+        rotationXpos.y = Mathf.Cos(rotationX) * rotationYpos.y - Mathf.Sin(rotationX) * rotationYpos.z;
+        rotationXpos.z = Mathf.Sin(rotationX) * rotationYpos.y + Mathf.Cos(rotationX) * rotationYpos.z;
+
+        tempPos = rotationXpos + new Vector3(voxelCubeSize / 2, voxelCubeSize / 2, voxelCubeSize / 2);
+        
+        /*Vector4 rotatedPos = (Quaternion.Euler(rotation)*new Vector4(tempPos.x,tempPos.y,tempPos.z,1));s
+        tempPos = new Vector3(rotatedPos.x, rotatedPos.y, rotatedPos.z);
+        tempPos = tempPos + new Vector3(voxelCubeSize / 2, voxelCubeSize / 2, voxelCubeSize / 2);*/
+        Debug.Log("position after" + tempPos);
+        return tempPos;
     }
 
     public void setPushTool()

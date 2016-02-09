@@ -6,7 +6,8 @@ struct Vert{
 	float3 normal;
 };
 
-float4 rotation;
+float rotationXaxis;
+float rotationYaxis;
 int dimension;
 int cubeDimension;
 float isolevel;
@@ -71,21 +72,17 @@ float3 rotateVertex(float3 vert){
 	tempVert.y = vert.y - sizeOffset;
 	tempVert.z = vert.z - sizeOffset;
 
-	//angle -> gradients
-	float rotationX = rotation.x/180*PI;
-	float rotationY = rotation.y/180*PI;
-
 	//X-axis rotation
 	float3 xRotVert;
-	xRotVert.x = 1*tempVert.x; 
-	xRotVert.y = cos(rotationX)*tempVert.y - sin(rotationX)*tempVert.z;
-	xRotVert.z = sin(rotationX)*tempVert.y + cos(rotationX)*tempVert.z;
+	xRotVert.x = tempVert.x; 
+	xRotVert.y = cos(rotationXaxis)*tempVert.y - sin(rotationXaxis)*tempVert.z;
+	xRotVert.z = sin(rotationXaxis)*tempVert.y + cos(rotationXaxis)*tempVert.z;
 
 	//Y-axis rotation
 	float3 yRotVert;
-	yRotVert.x = cos(rotationY)*xRotVert.x + sin(rotationY)*xRotVert.z;
-	yRotVert.y = 1*xRotVert.y;
-	yRotVert.z = -sin(rotationY)*xRotVert.x + cos(rotationY)*xRotVert.z;
+	yRotVert.x = cos(rotationYaxis)*xRotVert.x + sin(rotationYaxis)*xRotVert.z;
+	yRotVert.y = xRotVert.y;
+	yRotVert.z = -sin(rotationYaxis)*xRotVert.x + cos(rotationYaxis)*xRotVert.z;
 
 	tempVert.x = yRotVert.x + sizeOffset;
 	tempVert.y = yRotVert.y + sizeOffset;

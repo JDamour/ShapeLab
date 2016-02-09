@@ -86,22 +86,12 @@ public class VoxelObjectGPU : MonoBehaviour {
             modManager.modify(modCenter, useKernelIndex);
         }
 
-        //create a sphere on GPU
-        /*
-        sphereShader.SetInt("dimension", N);
-        sphereShader.SetFloat("radius", N / 3);
-        sphereShader.SetBuffer(0, "voxel", voxelBuffer);
-        sphereShader.Dispatch(0, N / 8, N / 8, N / 8); */
-
-        /*
-        //calculate normals
-        normalsShader.SetInt("dimension", N);
-        normalsShader.SetBuffer(0, "voxel", voxelBuffer);
-        normalsShader.SetBuffer(0, "normalBuffer", normalBuffer);
-        */
+        float rotationX = rotation.x / 180 * (float)Math.PI;
+        float rotationY = rotation.y / 180 * (float)Math.PI;
 
         //calculate new vertices in vertexBuffer
-        voxelComputeShader.SetVector("rotation", new Vector4(rotation.x, rotation.y, rotation.z, 1));
+        voxelComputeShader.SetFloat("rotationXaxis", rotationX);
+        voxelComputeShader.SetFloat("rotationYaxis", rotationY);
         voxelComputeShader.SetFloat("scale", scaling);
         voxelComputeShader.SetInt("dimension", voxelFieldSize);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
@@ -124,8 +114,11 @@ public class VoxelObjectGPU : MonoBehaviour {
         //send the current voxel field to the gpu
         voxelBuffer.SetData(voxel.getField());
 
+        rotation.x = rotation.x / 180 * (float)Math.PI;
+        rotation.y = rotation.y / 180 * (float)Math.PI;
         //calculate new vertices in vertexBuffer
-        voxelComputeShader.SetVector("rotation", new Vector4(rotation.x, rotation.y, rotation.z, 1));
+        voxelComputeShader.SetFloat("rotationXaxis", rotation.x);
+        voxelComputeShader.SetFloat("rotationYaxis", rotation.y);
         voxelComputeShader.SetFloat("scale", scaling);
         voxelComputeShader.SetInt("cubeDimension", voxelCubeSize);
         voxelComputeShader.SetInt("dimension", voxelCubeSize + 1);
