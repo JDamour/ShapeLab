@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using Leap;
+using UnityEngine.UI;
 
 public class VoxelManager : MonoBehaviour {
 
@@ -31,6 +32,9 @@ public class VoxelManager : MonoBehaviour {
     public Color smoothToolColor;
 
     private Vector3 rotation;
+
+    public Text radiusText;
+    public Text strengthText;
 
     private enum INTEND
     {
@@ -62,6 +66,8 @@ public class VoxelManager : MonoBehaviour {
     void Start () {
         m_leapController = handController.GetLeapController();
 
+        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
@@ -165,6 +171,8 @@ public class VoxelManager : MonoBehaviour {
             // reducing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+            //radiusText.text = "Radius: " + voxelObjectGPU.getModificationManager().getToolRadius(true) + "%";
+            radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius()*100))/100f;
         }
         if (Input.GetAxis("AnalogCrossHorizontal") > 0 ||
             Input.GetKey(KeyCode.RightArrow))
@@ -172,18 +180,21 @@ public class VoxelManager : MonoBehaviour {
             // increasing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+            radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
         }
         if (Input.GetAxis("AnalogCrossVertical") < 0 ||
             Input.GetKey(KeyCode.DownArrow))
         {
             // reducing tool strength
             voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.005f);
+            strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         }
         if (Input.GetAxis("AnalogCrossVertical") > 0 ||
             Input.GetKey(KeyCode.UpArrow))
         {
             // increasing tool strength
             voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
+            strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         }
         if (Input.GetButton("ModButton") || Input.GetButton("Jump"))
         {

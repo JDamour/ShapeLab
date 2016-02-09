@@ -17,9 +17,9 @@ public class ModificationManager {
     private int dimension;
     private float modRange = 5.0f;
     private float modPower = 1.0f;
-    private float MAX_RANGE = 50.0f;
+    private float MAX_RANGE = 20.0f;
     private float MIN_RANGE = 1.0f;
-    private float MAX_TOOL_POWER = 1.25f;
+    private float MAX_TOOL_POWER = 1.5f;
     private float MIN_TOOL_POWER = 0.75f;
 
     public ModificationManager(ComputeShader modShader, int N, float scale)
