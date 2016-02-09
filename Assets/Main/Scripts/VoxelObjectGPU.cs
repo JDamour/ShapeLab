@@ -87,7 +87,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         }
 
         float rotationX = rotation.x / 180 * (float)Math.PI;
-        float rotationY = rotation.y / 180 * (float)Math.PI;
+        float rotationY = -rotation.y / 180 * (float)Math.PI;
 
         //calculate new vertices in vertexBuffer
         voxelComputeShader.SetFloat("rotationXaxis", rotationX);
