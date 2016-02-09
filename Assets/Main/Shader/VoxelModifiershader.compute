@@ -145,7 +145,14 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 		allWeights += indexWeight[i];
 	}
 	newDensity /= allWeights;
-
+	if(newDensity > 0 && voxel[voxelIndex] < 0){
+		voxel[voxelIndex] = 0.001f;
+		return;
+	}
+	if(newDensity < 0 && voxel[voxelIndex] > 0){
+		voxel[voxelIndex] = -0.001f;
+		return;
+	}
 	
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 	
