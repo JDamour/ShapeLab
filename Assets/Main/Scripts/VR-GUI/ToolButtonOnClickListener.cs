@@ -8,7 +8,7 @@ public class ToolButtonOnClickListener : MonoBehaviour {
     private ToolButtonToggle toolButtonToggle;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         toolButtonToggle = this.GetComponent<ToolButtonToggle>();
     }
 	

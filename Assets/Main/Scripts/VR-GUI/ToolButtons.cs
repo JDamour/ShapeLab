@@ -11,11 +11,11 @@ public class ToolButtons : MonoBehaviour {
     void Start()
     {
         setPullTool();
-        manager.setPullTool();
     }
 
     public void setPullTool()
     {
+        Debug.Log("Set Pull Tool");
         pullToolButton.changeState(true);
         pushToolButton.changeState(false);
         smoothToolButton.changeState(false);
