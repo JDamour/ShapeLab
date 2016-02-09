@@ -9,6 +9,7 @@ public class VoxelManager : MonoBehaviour {
     private float scaling;
     public int voxelCubeSize;
     public Transform eyePos;
+    public Transform boundaries;
 
     public VoxelObjectGPU voxelObjectGPU;
 
@@ -130,7 +131,6 @@ public class VoxelManager : MonoBehaviour {
     private INTEND getIntent()
     {
         //TODO erkennung, wann objekt berührt wird
-        showToolRadius();
         if (Input.GetAxis("StickVertical") != 0)
         {
             if (Input.GetAxis("StickVertical") > 0) { 
@@ -158,6 +158,7 @@ public class VoxelManager : MonoBehaviour {
             Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
             Debug.Log("Rotation Y: " + rotation.y);
         }
+        updateBoundaries();
         if (Input.GetAxis("AnalogCrossHorizontal") < 0 ||
             Input.GetKey(KeyCode.LeftArrow))
         {
@@ -203,34 +204,18 @@ public class VoxelManager : MonoBehaviour {
         return INTEND.NONE;
     }
 
-    private void showToolRadius()
+    public void showToolRadius(bool show)
     {
-        Frame frame = m_leapController.Frame();
-        if (frame.Tools.Count != 0)
-        {
-            Vector3 toolPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
-            toolPosition = handController.transform.TransformPoint(toolPosition);
-            if (toolInsideModificationArea(toolPosition))
-            {
-                toolMaterial.SetFloat("_Transparency", 1.0f);
-            }
-            else
-            {
-                toolMaterial.SetFloat("_Transparency", 0.0f);
-            }
+        if (show){
+            toolMaterial.SetFloat("_Transparency", 1.0f);
+        }else{
+            toolMaterial.SetFloat("_Transparency", 0.0f);
         }
     }
 
-    private bool toolInsideModificationArea(Vector3 position)
+    private void updateBoundaries()
     {
-        if (position.x >= 0f && position.x <= objectSize && position.y >= 0f && position.y <= objectSize && position.z >= 0f && position.z <= objectSize)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        boundaries.transform.rotation = Quaternion.Euler(new Vector3(rotation.x, -rotation.y, rotation.z));
     }
 
     private void initMesh()
