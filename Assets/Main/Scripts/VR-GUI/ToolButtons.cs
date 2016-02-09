@@ -8,6 +8,12 @@ public class ToolButtons : MonoBehaviour {
     public ToolButtonOnClickListener pushToolButton;
     public ToolButtonOnClickListener smoothToolButton;
 
+    void Start()
+    {
+        setPullTool();
+        manager.setPullTool();
+    }
+
     public void setPullTool()
     {
         pullToolButton.changeState(true);

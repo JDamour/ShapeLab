@@ -71,6 +71,7 @@ public class VoxelManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        
         switch (getIntent()) {
             case INTEND.CREATESPHERE:
                 voxel.createSphere(voxelFieldSize / 3);
@@ -86,9 +87,10 @@ public class VoxelManager : MonoBehaviour {
                 break;
             
             case INTEND.MOD:
+                Frame frame = m_leapController.Frame();
                 Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
                 if (m_leapController.IsConnected) {
-                    Frame frame = m_leapController.Frame();
+                    
                     if (frame.Tools.Count == 0) //only modify if there is a tool
                         return;
 
@@ -128,7 +130,7 @@ public class VoxelManager : MonoBehaviour {
     private INTEND getIntent()
     {
         //TODO erkennung, wann objekt berührt wird
-
+        showToolRadius();
         if (Input.GetAxis("StickVertical") != 0)
         {
             if (Input.GetAxis("StickVertical") > 0) { 
@@ -199,6 +201,36 @@ public class VoxelManager : MonoBehaviour {
             return INTEND.CREATERND;
         }
         return INTEND.NONE;
+    }
+
+    private void showToolRadius()
+    {
+        Frame frame = m_leapController.Frame();
+        if (frame.Tools.Count != 0)
+        {
+            Vector3 toolPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+            toolPosition = handController.transform.TransformPoint(toolPosition);
+            if (toolInsideModificationArea(toolPosition))
+            {
+                toolMaterial.SetFloat("_Transparency", 1.0f);
+            }
+            else
+            {
+                toolMaterial.SetFloat("_Transparency", 0.0f);
+            }
+        }
+    }
+
+    private bool toolInsideModificationArea(Vector3 position)
+    {
+        if (position.x >= 0f && position.x <= objectSize && position.y >= 0f && position.y <= objectSize && position.z >= 0f && position.z <= objectSize)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private void initMesh()

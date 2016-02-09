@@ -4,10 +4,12 @@
 	{
 		_Color("Color", Color) = (1.0,1.0,1.0,1.0)
 		_Radius("Radius", Float) = 5.0
+		_Transparency("Transparency", Float) = 1.0
 	}
 	SubShader
 	{
-		Tags {"RenderType" = "Opaque" }
+		Tags {"Queue" = "Transparent"  "RenderType" = "Transparent" }
+		Blend SrcAlpha OneMinusSrcAlpha
 		LOD 100
 
 		Pass
@@ -37,6 +39,7 @@
 
 			float4 _Color;
 			float _Radius;
+			float _Transparency;
 			
 			v2f vert (appdata v)
 			{
@@ -51,8 +54,10 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
+				if (_Transparency == 0) discard;
 				// sample the texture
 				fixed4 col = _Color * (dot(i.normal, normalize(float3(0.08,-0.14,0.4)))*0.5 +0.5);
+				col.a = _Transparency;
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
