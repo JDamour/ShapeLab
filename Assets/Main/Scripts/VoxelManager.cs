@@ -16,7 +16,7 @@ public class VoxelManager : MonoBehaviour {
 
     private int voxelFieldSize;
     private VoxelField voxel;
-    private float isolevel = 0f;
+    //private float isolevel = 0f;
 
     //Leap variables
     private Controller m_leapController;
@@ -71,26 +71,24 @@ public class VoxelManager : MonoBehaviour {
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
-        initMesh();
-        setPullTool();
+        initMesh(true);
 
     }
 
     // Update is called once per frame
     void Update () {
-        
         switch (getIntent()) {
             case INTEND.CREATESPHERE:
                 voxel.createSphere(voxelFieldSize / 3);
-                initMesh();
+                initMesh(false);
                 break;
             case INTEND.CREATERND:
                 voxel.createRandomGrid();
-                initMesh();
+                initMesh(false);
                 break;
             case INTEND.CREATEBLOCK:
                 voxel.createBlock();
-                initMesh();
+                initMesh(false);
                 break;
             
             case INTEND.MOD:
@@ -110,7 +108,8 @@ public class VoxelManager : MonoBehaviour {
                 }
 
                 //apply modification
-                voxelObjectGPU.updateMesh(getRotatedPosition(tipPosition / scaling), currentTool, rotation);
+                voxelObjectGPU.applyToolAt(getRotatedPosition(tipPosition / scaling), currentTool);
+                //voxelObjectGPU.updateMesh(getRotatedPosition(tipPosition / scaling), currentTool, rotation);
                 //render new vertices
                 updateMesh();
 
@@ -229,9 +228,9 @@ public class VoxelManager : MonoBehaviour {
         boundaries.transform.rotation = Quaternion.Euler(new Vector3(rotation.x, -rotation.y, rotation.z));
     }
 
-    private void initMesh()
+    private void initMesh(bool withSmooth)
     {
-        voxelObjectGPU.initMesh(voxel, rotation);
+        voxelObjectGPU.initMesh(voxel, rotation, withSmooth);
     }
 
     public void updateMesh()
@@ -241,7 +240,7 @@ public class VoxelManager : MonoBehaviour {
 
     protected Vector3 getRotatedPosition(Vector3 position)
     {
-        Debug.Log("position before"+ position);
+        //Debug.Log("position before"+ position);
         Vector3 tempPos = position - new Vector3(voxelCubeSize / 2, voxelCubeSize / 2, voxelCubeSize / 2);
 
         float rotationX = -rotation.x / 180 * (float)Math.PI;

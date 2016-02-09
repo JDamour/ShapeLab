@@ -1,5 +1,4 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel densityModificator
 
 float MIN_DENSITY;
 float MAX_DENSITY;
@@ -20,7 +19,8 @@ float PI = 3.14159265;
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 RWStructuredBuffer<float> voxel;
-RWBuffer<bool> retVal;
+
+#pragma kernel densityModificator
 
 [numthreads(8,8,8)]
 void densityModificator (uint3 id : SV_DispatchThreadID)
@@ -48,53 +48,7 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 	}
 	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
 }
-
-#pragma kernel smoothModificator
-
-[numthreads(8,8,8)]
-void smoothModificator (uint3 id : SV_DispatchThreadID)
-{
-    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
-		return;
-	
-	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
-	float4 voxelPos = {id.x, id.y, id.z, 1.0};
-	float dist = distance(voxelPos, modCenter);
-
-	if(dist > modRange){
-		return;
-	}
-
-	//get sourrounding voxels desities
-	uint indecies[6] = {
-		id.x+ 1 + (id.y) * (dimension) + id.z * (dimension) * (dimension),
-		id.x-1  + (id.y) * (dimension) + id.z * (dimension) * (dimension),
-		id.x + (id.y+1) * (dimension) + id.z * (dimension) * (dimension),
-		id.x + (id.y-1) * (dimension) + id.z * (dimension) * (dimension),
-		id.x + id.y * (dimension) + (id.z-1) * (dimension) * (dimension),
-		id.x + id.y * (dimension) + (id.z+1) * (dimension) * (dimension),
-	};
-	
-	float newDensity = (voxel[voxelIndex]*(10.0f*toolPower)+
-						voxel[indecies[0]] + 
-						voxel[indecies[1]] + 
-						voxel[indecies[2]] + 
-						voxel[indecies[3]] + 
-						voxel[indecies[4]] + 
-						voxel[indecies[5]] 
-						)/(7.0f+10.0f*toolPower);
-	if(newDensity > 0 && voxel[voxelIndex] < 0){
-		voxel[voxelIndex] = 0.001f;
-		return;
-	}
-	if(newDensity < 0 && voxel[voxelIndex] > 0){
-		voxel[voxelIndex] = -0.001f;
-		return;
-	}
-	voxel[voxelIndex] = max(min(newDensity,MAX_DENSITY),MIN_DENSITY);
-	
-}
-
+//---------------------------------------------------------------------------------------------
 #pragma kernel smooth3x3Modificator
 
 [numthreads(8,8,8)]

@@ -84,9 +84,20 @@ public class ModificationManager {
         return offset;
     }
 
-    public void SetToolPower(float power)
+    internal void InitialSmooth(int smoothQuality)
     {
-        DensityModShader.SetFloat("toolPower", power);
+        DensityModShader.SetVector("Bounding_offSet", new Vector4(0, 0, 0, 0));
+        DensityModShader.SetVector("modCenter", new Vector4(this.dimension/2.0f, this.dimension / 2.0f, this.dimension / 2.0f, 1));
+        DensityModShader.SetFloat("toolPower", MIN_TOOL_POWER);
+        DensityModShader.SetFloat("modRange", 500.0f);
+        //setup buffer containing densities
+        DensityModShader.SetBuffer(DensityModShader.FindKernel("smooth3x3Modificator"), "voxel", densityBuffer);
+        for(int i = 0; i < smoothQuality; i++)
+        {
+            //run shader
+            DensityModShader.Dispatch(DensityModShader.FindKernel("smooth3x3Modificator"), dimension / 8, dimension / 8, dimension / 8);
+        }
+        
     }
 
     public void ChangeToolRange(float rangeChange)
@@ -97,11 +108,6 @@ public class ModificationManager {
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
     }
 
-    public float getToolRadius()
-    {
-        return modRange;
-    }
-
     public void ChangeToolStrength(float powerChange)
     {
         //todo UI text with tool power
@@ -110,9 +116,19 @@ public class ModificationManager {
         this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
     }
 
+    public float getToolRadius()
+    {
+        return modRange;
+    }
+
     public float getToolStrength()
     {
         return modPower;
+    }
+
+    public void SetToolPower(float power)
+    {
+        DensityModShader.SetFloat("toolPower", power);
     }
 
     internal void destroy()

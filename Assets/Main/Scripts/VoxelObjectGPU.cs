@@ -28,7 +28,6 @@ public class VoxelObjectGPU : MonoBehaviour {
     private ComputeBuffer edgeTable, triTable;
 
     private Vector3 modCenter;
-    private Boolean applyModification;
     private ModificationManager.ACTION modAction;
 
     public ModificationManager modManager;
@@ -43,7 +42,6 @@ public class VoxelObjectGPU : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
-        applyModification = false;
         modManager = new ModificationManager(voxelModifierShader, voxelCubeSize, scaling);
 
         //set buffer data for lookup tables
@@ -82,9 +80,11 @@ public class VoxelObjectGPU : MonoBehaviour {
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
-        if (modCenter != new Vector3(0, 0, 0)) { 
+        voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
+        //voxelComputeShader.Dispatch(voxelComputeShader.FindKernel("cleanVertices"), voxelCubeSize / 8, voxelCubeSize / 8, voxelCubeSize / 8);
+        /*if (modCenter != new Vector3(0, 0, 0)) { 
             modManager.modify(modCenter, useKernelIndex);
-        }
+        }*/
 
         float rotationX = rotation.x / 180 * (float)Math.PI;
         float rotationY = -rotation.y / 180 * (float)Math.PI;
@@ -103,7 +103,12 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.Dispatch(0, voxelCubeSize/8, voxelCubeSize/8, voxelCubeSize/8);
     }
 
-    public void initMesh(VoxelField voxel, Vector3 rotation)
+    internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex)
+    {
+        modManager.modify(modCenter, useKernelIndex);
+    }
+
+    public void initMesh(VoxelField voxel, Vector3 rotation, bool withSmooth)
     {
         //Debug.Log("Update Voxel Buffer");
 
@@ -113,6 +118,8 @@ public class VoxelObjectGPU : MonoBehaviour {
        
         //send the current voxel field to the gpu
         voxelBuffer.SetData(voxel.getField());
+        if(withSmooth)
+            modManager.InitialSmooth(10); // 10 shader passes with smooth
 
         rotation.x = rotation.x / 180 * (float)Math.PI;
         rotation.y = rotation.y / 180 * (float)Math.PI;
@@ -142,11 +149,13 @@ public class VoxelObjectGPU : MonoBehaviour {
     void OnDestroy()
     {
         //MUST release buffers.
-        modManager.destroy();
+        vertexBuffer.Dispose();
         vertexBuffer.Release();
+        voxelBuffer.Dispose();
         voxelBuffer.Release();
         edgeTable.Release();
         triTable.Release();
+        modManager.destroy();
     }
 
     static int[] edgeTableLookUp = new int[256]{
