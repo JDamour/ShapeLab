@@ -73,7 +73,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         return this.voxelBuffer;
     }
 
-    public void updateMesh(Vector3 modCenter, ModificationManager.ACTION useKernelIndex, Vector3 rotation)
+    public void updateMesh(Vector3 rotation)
     {
         //Debug.Log("Update Voxel Buffer");
 

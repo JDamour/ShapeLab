@@ -72,7 +72,6 @@ public class VoxelManager : MonoBehaviour {
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh(true);
-
     }
 
     // Update is called once per frame
@@ -115,7 +114,6 @@ public class VoxelManager : MonoBehaviour {
 
                 break;
             case INTEND.NONE:
-                updateMesh();
                 break;
         }
         
@@ -135,6 +133,7 @@ public class VoxelManager : MonoBehaviour {
 
     private INTEND getIntent()
     {
+        
         //TODO erkennung, wann objekt berührt wird
         if (Input.GetAxis("StickVertical") != 0)
         {
@@ -163,7 +162,11 @@ public class VoxelManager : MonoBehaviour {
             Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
             Debug.Log("Rotation Y: " + rotation.y);
         }
-        updateBoundaries();
+        if (Input.GetAxis("StickVertical") != 0|| Input.GetAxis("StickHorizontal") != 0)
+        {
+            updateMesh();
+        }
+            updateBoundaries();
         if (Input.GetAxis("AnalogCrossHorizontal") < 0 ||
             Input.GetKey(KeyCode.LeftArrow))
         {
@@ -235,7 +238,8 @@ public class VoxelManager : MonoBehaviour {
 
     public void updateMesh()
     {
-        voxelObjectGPU.updateMesh(new Vector3(0,0,0), ModificationManager.ACTION.NONE, rotation);
+        voxelObjectGPU.updateMesh(rotation);
+        voxelObjectGPU.updateMesh(rotation);
     }
 
     protected Vector3 getRotatedPosition(Vector3 position)
