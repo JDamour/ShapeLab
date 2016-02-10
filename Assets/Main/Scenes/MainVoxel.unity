@@ -2026,7 +2026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fc946231499824abc02749e732edd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalsShader: {fileID: 0}
+  normalsShader: {fileID: 7200000, guid: 63c09adde91b738448c7066e2f41fcd0, type: 3}
   voxelComputeShader: {fileID: 7200000, guid: 558cfcb561724c74f90ea39aec729b33, type: 3}
   sphereShader: {fileID: 7200000, guid: 4136a36669f89a54899f6c9b374c86a8, type: 3}
   voxelModifierShader: {fileID: 7200000, guid: 7b6b2a71fe5d570458f59e112a450dd7, type: 3}
@@ -4056,7 +4056,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11487938, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_Text
-      value: 'Delete Tool
+      value: 'Substract Tool
 
         active'
       objectReference: {fileID: 0}
@@ -4070,7 +4070,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11491330, guid: 911a7a73513ee4141be8de22bb88cd41, type: 2}
       propertyPath: m_Text
-      value: 'Delete Tool
+      value: 'Substract Tool
 
 '
       objectReference: {fileID: 0}

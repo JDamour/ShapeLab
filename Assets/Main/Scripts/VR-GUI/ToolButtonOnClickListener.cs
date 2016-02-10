@@ -11,6 +11,14 @@ public class ToolButtonOnClickListener : MonoBehaviour {
     void Awake () {
         toolButtonToggle = this.GetComponent<ToolButtonToggle>();
     }
+
+    void Start()
+    {
+        if (tool == "Pull")
+        {
+            changeState(true);
+        }
+    }
 	
     void OnTriggerEnter(Collider other)
     {
