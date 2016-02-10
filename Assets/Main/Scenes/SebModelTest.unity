@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fc946231499824abc02749e732edd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modRange: 20
   normalsShader: {fileID: 0}
   voxelComputeShader: {fileID: 7200000, guid: 558cfcb561724c74f90ea39aec729b33, type: 3}
   sphereShader: {fileID: 7200000, guid: 4136a36669f89a54899f6c9b374c86a8, type: 3}
@@ -283,6 +282,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a41f60a8d17aa1b43b562a4bc75b88f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toolButtons: {fileID: 0}
+  tool: 
 --- !u!1 &886458788
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,7 +601,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11464928, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: recenter
-      value: 32
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2079510, guid: 27f15dd5e6233af4b96aa57291abba30, type: 2}
       propertyPath: m_HDR
@@ -643,9 +644,16 @@ MonoBehaviour:
   objectSize: 0
   voxelCubeSize: 0
   eyePos: {fileID: 0}
+  boundaries: {fileID: 0}
   voxelObjectGPU: {fileID: 141250102}
   handController: {fileID: 0}
-  toolModels: []
+  tool: {fileID: 0}
+  toolMaterial: {fileID: 0}
+  pushToolColor: {r: 0, g: 0, b: 0, a: 0}
+  pullToolColor: {r: 0, g: 0, b: 0, a: 0}
+  smoothToolColor: {r: 0, g: 0, b: 0, a: 0}
+  radiusText: {fileID: 0}
+  strengthText: {fileID: 0}
 --- !u!4 &1776992261
 Transform:
   m_ObjectHideFlags: 0
