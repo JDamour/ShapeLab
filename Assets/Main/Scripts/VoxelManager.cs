@@ -162,10 +162,7 @@ public class VoxelManager : MonoBehaviour {
             Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
             Debug.Log("Rotation Y: " + rotation.y);
         }
-        if (Input.GetAxis("StickVertical") != 0|| Input.GetAxis("StickHorizontal") != 0)
-        {
-            updateMesh();
-        }
+        
             updateBoundaries();
         if (Input.GetAxis("AnalogCrossHorizontal") < 0 ||
             Input.GetKey(KeyCode.LeftArrow))
@@ -213,6 +210,10 @@ public class VoxelManager : MonoBehaviour {
         if (Input.GetKeyUp("r"))
         {
             return INTEND.CREATERND;
+        }
+        if (Input.GetAxis("StickVertical") != 0 || Input.GetAxis("StickHorizontal") != 0)
+        {
+            voxelObjectGPU.updateMesh(rotation);
         }
         return INTEND.NONE;
     }
