@@ -82,7 +82,7 @@ Material:
       data:
         first:
           name: _Radius
-        second: 14.800022
+        second: 5
       data:
         first:
           name: _SrcBlend
