@@ -22,6 +22,7 @@ RWStructuredBuffer<Vert> vertexBuffer;
 
 float PI = 3.14159265;
 
+// get the cube index of the current voxel cube, result between 0 and 255
 uint getCubeIndex(int id0, int id1, int id2, int id3, int id4, int id5, int id6, int id7){
 
 	// get binaryIndex for cube
@@ -57,6 +58,7 @@ float3 vertexInterpolate(float isolevel, float3 p1, float3 p2, float v1, float v
     return p;
 }
 
+//calculate normal based on the triangle
 float3 calculateNormal(float3 vec1, float3 vec2, float3 vec3){
 	float3 edge1 = vec2 - vec1;
 	float3 edge2 = vec3 - vec1;
@@ -64,6 +66,7 @@ float3 calculateNormal(float3 vec1, float3 vec2, float3 vec3){
 	return cross(edge1, edge2);
 }
 
+//rotate the vertex with the given rotation
 float3 rotateVertex(float3 vert){
 	float sizeOffset = scale * dimension/2;
 
@@ -91,6 +94,7 @@ float3 rotateVertex(float3 vert){
 	return tempVert;
 }
 
+//Main Compute Shader program - 512 Threads 
 [numthreads(8,8,8)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -138,6 +142,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     vertList[10] = vertexInterpolate(isolevel, vertices[2], vertices[6], voxel[id2], voxel[id6]);
     vertList[11] = vertexInterpolate(isolevel, vertices[3], vertices[7], voxel[id3], voxel[id7]); 
 	
+	//TODO: Add Colors
 	for (uint i = 0; triangleConnectionTable[cubeIndex * 16 + i] != -1; i += 3){
 		Vert vert1;
 		Vert vert2;

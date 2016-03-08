@@ -3,18 +3,22 @@ using System;
 using System.Collections;
 using Random = UnityEngine.Random;
 
-
+/// <summary>
+/// class for a 3d voxelfield
+/// </summary>
 public class VoxelField{
 
     private float[,,] voxel;
     private int size;
 
+    //constructor to set the dimension of the field
     public VoxelField(int size)
     {
         voxel = new float[size, size, size];
         this.size = size;
     }
 
+    //creates a random voxel field
     public void createRandomGrid()
     {
         voxel = new float[size, size, size];
@@ -47,6 +51,10 @@ public class VoxelField{
         Debug.Log("VOXEL: Generated Random Grid");
     }
 
+    /// <summary>
+    /// creates a sphere in the voxel field
+    /// </summary>
+    /// <param name="radius">rqadius of the voxel sphere, between 0 an voxel-dimension/2</param>
     public void createSphere(int radius)
     {
         voxel = new float[size, size, size];
@@ -72,6 +80,9 @@ public class VoxelField{
         Debug.Log("VOXEL: Generated (Almost) Sphere");
     }
 
+    /// <summary>
+    /// creates a block in the voxel field
+    /// </summary>
     public void createBlock()
     {
 
@@ -92,36 +103,26 @@ public class VoxelField{
                     
     }
 
+    // returnsd the voxelfield als 3d array
     public float[,,] getField()
     {
         return voxel;
     }
-
+    //returns the desity value for a given position
     public float getValue(int x, int y, int z)
     {
         return voxel[x, y, z];
     }
-
+    //returns the desity value for a given Vector3 position
     public float getValue(Vector3 vec)
     {
 
         return voxel[(int)vec.x,(int)vec.y, (int)vec.z];
     }
 
+    //TODO: remove unused code
     public int getCubeIndex(int xPos, int yPos, int zPos, float isolevel)
     {
-        /*
-        int cubeindex = 0;
-        if (voxel[xPos, yPos, zPos+1] <= isolevel) cubeindex |= 1;
-        if (voxel[xPos+1, yPos, zPos+1] <= isolevel) cubeindex |= 2;
-        if (voxel[xPos+1, yPos, zPos] <= isolevel) cubeindex |= 4;
-        if (voxel[xPos, yPos, zPos] <= isolevel) cubeindex |= 8;
-        if (voxel[xPos, yPos+1, zPos+1] <= isolevel) cubeindex |= 16;
-        if (voxel[xPos+1, yPos+1, zPos+1] <= isolevel) cubeindex |= 32;
-        if (voxel[xPos+1, yPos+1, zPos] <= isolevel) cubeindex |= 64;
-        if (voxel[xPos, yPos+1, zPos] <= isolevel) cubeindex |= 128;
-        */
-
         int binaryIndex = 0;
         if (voxel[xPos, yPos, zPos + 1] <= 0) binaryIndex += 1;
         if (voxel[xPos + 1, yPos, zPos + 1] <= 0) binaryIndex += 2;

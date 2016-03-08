@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
 using Leap;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manager of the Sculpting Project
+/// manages all input and modification
+/// </summary>
 public class VoxelManager : MonoBehaviour {
 
     public float objectSize;
@@ -16,9 +19,8 @@ public class VoxelManager : MonoBehaviour {
 
     private int voxelFieldSize;
     private VoxelField voxel;
-    //private float isolevel = 0f;
 
-    //Leap variables
+    // Leap variables
     private Controller m_leapController;
     public HandController handController;
     private ModificationManager.ACTION currentTool;
@@ -27,12 +29,15 @@ public class VoxelManager : MonoBehaviour {
     private SphereTool currentToolObject;
     public Material toolMaterial;
 
+    // Tool colors
     public Color pushToolColor;
     public Color pullToolColor;
     public Color smoothToolColor;
 
     private Vector3 rotation;
 
+    //TODO: create a UI Manager
+    // UI elements
     public Text radiusText;
     public Text strengthText;
 
@@ -62,7 +67,7 @@ public class VoxelManager : MonoBehaviour {
         voxelObjectGPU.setInitData(voxelCubeSize, scaling);
     }
 
-    // Use this for initialization
+    // initialization
     void Start () {
         m_leapController = handController.GetLeapController();
 
@@ -108,8 +113,6 @@ public class VoxelManager : MonoBehaviour {
 
                 //apply modification
                 voxelObjectGPU.applyToolAt(getRotatedPosition(tipPosition / scaling), currentTool);
-                //voxelObjectGPU.updateMesh(getRotatedPosition(tipPosition / scaling), currentTool, rotation);
-                //render new vertices
                 updateMesh();
 
                 break;
@@ -117,6 +120,7 @@ public class VoxelManager : MonoBehaviour {
                 break;
         }
         
+        // change tools manualy with keyboard for testing
         if (Input.GetKeyUp("1"))
         {
             setPullTool(); 
@@ -131,6 +135,7 @@ public class VoxelManager : MonoBehaviour {
         }
     }
 
+    // get the Intend of the current action
     private INTEND getIntent()
     {
         
@@ -144,8 +149,6 @@ public class VoxelManager : MonoBehaviour {
             {
                 rotation.x = (rotation.x - 1 + 360) %360;
             }
-            //todo rotate object Around X axis
-            Debug.Log("StickVertical: " + Input.GetAxis("StickVertical"));
             Debug.Log("Rotation X: " + rotation.x);
         }
         if (Input.GetAxis("StickHorizontal") != 0)
@@ -158,8 +161,6 @@ public class VoxelManager : MonoBehaviour {
             {
                 rotation.y = (rotation.y - 1 + 360) %360;
             }
-            //todo rotate object around Y axis
-            Debug.Log("StickHorizontal: " + Input.GetAxis("StickHorizontal"));
             Debug.Log("Rotation Y: " + rotation.y);
         }
         
@@ -170,7 +171,6 @@ public class VoxelManager : MonoBehaviour {
             // reducing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
-            //radiusText.text = "Radius: " + voxelObjectGPU.getModificationManager().getToolRadius(true) + "%";
             radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius()*100))/100f;
         }
         if (Input.GetAxis("AnalogCrossHorizontal") > 0 ||
@@ -195,6 +195,8 @@ public class VoxelManager : MonoBehaviour {
             voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
             strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         }
+
+        // keyboard shortcuts for debugging
         if (Input.GetButton("ModButton") || Input.GetButton("Jump"))
         {
             return INTEND.MOD;
@@ -211,6 +213,8 @@ public class VoxelManager : MonoBehaviour {
         {
             return INTEND.CREATERND;
         }
+
+        // updateMesh if rotation is changed during this frame
         if (Input.GetAxis("StickVertical") != 0 || Input.GetAxis("StickHorizontal") != 0)
         {
             voxelObjectGPU.updateMesh(rotation);
@@ -218,6 +222,10 @@ public class VoxelManager : MonoBehaviour {
         return INTEND.NONE;
     }
 
+    /// <summary>
+    /// called to hide or show the modification radius of the toool
+    /// </summary>
+    /// <param name="show">set to true, if the modification radius should be shown</param>
     public void showToolRadius(bool show)
     {
         if (show){
@@ -232,22 +240,36 @@ public class VoxelManager : MonoBehaviour {
         boundaries.transform.rotation = Quaternion.Euler(new Vector3(rotation.x, -rotation.y, rotation.z));
     }
 
+    /// <summary>
+    /// Call to init the startmesh. 
+    /// </summary>
+    /// <param name="withSmooth">Set to true,if the mesh should be smoothed from the beginning.</param>
     private void initMesh(bool withSmooth)
     {
         voxelObjectGPU.initMesh(voxel, rotation, withSmooth);
     }
 
+    //TODO: find the flickering problem, to only call updateMesh once
+    /// <summary>
+    /// update of the Mesh. Needs to be called to times to avoid Mesh flickering
+    /// </summary>
     public void updateMesh()
     {
         voxelObjectGPU.updateMesh(rotation);
         voxelObjectGPU.updateMesh(rotation);
     }
 
+    /// <summary>
+    /// Rotate a given Vector3 based on the Rotation of the Object.
+    /// </summary>
+    /// <param name="position">The Vector3 that shoul dbe rotated./param>
+    /// <returns></returns>
+         
     protected Vector3 getRotatedPosition(Vector3 position)
     {
-        //Debug.Log("position before"+ position);
         Vector3 tempPos = position - new Vector3(voxelCubeSize / 2, voxelCubeSize / 2, voxelCubeSize / 2);
 
+        //degree >> radians
         float rotationX = -rotation.x / 180 * (float)Math.PI;
         float rotationY = rotation.y / 180 * (float)Math.PI;
         
@@ -268,6 +290,9 @@ public class VoxelManager : MonoBehaviour {
         return tempPos;
     }
 
+    /// <summary>
+    /// Set currentTool to Substract Tool. Sets the color in the material.
+    /// </summary>
     public void setPushTool()
     {
         toolMaterial.SetColor("_Color",pushToolColor);
@@ -275,6 +300,9 @@ public class VoxelManager : MonoBehaviour {
         Debug.Log("Current tool now is: SUBSTRACT");
     }
 
+    /// <summary>
+    /// Set current Tool to Add Tool.
+    /// </summary>
     public void setPullTool()
     {
         toolMaterial.SetColor("_Color", pullToolColor);
@@ -282,6 +310,9 @@ public class VoxelManager : MonoBehaviour {
         Debug.Log("Current tool now is: ADD");
     }
 
+    /// <summary>
+    /// Set current Tool to Smooth Tool
+    /// </summary>
     public void setSmoothTool()
     {
         toolMaterial.SetColor("_Color", smoothToolColor);

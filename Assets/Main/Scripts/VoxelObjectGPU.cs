@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using System;
 
 public class VoxelObjectGPU : MonoBehaviour {
@@ -13,6 +11,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     
     private float scaling;
 
+    //Computer Shader
     public ComputeShader normalsShader;
     public ComputeShader voxelComputeShader;
     public ComputeShader sphereShader;
@@ -32,7 +31,7 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     public ModificationManager modManager;
 
-    //data set by the voxelmanager --> needs to be set before the Start() - method
+    //data set by the voxelmanager --> needs to be set before the Start() - method by the voxelmanager
     public void setInitData(int dimension, float scaling)
     {
         voxelCubeSize = dimension;
@@ -40,7 +39,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         maxVerticesSize = voxelCubeSize * voxelCubeSize * voxelCubeSize * 3 * 5;
         this.scaling = scaling;
     }
-    // Use this for initialization
+    //initialization
     void Start () {
         modManager = new ModificationManager(voxelModifierShader, voxelCubeSize, scaling);
 
@@ -68,23 +67,27 @@ public class VoxelObjectGPU : MonoBehaviour {
         return modManager;
     }
 
+    /// <summary>
+    /// returns the voxel field on gpu
+    /// </summary>
+    /// <returns>voxelbuffer</returns>
     internal ComputeBuffer getVoxelBuffer()
     {
-        return this.voxelBuffer;
+        return voxelBuffer;
     }
 
+    /// <summary>
+    /// call to update the object surface after modification
+    /// </summary>
+    /// <param name="rotation">current object rotation</param>
     public void updateMesh(Vector3 rotation)
     {
-        //Debug.Log("Update Voxel Buffer");
 
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-        //voxelComputeShader.Dispatch(voxelComputeShader.FindKernel("cleanVertices"), voxelCubeSize / 8, voxelCubeSize / 8, voxelCubeSize / 8);
-        /*if (modCenter != new Vector3(0, 0, 0)) { 
-            modManager.modify(modCenter, useKernelIndex);
-        }*/
+
 
         float rotationX = rotation.x / 180 * (float)Math.PI;
         float rotationY = -rotation.y / 180 * (float)Math.PI;
@@ -103,11 +106,22 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.Dispatch(0, voxelCubeSize/8, voxelCubeSize/8, voxelCubeSize/8);
     }
 
+    /// <summary>
+    /// called to modifiy the mesh
+    /// </summary>
+    /// <param name="modCenter">center of the modification</param>
+    /// <param name="useKernelIndex"modification action defines the kernel used in the computer shader></param>
     internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex)
     {
         modManager.modify(modCenter, useKernelIndex);
     }
 
+    /// <summary>
+    /// writes the initial mesh to the GPU
+    /// </summary>
+    /// <param name="voxel">voxel field that is written to the GPU</param>
+    /// <param name="rotation">rotation of the object</param>
+    /// <param name="withSmooth">boolean, if the object should be smoothed</param>
     public void initMesh(VoxelField voxel, Vector3 rotation, bool withSmooth)
     {
         //Debug.Log("Update Voxel Buffer");
@@ -138,6 +152,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.Dispatch(0, voxelCubeSize / 8, voxelCubeSize / 8, voxelCubeSize / 8);
     }
 
+    // Renders the custom buffer after Unity rendered the normal Unity objects
     void OnRenderObject()
     {
         //Since mesh is in a buffer need to use DrawProcedual called from OnPostRender or OnRenderObject
@@ -146,9 +161,9 @@ public class VoxelObjectGPU : MonoBehaviour {
         Graphics.DrawProcedural(MeshTopology.Triangles, maxVerticesSize);
     }
 
+    // The buffer must be released
     void OnDestroy()
     {
-        //MUST release buffers.
         vertexBuffer.Dispose();
         vertexBuffer.Release();
         voxelBuffer.Dispose();
@@ -158,6 +173,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         modManager.destroy();
     }
 
+    // edge look up able
     static int[] edgeTableLookUp = new int[256]{
         0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
         0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -192,6 +208,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
         0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0   };
 
+    // triangle look up table
     static int[,] triTableLookUp = new int[256, 16]
     {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},

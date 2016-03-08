@@ -52,6 +52,7 @@ Shader "Custom/DrawBuffer"
 
 			float4 frag(v2f IN) : COLOR
 			{
+				// TODO: specular calculation
 				//float specular = pow(dot(reflect(normalize(ObjSpaceViewDir(IN.pos)), IN.normal),_lightDir),_shininess);
 				float diffuse = dot(IN.normal, normalize(_lightDir));
 				return _color * diffuse;

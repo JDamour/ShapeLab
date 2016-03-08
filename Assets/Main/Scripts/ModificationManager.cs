@@ -41,6 +41,11 @@ public class ModificationManager {
         densityBuffer = voxelBuffer;
     }
 
+    /// <summary>
+    /// Modification of the object
+    /// </summary>
+    /// <param name="modCenter">center of the modification</param>
+    /// <param name="modAction">type of modification</param>
     internal void modify(Vector3 modCenter, ACTION modAction)
     {
 
@@ -72,6 +77,7 @@ public class ModificationManager {
         DensityModShader.Dispatch(DensityModShader.FindKernel(kernelName), dimension / 8, dimension / 8, dimension / 8);
     }
 
+    //TODO: Calculate a bounding box
     private Vector4 calculateBoundingBox(Vector3 modCenter, float modRange)
     {
         Vector4 offset = new Vector4(0, 0, 0, 0);
@@ -84,6 +90,7 @@ public class ModificationManager {
         return offset;
     }
 
+    // 
     internal void InitialSmooth(int smoothQuality)
     {
         DensityModShader.SetVector("Bounding_offSet", new Vector4(0, 0, 0, 0));
@@ -100,18 +107,17 @@ public class ModificationManager {
         
     }
 
+    //
     public void ChangeToolRange(float rangeChange)
     {
-        //todo UI text with tool range
-        Debug.Log("Range changed by "+rangeChange + ", \tnew Value: " + this.modRange);
+        //Debug.Log("Range changed by "+rangeChange + ", \tnew Value: " + this.modRange);
         this.modRange += rangeChange;
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
     }
 
     public void ChangeToolStrength(float powerChange)
     {
-        //todo UI text with tool power
-        Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
+        //Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
         this.modPower += powerChange;
         this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
     }
