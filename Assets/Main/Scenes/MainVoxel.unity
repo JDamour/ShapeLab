@@ -4241,8 +4241,9 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 2089111873}
+  - 114: {fileID: 2089111874}
   m_Layer: 0
-  m_Name: UI
+  m_Name: UIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4262,6 +4263,18 @@ Transform:
   - {fileID: 1692306569}
   m_Father: {fileID: 787525642}
   m_RootOrder: 3
+--- !u!114 &2089111874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2089111872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea9a1b532fe1b35498670792e9fa135d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 787525643}
 --- !u!1 &2102642086
 GameObject:
   m_ObjectHideFlags: 0

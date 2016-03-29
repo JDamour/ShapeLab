@@ -319,4 +319,12 @@ public class VoxelManager : MonoBehaviour {
         currentTool = ModificationManager.ACTION.SMOOTH;
         Debug.Log("Current tool now is: SMOOTH"); 
     }
+
+    /// <summary>
+    /// calls voxel object to export
+    /// </summary>
+    public void export()
+    {
+        voxelObjectGPU.exportObject();
+    }
 }

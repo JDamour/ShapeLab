@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System;
 
+public struct Vert
+{
+    public Vector3 position;
+    public Vector3 normal;
+};
+
 public class VoxelObjectGPU : MonoBehaviour {
 
     public enum MODACTION
@@ -8,7 +14,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         SUBSTRACT,
         ADD
     };
-    
+
     private float scaling;
 
     //Computer Shader
@@ -31,6 +37,8 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     public ModificationManager modManager;
 
+    private Vert[] vertexData;
+
     //data set by the voxelmanager --> needs to be set before the Start() - method by the voxelmanager
     public void setInitData(int dimension, float scaling)
     {
@@ -43,6 +51,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     void Start () {
         modManager = new ModificationManager(voxelModifierShader, voxelCubeSize, scaling);
 
+        vertexData = new Vert[maxVerticesSize];
         //set buffer data for lookup tables
         edgeTable = new ComputeBuffer(256, sizeof(int));
         edgeTable.SetData(edgeTableLookUp);
@@ -104,6 +113,15 @@ public class VoxelObjectGPU : MonoBehaviour {
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
         voxelComputeShader.Dispatch(0, voxelCubeSize/8, voxelCubeSize/8, voxelCubeSize/8);
+
+    }
+
+
+    public void exportObject()
+    {
+        vertexBuffer.GetData(vertexData);
+        
+        Export.exportSTLfromBuffer(vertexData, "exportTest");
     }
 
     /// <summary>
