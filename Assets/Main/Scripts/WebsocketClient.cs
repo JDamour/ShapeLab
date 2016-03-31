@@ -9,8 +9,8 @@ public class WebsocketClient : MonoBehaviour
 
     void Start()
     {
-        //ws = new WebSocket("ws://shapelab.kasanzew.de");
-        ws = new WebSocket("ws://echo.websocket.org");
+        //ws = new WebSocket("ws://shapelab.kasanzew.de/websocket");
+        ws = new WebSocket("ws://localhost:3000/websocket");
 
         ws.OnOpen += OnOpenHandler;
         ws.OnMessage += OnMessageHandler;
