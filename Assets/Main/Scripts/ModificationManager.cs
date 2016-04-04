@@ -132,9 +132,19 @@ public class ModificationManager {
         return modPower;
     }
 
-    public void SetToolPower(float power)
+    public void SetToolPower(float newPower)
     {
-        DensityModShader.SetFloat("toolPower", power);
+        this.modPower = this.MIN_TOOL_POWER + newPower;
+        this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
+        // DensityModShader.SetFloat("toolPower", power);
+    }
+
+    public void ResetToolRange()
+    {
+        this.modRange = 5.0f;
+        this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
+        Debug.Log("Range reset to " + this.modRange);
+
     }
 
     internal void destroy()

@@ -44,6 +44,8 @@ public class VoxelManager : MonoBehaviour {
     private enum INTEND
     {
         MOD,
+        RESETVIEW,
+        RESETALL,
         CREATERND,
         CREATEBLOCK,
         CREATESPHERE,
@@ -94,7 +96,6 @@ public class VoxelManager : MonoBehaviour {
                 voxel.createBlock();
                 initMesh(false);
                 break;
-            
             case INTEND.MOD:
                 Frame frame = m_leapController.Frame();
                 Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
@@ -116,6 +117,13 @@ public class VoxelManager : MonoBehaviour {
                 updateMesh();
 
                 break;
+            case INTEND.RESETVIEW:
+                UnityEngine.VR.InputTracking.Recenter();
+                break;
+            case INTEND.RESETALL:
+                //todo call function from server via websocket
+                resetAll(false);
+                break;
             case INTEND.NONE:
                 break;
         }
@@ -135,25 +143,43 @@ public class VoxelManager : MonoBehaviour {
         }
     }
 
+    private void resetAll( bool resetByServer)
+    {
+        if (resetByServer)
+        {
+            //todo check if current object should be exported
+            export(); // transmit current id?
+            //todo answer to server "all okay"?
+        }
+        Debug.Log("Reseting environment");
+        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+        voxel = new VoxelField(voxelFieldSize);
+        voxel.createSphere(voxelFieldSize / 3);
+        initMesh(true);
+        voxelObjectGPU.modManager.ResetToolRange();
+    }
+
     // get the Intend of the current action
     private INTEND getIntent()
     {
         
         //TODO erkennung, wann objekt berührt wird
-        if (Input.GetAxis("StickVertical") != 0)
+        if (Input.GetAxis("PadStickVertical") != 0)
         {
-            if (Input.GetAxis("StickVertical") > 0) { 
+            if (Input.GetAxis("PadStickVertical") > 0) { 
                 rotation.x = (rotation.x + 1 + 360) %360;
             }
             else
             {
                 rotation.x = (rotation.x - 1 + 360) %360;
             }
-            Debug.Log("Rotation X: " + rotation.x);
+            //Debug.Log("Rotation X: " + rotation.x);
         }
-        if (Input.GetAxis("StickHorizontal") != 0)
+        if (Input.GetAxis("PadStickHorizontal") != 0)
         {
-            if (Input.GetAxis("StickHorizontal") > 0)
+            if (Input.GetAxis("PadStickHorizontal") > 0)
             {
                 rotation.y = (rotation.y + 1 + 360)%360;
             }
@@ -161,11 +187,11 @@ public class VoxelManager : MonoBehaviour {
             {
                 rotation.y = (rotation.y - 1 + 360) %360;
             }
-            Debug.Log("Rotation Y: " + rotation.y);
+            //Debug.Log("Rotation Y: " + rotation.y);
         }
         
             updateBoundaries();
-        if (Input.GetAxis("AnalogCrossHorizontal") < 0 ||
+        if (Input.GetAxis("PadAnalogCrossHorizontal") < 0 ||
             Input.GetKey(KeyCode.LeftArrow))
         {
             // reducing tool range
@@ -173,7 +199,7 @@ public class VoxelManager : MonoBehaviour {
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
             radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius()*100))/100f;
         }
-        if (Input.GetAxis("AnalogCrossHorizontal") > 0 ||
+        if (Input.GetAxis("PadAnalogCrossHorizontal") > 0 ||
             Input.GetKey(KeyCode.RightArrow))
         {
             // increasing tool range
@@ -181,22 +207,39 @@ public class VoxelManager : MonoBehaviour {
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
             radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
         }
-        if (Input.GetAxis("AnalogCrossVertical") < 0 ||
+        if (Input.GetAxis("PadAnalogCrossVertical") < 0 ||
             Input.GetKey(KeyCode.DownArrow))
         {
             // reducing tool strength
             voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.005f);
             strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         }
-        if (Input.GetAxis("AnalogCrossVertical") > 0 ||
+        if (Input.GetAxis("PadAnalogCrossVertical") > 0 ||
             Input.GetKey(KeyCode.UpArrow))
         {
             // increasing tool strength
             voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
             strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         }
+        if (Input.GetAxis("PadTrigger") != 0)
+        {
+            // activate modding and set strength
+            // overrides previous toolpower, but once you go trigger, you never go back ;)
+            voxelObjectGPU.getModificationManager().SetToolPower(Input.GetAxis("PadTrigger"));
+            return INTEND.MOD;
+        }
+        if (Input.GetButton("PadResetButton"))
+        {
+            return INTEND.RESETALL;
+        }
+        if (Input.GetButton("PadResetViewButton"))
+        {
+            return INTEND.RESETVIEW;
+        }
+        
 
         // keyboard shortcuts for debugging
+        
         if (Input.GetButton("ModButton") || Input.GetButton("Jump"))
         {
             return INTEND.MOD;
@@ -215,7 +258,7 @@ public class VoxelManager : MonoBehaviour {
         }
 
         // updateMesh if rotation is changed during this frame
-        if (Input.GetAxis("StickVertical") != 0 || Input.GetAxis("StickHorizontal") != 0)
+        if (Input.GetAxis("PadStickVertical") != 0 || Input.GetAxis("PadStickHorizontal") != 0)
         {
             voxelObjectGPU.updateMesh(rotation);
         }

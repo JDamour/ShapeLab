@@ -147,12 +147,15 @@ public class VoxelObjectGPU : MonoBehaviour {
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
-       
-        //send the current voxel field to the gpu
-        voxelBuffer.SetData(voxel.getField());
-        if(withSmooth)
-            modManager.InitialSmooth(10); // 10 shader passes with smooth
 
+        //send the current voxel field to the gpu
+        voxelBuffer.Dispose();
+        voxelBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(float));
+        voxelBuffer.SetData(voxel.getField());
+        if (withSmooth) {
+            modManager.setDensityBuffer(voxelBuffer);
+            modManager.InitialSmooth(10); // 10 shader passes with smooth
+        }
         rotation.x = rotation.x / 180 * (float)Math.PI;
         rotation.y = rotation.y / 180 * (float)Math.PI;
         //calculate new vertices in vertexBuffer
@@ -176,6 +179,8 @@ public class VoxelObjectGPU : MonoBehaviour {
         //Since mesh is in a buffer need to use DrawProcedual called from OnPostRender or OnRenderObject
         drawBuffer.SetBuffer("vertexBuffer", vertexBuffer);
         drawBuffer.SetPass(0);
+        //todo? https://scrawkblog.com/2014/07/02/directcompute-tutorial-for-unity-buffers/
+        // not sure maxVerticesSize is supposed to be send here
         Graphics.DrawProcedural(MeshTopology.Triangles, maxVerticesSize);
     }
 
