@@ -299,7 +299,7 @@ public class VoxelManager : MonoBehaviour {
     public void updateMesh()
     {
         voxelObjectGPU.updateMesh(rotation);
-        voxelObjectGPU.updateMesh(rotation);
+        //voxelObjectGPU.updateMesh(rotation);
     }
 
     /// <summary>

@@ -13,19 +13,21 @@ public class ModificationManager {
 
     private ComputeShader DensityModShader;
     private ComputeBuffer densityBuffer;
+    private ComputeShader clearVertexAreaShader;
 
     private int dimension;
     private float modRange = 5.0f;
     private float modPower = 1.0f;
-    private float MAX_RANGE = 20.0f;
+    private float MAX_RANGE = 50.0f;
     private float MIN_RANGE = 1.0f;
     private float MAX_TOOL_POWER = 1.5f;
     private float MIN_TOOL_POWER = 0.75f;
 
-    public ModificationManager(ComputeShader modShader, int N, float scale)
+    public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scale)
     {
         dimension = N;
         DensityModShader = modShader;
+        clearVertexAreaShader = clearShader;
 
         // set up shader vars
         DensityModShader.SetFloat("toolPower", modPower);
@@ -46,7 +48,7 @@ public class ModificationManager {
     /// </summary>
     /// <param name="modCenter">center of the modification</param>
     /// <param name="modAction">type of modification</param>
-    internal void modify(Vector3 modCenter, ACTION modAction)
+    internal void modify(Vector3 modCenter, ACTION modAction, ComputeBuffer vertexBuffer)
     {
 
         DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
@@ -75,6 +77,8 @@ public class ModificationManager {
         DensityModShader.SetBuffer(DensityModShader.FindKernel(kernelName), "voxel", densityBuffer);
         //run shader
         DensityModShader.Dispatch(DensityModShader.FindKernel(kernelName), dimension / 8, dimension / 8, dimension / 8);
+
+        clearVertexArea(calculateOffset(modCenter, modRange), calculateModifySize(modRange), vertexBuffer);
     }
 
     //TODO: Calculate a bounding box
@@ -88,6 +92,30 @@ public class ModificationManager {
         offset.z = (float)Math.Floor(modCenter.z - modRange);
         */
         return offset;
+    }
+
+    private int[] calculateOffset(Vector3 modCenter, float modRange)
+    {
+        int[] offset = new int[3];
+        offset[0] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.x - modRange), dimension), 0f);
+        offset[1] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.y - modRange), dimension), 0f);
+        offset[2] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.z - modRange), dimension), 0f);
+        return offset;
+    }
+
+    private int calculateModifySize(float modRange)
+    {
+        return (int)Mathf.Ceil(modRange*2);
+    }
+
+    private void clearVertexArea(int[] offset, int size, ComputeBuffer vertexBuffer)
+    {
+        Debug.Log("offset is: " + offset[0] + " " + offset[1] + " " + offset[2]);
+        Debug.Log("range is: " + modRange);
+        clearVertexAreaShader.SetInt("cubeDimension", dimension);
+        clearVertexAreaShader.SetVector("offset", new Vector3(offset[0], offset[1], offset[2]));
+        clearVertexAreaShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
+        clearVertexAreaShader.Dispatch(0, dimension/8, dimension / 8, dimension / 8);
     }
 
     // 

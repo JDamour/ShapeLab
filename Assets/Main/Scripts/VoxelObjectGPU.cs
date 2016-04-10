@@ -22,6 +22,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     public ComputeShader voxelComputeShader;
     public ComputeShader sphereShader;
     public ComputeShader voxelModifierShader;
+    public ComputeShader clearVertexShader;
 
     public Material drawBuffer;
 
@@ -49,7 +50,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     }
     //initialization
     void Start () {
-        modManager = new ModificationManager(voxelModifierShader, voxelCubeSize, scaling);
+        modManager = new ModificationManager(voxelModifierShader, clearVertexShader, voxelCubeSize, scaling);
 
         vertexData = new Vert[maxVerticesSize];
         //set buffer data for lookup tables
@@ -93,14 +94,13 @@ public class VoxelObjectGPU : MonoBehaviour {
     {
 
         //before creating a new vertexBuffer the old one must be disposed
-        vertexBuffer.Dispose();
-        vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
-        voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-
+        //vertexBuffer.Dispose();
+        //vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
+        //voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
 
         float rotationX = rotation.x / 180 * (float)Math.PI;
         float rotationY = -rotation.y / 180 * (float)Math.PI;
-
+        
         //calculate new vertices in vertexBuffer
         voxelComputeShader.SetFloat("rotationXaxis", rotationX);
         voxelComputeShader.SetFloat("rotationYaxis", rotationY);
@@ -131,7 +131,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     /// <param name="useKernelIndex"modification action defines the kernel used in the computer shader></param>
     internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex)
     {
-        modManager.modify(modCenter, useKernelIndex);
+        modManager.modify(modCenter, useKernelIndex, vertexBuffer);
     }
 
     /// <summary>

@@ -1,0 +1,33 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Vert{
+	float3 position;
+	float3 normal;
+};
+
+int cubeDimension;
+float3 offset;
+RWStructuredBuffer<Vert> vertexBuffer;
+
+[numthreads(8,8,8)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+
+	//uint bufferIndex = (offset.x + id.x) + (offset.y + id.y) * cubeDimension + (offset.z + id.z) * cubeDimension * cubeDimension;
+	uint bufferIndex = id.x + id.y * cubeDimension + id.z * cubeDimension * cubeDimension;
+
+	for (uint i = 0; i < 16; i += 3){
+
+		Vert vert1;
+		Vert vert2;
+		Vert vert3;
+
+		vert1.position = vert2.position = vert3.position = float3(0.0,0.0,0.0);
+		vert1.normal = vert2.normal = vert3.normal = float3(0.0,0.0,0.0);
+
+		vertexBuffer[bufferIndex * 15 + i] = vert1;
+		vertexBuffer[bufferIndex * 15 + i+1] = vert2;
+		vertexBuffer[bufferIndex * 15 + i+2] = vert3;
+	}
+}
