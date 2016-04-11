@@ -10,7 +10,7 @@ public class WebsocketClient : MonoBehaviour
     void Start()
     {
         //ws = new WebSocket("ws://shapelab.kasanzew.de/websocket");
-        ws = new WebSocket("ws://localhost:3000/websocket");
+        ws = new WebSocket("ws://localhost:3003");
 
         ws.OnOpen += OnOpenHandler;
         ws.OnMessage += OnMessageHandler;
@@ -23,7 +23,7 @@ public class WebsocketClient : MonoBehaviour
     {
         Debug.Log("WebSocket connected!");
         Thread.Sleep(3000);
-        ws.SendAsync("This WebSockets stuff is a breeze!", OnSendComplete);
+        ws.SendAsync("{'key': 'value'}", OnSendComplete);
     }
 
     private void OnMessageHandler(object sender, MessageEventArgs e)
