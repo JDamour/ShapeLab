@@ -13,6 +13,10 @@ float4 Bounding_offSet;
 float4 tipPosition;
 float curMinDist;
 
+int offsetX;
+int offsetY;
+int offsetZ;
+
 //static
 float PI = 3.14159265;
 
@@ -22,15 +26,19 @@ RWStructuredBuffer<float> voxel;
 
 #pragma kernel densityModificator
 
-[numthreads(8,8,8)]
+[numthreads(4,4,4)]
 void densityModificator (uint3 id : SV_DispatchThreadID)
 {
-    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
+	uint idX = id.x + offsetX;
+	uint idY = id.y + offsetY;
+	uint idZ = id.z + offsetZ; 
+
+    if (idX == 0 || idX == dimension - 1 || idY == 0 || idY == dimension - 1 || idZ == 0 || idZ == dimension - 1)
 		return;
 	// this voxel will be changed in this iteration
-	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
+	uint voxelIndex = idX + idY * (dimension) + idZ * (dimension) * (dimension);
 	float newDensity;
-	float4 voxelPos = {id.x, id.y, id.z, 1.0};
+	float4 voxelPos = {idX, idY, idZ, 1.0};
 	float dist = distance(voxelPos, modCenter);
 
 	if(dist > modRange){

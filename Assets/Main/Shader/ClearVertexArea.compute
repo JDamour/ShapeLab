@@ -12,7 +12,7 @@ int offsetY;
 int offsetZ;
 RWStructuredBuffer<Vert> vertexBuffer;
 
-[numthreads(1,1,1)]
+[numthreads(4,4,4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
 	

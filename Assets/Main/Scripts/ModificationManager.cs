@@ -50,11 +50,16 @@ public class ModificationManager {
     /// <param name="modAction">type of modification</param>
     internal void modify(Vector3 modCenter, ACTION modAction, ComputeBuffer vertexBuffer)
     {
+        int[] offset = calculateOffset(modCenter, modRange);
+        int boundingBoxSize = calculateModifySize(modRange);
 
         DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
         DensityModShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
         DensityModShader.SetFloat("toolPower", modPower);
         DensityModShader.SetFloat("modRange", modRange);
+        DensityModShader.SetInt("offsetX", offset[0]);
+        DensityModShader.SetInt("offsetY", offset[1]);
+        DensityModShader.SetInt("offsetZ", offset[2]);
 
         //set up modification specific vars and kernel name
         String kernelName = "";
@@ -76,9 +81,9 @@ public class ModificationManager {
         //setup buffer containing densities
         DensityModShader.SetBuffer(DensityModShader.FindKernel(kernelName), "voxel", densityBuffer);
         //run shader
-        DensityModShader.Dispatch(DensityModShader.FindKernel(kernelName), dimension / 8, dimension / 8, dimension / 8);
+        DensityModShader.Dispatch(DensityModShader.FindKernel(kernelName), boundingBoxSize/4, boundingBoxSize/4, boundingBoxSize/4);
 
-        clearVertexArea(calculateOffset(modCenter, modRange), calculateModifySize(modRange), vertexBuffer);
+        clearVertexArea(offset, boundingBoxSize, vertexBuffer);
     }
 
     //TODO: Calculate a bounding box
@@ -106,7 +111,19 @@ public class ModificationManager {
 
     private int calculateModifySize(float modRange)
     {
-        return (int)Mathf.Ceil(modRange*2);
+        int boundingBoxSize = (int)Mathf.Ceil(modRange * 2);
+        if (boundingBoxSize%4 == 1){
+            return boundingBoxSize + 3;
+
+        }else if (boundingBoxSize%4 == 2){
+            return boundingBoxSize + 2;
+
+        }else if(boundingBoxSize%4 == 3){
+            return boundingBoxSize + 1;
+
+        }else {
+            return boundingBoxSize;
+        }
         
     }
 
@@ -120,7 +137,7 @@ public class ModificationManager {
         clearVertexAreaShader.SetInt("offsetZ", offset[2]);
         clearVertexAreaShader.SetVector("offset", new Vector3(offset[0], offset[1], offset[2]));
         clearVertexAreaShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-        clearVertexAreaShader.Dispatch(0, size, size, size);
+        clearVertexAreaShader.Dispatch(0, size/4, size/4, size/4);
     }
 
     // 
