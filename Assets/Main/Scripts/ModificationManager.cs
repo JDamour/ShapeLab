@@ -100,22 +100,27 @@ public class ModificationManager {
         offset[0] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.x - modRange), dimension), 0f);
         offset[1] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.y - modRange), dimension), 0f);
         offset[2] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.z - modRange), dimension), 0f);
+        Debug.Log("modcenter is: "+ modCenter);
         return offset;
     }
 
     private int calculateModifySize(float modRange)
     {
         return (int)Mathf.Ceil(modRange*2);
+        
     }
 
     private void clearVertexArea(int[] offset, int size, ComputeBuffer vertexBuffer)
     {
         Debug.Log("offset is: " + offset[0] + " " + offset[1] + " " + offset[2]);
-        Debug.Log("range is: " + modRange);
+        Debug.Log("range is: " + modRange + " size is: " + size);
         clearVertexAreaShader.SetInt("cubeDimension", dimension);
+        clearVertexAreaShader.SetInt("offsetX", offset[0]);
+        clearVertexAreaShader.SetInt("offsetY", offset[1]);
+        clearVertexAreaShader.SetInt("offsetZ", offset[2]);
         clearVertexAreaShader.SetVector("offset", new Vector3(offset[0], offset[1], offset[2]));
         clearVertexAreaShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
-        clearVertexAreaShader.Dispatch(0, dimension/8, dimension / 8, dimension / 8);
+        clearVertexAreaShader.Dispatch(0, size, size, size);
     }
 
     // 
@@ -162,7 +167,7 @@ public class ModificationManager {
 
     public void SetToolPower(float newPower)
     {
-        this.modPower = this.MIN_TOOL_POWER + newPower;
+        this.modPower = this.MIN_TOOL_POWER + newPower*0.3f;
         this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
         // DensityModShader.SetFloat("toolPower", power);
     }

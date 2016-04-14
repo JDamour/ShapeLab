@@ -7,15 +7,17 @@ struct Vert{
 };
 
 int cubeDimension;
-float3 offset;
+int offsetX;
+int offsetY;
+int offsetZ;
 RWStructuredBuffer<Vert> vertexBuffer;
 
-[numthreads(8,8,8)]
+[numthreads(1,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-
-	//uint bufferIndex = (offset.x + id.x) + (offset.y + id.y) * cubeDimension + (offset.z + id.z) * cubeDimension * cubeDimension;
-	uint bufferIndex = id.x + id.y * cubeDimension + id.z * cubeDimension * cubeDimension;
+	
+	uint bufferIndex = (offsetX + id.x) + (offsetY + id.y) * cubeDimension + (offsetZ + id.z) * cubeDimension * cubeDimension;
+	//uint bufferIndex = id.x + id.y * cubeDimension + id.z * cubeDimension * cubeDimension;
 
 	for (uint i = 0; i < 16; i += 3){
 
