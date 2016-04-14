@@ -155,6 +155,8 @@ public class VoxelManager : MonoBehaviour {
         radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
         strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+
+        rotation = Vector3.zero;
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh(true);
