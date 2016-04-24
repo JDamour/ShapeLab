@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
-//using Net.DDP.Client;
+using Net.DDP.Client;
 
 public class MeteorConnection : MonoBehaviour {
-    //private IDataSubscriber subscriber = new Subscriber();
+    private IDataSubscriber subscriber = new Subscriber();
 
-    // private DdpClient client;
+    private DDPClient client;
 
     // Use this for initialization
     void Start () {
 
-        Debug.Log(System.Environment.Version);
+        //Debug.Log(System.Environment.Version);
 
         ////subscriber is an instance of IDataSubscriber, which gets a callback
         ////when a change comes in
