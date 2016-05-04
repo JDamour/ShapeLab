@@ -17,6 +17,8 @@ public class VoxelManager : MonoBehaviour {
 
     public VoxelObjectGPU voxelObjectGPU;
 
+    private System.Collections.Generic.Queue<StatefulMain.Command> cmdQueue;
+
     private int voxelFieldSize;
     private VoxelField voxel;
 
@@ -67,18 +69,20 @@ public class VoxelManager : MonoBehaviour {
         voxelFieldSize = voxelCubeSize + 1;
         scaling = objectSize / (float)voxelCubeSize;
         voxelObjectGPU.setInitData(voxelCubeSize, scaling);
+        cmdQueue = new System.Collections.Generic.Queue<StatefulMain.Command>();
     }
 
     // initialization
     void Start () {
         m_leapController = handController.GetLeapController();
-
+        
         radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
         strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh(true);
+        
     }
 
     // Update is called once per frame
@@ -127,6 +131,12 @@ public class VoxelManager : MonoBehaviour {
             case INTEND.NONE:
                 break;
         }
+
+        //check, if server has send any commands
+        if(cmdQueue.Count > 0)
+        {
+            Debug.Log("I should do something with this \"" + cmdQueue.Dequeue().ToString() + "\"command...");
+        }
         
         // change tools manualy with keyboard for testing
         if (Input.GetKeyUp("1"))
@@ -141,6 +151,12 @@ public class VoxelManager : MonoBehaviour {
         {
             setSmoothTool();     
         }
+    }
+
+    public void queueServerCommand(StatefulMain.Command cmd)
+    {
+        //Debug.Log("Server said: "+cmd.ToString()+", queueing");
+        cmdQueue.Enqueue(cmd);
     }
 
     private void resetAll( bool resetByServer)
