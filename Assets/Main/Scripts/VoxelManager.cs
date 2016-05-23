@@ -184,17 +184,6 @@ public class VoxelManager : MonoBehaviour {
     {
         
         //TODO erkennung, wann objekt berührt wird
-        if (Input.GetAxis("PadStickVertical") != 0)
-        {
-            if (Input.GetAxis("PadStickVertical") > 0) { 
-                rotation.x = (rotation.x + 1 + 360) %360;
-            }
-            else
-            {
-                rotation.x = (rotation.x - 1 + 360) %360;
-            }
-            //Debug.Log("Rotation X: " + rotation.x);
-        }
         if (Input.GetAxis("PadStickHorizontal") != 0)
         {
             if (Input.GetAxis("PadStickHorizontal") > 0)
@@ -276,7 +265,7 @@ public class VoxelManager : MonoBehaviour {
         }
 
         // updateMesh if rotation is changed during this frame
-        if (Input.GetAxis("PadStickVertical") != 0 || Input.GetAxis("PadStickHorizontal") != 0)
+        if (Input.GetAxis("PadStickHorizontal") != 0)
         {
             voxelObjectGPU.updateMesh(rotation);
         }
