@@ -29,13 +29,13 @@ public class StateMachine : MonoBehaviour {
             pendingTransitions.Enqueue(state);
         }
 
-        Debug.Log("Queued transition from " + cur + " to " + state);
+        //Debug.Log("Queued transition from " + cur + " to " + state);
     }
 
     public void Update() {
         while (pendingTransitions.Count > 0) {
             currentState = pendingTransitions.Dequeue();
-            Debug.Log("Transitioned to state " + currentState);
+            //Debug.Log("Transitioned to state " + currentState);
 
             Handler handler;
             if (handlers.TryGetValue(currentState, out handler)) {

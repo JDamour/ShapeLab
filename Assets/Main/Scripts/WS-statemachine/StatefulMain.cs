@@ -5,17 +5,18 @@ public class StatefulMain : MonoBehaviour
 {
     public StateMachine stateMachine;
     public VoxelManager voxelmanager;
-
+    public string hostadresse;
     public enum Command
     {
         RESET_ALL,
         RESET_TOOLS,
         RESET_SCREENSHOTS,
+        RESET_HMD_LOCATION,
         NEXT_USER,
         TAKE_SCREENSHOT,
         UNKNOWN
     }
-
+    private string serverID;
     private WebSocket ws;
     public class ShapeLabProtocoll
     {
@@ -33,6 +34,8 @@ public class StatefulMain : MonoBehaviour
                     return Command.NEXT_USER;
                 case "take-screenshot":
                     return Command.TAKE_SCREENSHOT;
+                case "reset-hmd":
+                    return Command.RESET_HMD_LOCATION;
                 default:
                     return Command.UNKNOWN;
             }
@@ -43,13 +46,14 @@ public class StatefulMain : MonoBehaviour
     {
         //ws = new WebSocket("ws://echo.websocket.org");
         //ws = new WebSocket("ws://127.0.0.1:8080/");
-        ws = new WebSocket("ws://shapelab.kasanzew.de:8080/");
+        //ws = new WebSocket("ws://shapelab.kasanzew.de:8080/");
         //ws = new WebSocket("ws://141.64.64.251/websocket");
+        ws = new WebSocket(hostadresse);
 
         ws.OnOpen += OnOpenHandler;
         ws.OnMessage += OnMessageHandler;
         ws.OnClose += OnCloseHandler;
-
+        /*
         //----FOR TESTING-----
         stateMachine.AddHandler(State.Connected, () =>
         {
@@ -60,7 +64,7 @@ public class StatefulMain : MonoBehaviour
             });
         });
         //---------
-
+        */
         stateMachine.AddHandler(State.Running, () =>
         {
             new Wait(this, 3, () =>
@@ -112,8 +116,15 @@ public class StatefulMain : MonoBehaviour
         Command cmd = ShapeLabProtocoll.parseMessage(e.Data);
         if (cmd.Equals(Command.UNKNOWN))
         {
-            //Debug.Log("Unable to parse received command");
-            //TODO send warning to server
+            if (e.Data.Contains("clientID\":\""))
+            {
+                //erste Meldung des Servers mit Id
+                serverID = e.Data.Substring(13).Replace("\"}", "");
+                Debug.Log("My ID is: " + serverID);
+            } else
+            {
+                Debug.Log(cmd.ToString()+ " received: " + e.Data);
+            }
         }
         else
         {
