@@ -37,6 +37,7 @@ public class VoxelManager : MonoBehaviour {
     public Color smoothToolColor;
 
     private Vector3 rotation;
+    private float objectScaling;
 
     //TODO: create a UI Manager
     // UI elements
@@ -61,13 +62,14 @@ public class VoxelManager : MonoBehaviour {
     // initialization before the start() methods are called
     void Awake()
     {
+        objectScaling = 1.0f;
         rotation = new Vector3(0f,0f,0f);
         if(voxelCubeSize%8 != 0)
         {
             Debug.Log("The dimension of the voxelCubeField has to be a multiple of 8");
         }
         voxelFieldSize = voxelCubeSize + 1;
-        scaling = objectSize / (float)voxelCubeSize;
+        scaling = objectSize * objectScaling / (float)voxelCubeSize;
         voxelObjectGPU.setInitData(voxelCubeSize, scaling);
         cmdQueue = new System.Collections.Generic.Queue<StatefulMain.Command>();
     }
@@ -172,6 +174,9 @@ public class VoxelManager : MonoBehaviour {
         strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
 
+        objectScaling = 1.0f;
+        scaling = objectSize * objectScaling / (float)voxelCubeSize;
+
         rotation = Vector3.zero;
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
@@ -182,8 +187,23 @@ public class VoxelManager : MonoBehaviour {
     // get the Intend of the current action
     private INTEND getIntent()
     {
-        
+
         //TODO erkennung, wann objekt berührt wird
+        if (Input.GetAxis("PadStickVertical") != 0)
+        {
+            if (Input.GetAxis("PadStickVertical") > 0)
+            {
+                objectScaling = objectScaling + 0.02f;
+            }
+            else
+            {
+                objectScaling = Mathf.Max(objectScaling - 0.02f, 0.3f);
+            }
+            scaling = objectSize * objectScaling / (float)voxelCubeSize;
+            voxelObjectGPU.setScale(scaling);
+            boundaries.localScale = new Vector3(objectScaling, objectScaling, objectScaling);
+        }
+
         if (Input.GetAxis("PadStickHorizontal") != 0)
         {
             if (Input.GetAxis("PadStickHorizontal") > 0)
@@ -265,7 +285,7 @@ public class VoxelManager : MonoBehaviour {
         }
 
         // updateMesh if rotation is changed during this frame
-        if (Input.GetAxis("PadStickHorizontal") != 0)
+        if (Input.GetAxis("PadStickHorizontal") != 0 || Input.GetAxis("PadStickVertical") != 0)
         {
             voxelObjectGPU.updateMesh(rotation);
         }
@@ -298,6 +318,7 @@ public class VoxelManager : MonoBehaviour {
     {
         voxelObjectGPU.initMesh(voxel, rotation, withSmooth);
     }
+
 
     //TODO: find the flickering problem, to only call updateMesh once
     /// <summary>
