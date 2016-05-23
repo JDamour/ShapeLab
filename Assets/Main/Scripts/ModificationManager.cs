@@ -102,9 +102,9 @@ public class ModificationManager {
     private int[] calculateOffset(Vector3 modCenter, float modRange)
     {
         int[] offset = new int[3];
-        offset[0] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.x - modRange), dimension), 0f);
-        offset[1] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.y - modRange), dimension), 0f);
-        offset[2] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.z - modRange), dimension), 0f);
+        offset[0] = (int)(modCenter.x - modRange);
+        offset[1] = (int)(modCenter.y - modRange);
+        offset[2] = (int)(modCenter.z - modRange);
         Debug.Log("modcenter is: "+ modCenter);
         return offset;
     }
