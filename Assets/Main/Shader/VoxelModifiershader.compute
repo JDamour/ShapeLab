@@ -33,10 +33,13 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 	uint idY = id.y + offsetY;
 	uint idZ = id.z + offsetZ; 
 
-    if (idX == 0 || idX == dimension - 1 || idY == 0 || idY == dimension - 1 || idZ == 0 || idZ == dimension - 1)
-		return;
 	// this voxel will be changed in this iteration
 	uint voxelIndex = idX + idY * (dimension) + idZ * (dimension) * (dimension);
+
+    if (idX <= 0 || idX >= dimension - 1 || idY <= 0 || idY >= dimension - 1 || idZ <= 0 || idZ >= dimension - 1){
+		return;
+	}
+	
 	float newDensity;
 	float4 voxelPos = {idX, idY, idZ, 1.0};
 	float dist = distance(voxelPos, modCenter);

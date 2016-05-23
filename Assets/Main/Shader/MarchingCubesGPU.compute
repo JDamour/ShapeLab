@@ -10,6 +10,7 @@ float rotationXaxis;
 float rotationYaxis;
 int dimension;
 int cubeDimension;
+float3 positionOffset;
 float isolevel;
 float scale;
 
@@ -148,9 +149,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 		Vert vert2;
 		Vert vert3;
 
-		vert1.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i]] * scale);
-		vert2.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i+1]] * scale);
-		vert3.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i+2]] * scale);
+		vert1.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i]] * scale) + positionOffset;
+		vert2.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i+1]] * scale) + positionOffset;
+		vert3.position = rotateVertex(vertList[triangleConnectionTable[cubeIndex * 16 + i+2]] * scale) + positionOffset;
 
 		vert1.normal = vert2.normal = vert3.normal = normalize(calculateNormal(vert1.position, vert2.position, vert3.position));
 
