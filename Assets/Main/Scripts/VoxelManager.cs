@@ -39,6 +39,9 @@ public class VoxelManager : MonoBehaviour {
     private Vector3 rotation;
     private float objectScaling;
 
+    private Vector3 moveOffset = new Vector3(0f,0f,0f);
+    private Vector3 boundingBoxOffset = new Vector3(0f,0f,0f);
+
     //TODO: create a UI Manager
     // UI elements
     public Text radiusText;
@@ -187,15 +190,13 @@ public class VoxelManager : MonoBehaviour {
     // get the Intend of the current action
     private INTEND getIntent()
     {
-
-        //TODO erkennung, wann objekt berührt wird
-        if (Input.GetAxis("PadStickVertical") != 0)
+        if (Input.GetAxis("PadStickVertical") > 0.6 || Input.GetAxis("PadStickVertical") <- 0.6)
         {
-            if (Input.GetAxis("PadStickVertical") > 0)
+            if (Input.GetAxis("PadStickVertical") > 0.6)
             {
                 objectScaling = objectScaling + 0.02f;
             }
-            else
+            else if (Input.GetAxis("PadStickVertical") < -0.6)
             {
                 objectScaling = Mathf.Max(objectScaling - 0.02f, 0.3f);
             }
@@ -204,13 +205,13 @@ public class VoxelManager : MonoBehaviour {
             boundaries.localScale = new Vector3(objectScaling, objectScaling, objectScaling);
         }
 
-        if (Input.GetAxis("PadStickHorizontal") != 0)
+        if (Input.GetAxis("PadStickHorizontal") > 0.5 || Input.GetAxis("PadStickHorizontal") < -0.5)
         {
-            if (Input.GetAxis("PadStickHorizontal") > 0)
+            if (Input.GetAxis("PadStickHorizontal") > 0.5)
             {
                 rotation.y = (rotation.y + 1 + 360)%360;
             }
-            else
+            else if(Input.GetAxis("PadStickHorizontal") < -0.5)
             {
                 rotation.y = (rotation.y - 1 + 360) %360;
             }
