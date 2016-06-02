@@ -16,6 +16,7 @@ public class VoxelManager : MonoBehaviour {
     public Transform boundaries;
 
     public VoxelObjectGPU voxelObjectGPU;
+    public SCManager scmanager;
 
     private System.Collections.Generic.Queue<StatefulMain.Command> cmdQueue;
 
@@ -140,7 +141,47 @@ public class VoxelManager : MonoBehaviour {
         //check, if server has send any commands
         if(cmdQueue.Count > 0)
         {
-            Debug.Log("I should do something with this \"" + cmdQueue.Dequeue().ToString() + "\"command...");
+            StatefulMain.Command newCommand = cmdQueue.Dequeue();
+
+            switch (newCommand)
+            {
+                case StatefulMain.Command.RESET_ALL:
+                    {
+                        resetAll(true);
+                        Debug.Log("(Servercmd) reseting everything");
+                    }
+                    break;
+                case StatefulMain.Command.RESET_SCREENSHOTS:
+                    {
+                        resetAll(true);
+                        Debug.Log("(Servercmd) reseting screenshot-storage");
+                    }
+                    break;
+                case StatefulMain.Command.RESET_TOOLS:
+                    {
+                        resetAll(true);
+                        Debug.Log("(Servercmd) reseting tool parameter");
+                    }
+                    break;
+                case StatefulMain.Command.NEXT_USER:
+                    {
+                        resetAll(true);
+                        Debug.Log("(Servercmd) preparing programm for next user");
+                    }
+                    break;
+                case StatefulMain.Command.TAKE_SCREENSHOT:
+                    {
+                        scmanager.TakeScreenShoot();
+                        Debug.Log("(Servercmd) rendering screenshot");
+                    }
+                    break;
+                default:
+                    {
+                        Debug.Log("I should do something with this \"" + cmdQueue.Dequeue().ToString() + "\"command...");
+                    }
+                    break;
+            }
+            
         }
         
         // change tools manualy with keyboard for testing
