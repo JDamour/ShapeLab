@@ -137,9 +137,9 @@ public class VoxelObjectGPU : MonoBehaviour {
     /// </summary>
     /// <param name="modCenter">center of the modification</param>
     /// <param name="useKernelIndex"modification action defines the kernel used in the computer shader></param>
-    internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex)
+    internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex, float objectScaling)
     {
-        modManager.modify(modCenter, useKernelIndex, vertexBuffer);
+        modManager.modify(modCenter, useKernelIndex, vertexBuffer, objectScaling);
     }
 
     /// <summary>

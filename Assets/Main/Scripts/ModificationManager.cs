@@ -16,6 +16,7 @@ public class ModificationManager {
     private ComputeShader clearVertexAreaShader;
 
     private int dimension;
+    private float objectScaling = 1f;
     private float modRange = 5.0f;
     private float modPower = 1.0f;
     private float MAX_RANGE = 50.0f;
@@ -23,7 +24,7 @@ public class ModificationManager {
     private float MAX_TOOL_POWER = 1.5f;
     private float MIN_TOOL_POWER = 0.75f;
 
-    public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scale)
+    public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scaling)
     {
         dimension = N;
         DensityModShader = modShader;
@@ -34,7 +35,7 @@ public class ModificationManager {
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
         DensityModShader.SetFloat("cosStrength", 20.0f);
-        DensityModShader.SetFloat("modRange", modRange);
+        DensityModShader.SetFloat("modRange", getModRange());
         DensityModShader.SetInt("dimension", dimension + 1);
     }
 
@@ -48,15 +49,16 @@ public class ModificationManager {
     /// </summary>
     /// <param name="modCenter">center of the modification</param>
     /// <param name="modAction">type of modification</param>
-    internal void modify(Vector3 modCenter, ACTION modAction, ComputeBuffer vertexBuffer)
+    internal void modify(Vector3 modCenter, ACTION modAction, ComputeBuffer vertexBuffer, float objectScaling)
     {
-        int[] offset = calculateOffset(modCenter, modRange);
-        int boundingBoxSize = calculateModifySize(modRange);
+        this.objectScaling = objectScaling;
+        int[] offset = calculateOffset(modCenter, getModRange());
+        int boundingBoxSize = calculateModifySize(getModRange());
 
-        DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
+        DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, getModRange()));
         DensityModShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
         DensityModShader.SetFloat("toolPower", modPower);
-        DensityModShader.SetFloat("modRange", modRange);
+        DensityModShader.SetFloat("modRange", getModRange());
         DensityModShader.SetInt("offsetX", offset[0]);
         DensityModShader.SetInt("offsetY", offset[1]);
         DensityModShader.SetInt("offsetZ", offset[2]);
@@ -97,6 +99,11 @@ public class ModificationManager {
         offset.z = (float)Math.Floor(modCenter.z - modRange);
         */
         return offset;
+    }
+
+    private float getModRange()
+    {
+        return modRange / objectScaling;
     }
 
     private int[] calculateOffset(Vector3 modCenter, float modRange)

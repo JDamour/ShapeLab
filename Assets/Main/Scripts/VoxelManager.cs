@@ -170,7 +170,7 @@ public class VoxelManager : MonoBehaviour
                 tipPosition -= posOffset;
 
                 //apply modification
-                voxelObjectGPU.applyToolAt(getRotatedPosition(tipPosition / scaling), currentTool);
+                voxelObjectGPU.applyToolAt(getRotatedPosition(tipPosition / scaling), currentTool, objectScaling);
                 updateMesh();
 
                 break;
