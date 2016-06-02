@@ -1709,6 +1709,7 @@ MonoBehaviour:
   eyePos: {fileID: 439116206}
   boundaries: {fileID: 1928218137}
   voxelObjectGPU: {fileID: 723655124}
+  scmanager: {fileID: 0}
   handController: {fileID: 1685078488}
   tool: {fileID: 0}
   toolMaterial: {fileID: 2100000, guid: 8248fc8c6d1dd714fbf4ad101ab91f16, type: 2}
@@ -3970,6 +3971,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 2016526105}
   voxelmanager: {fileID: 787525643}
+  hostadresse: ws://shapelab.kasanzew.de:8080/
 --- !u!114 &2016526105
 MonoBehaviour:
   m_ObjectHideFlags: 0

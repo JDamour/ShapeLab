@@ -40,6 +40,10 @@ public class VoxelManager : MonoBehaviour {
     private Vector3 rotation;
     private float objectScaling;
 
+
+    //scaling and moving
+    private bool moveObject = false;
+    private Vector3 startMovePosition = new Vector3(0f, 0f, 0f);
     private Vector3 moveOffset = new Vector3(0f,0f,0f);
     private Vector3 boundingBoxOffset = new Vector3(0f,0f,0f);
 
@@ -60,6 +64,8 @@ public class VoxelManager : MonoBehaviour {
         INCREASETOOLRANGE,
         REDUCETOOLSTRENGTH,
         INCREASETOOLSTRENGTH,
+        MOVE,
+        MOVEINIT,
         NONE
     }
 
@@ -93,7 +99,9 @@ public class VoxelManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        Frame frame = m_leapController.Frame();
         switch (getIntent()) {
+
             case INTEND.CREATESPHERE:
                 voxel.createSphere(voxelFieldSize / 3);
                 initMesh(false);
@@ -106,8 +114,25 @@ public class VoxelManager : MonoBehaviour {
                 voxel.createBlock();
                 initMesh(false);
                 break;
+            case INTEND.MOVEINIT:
+                if (frame.Tools.Count != 0)
+                {
+                    startMovePosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+                    startMovePosition = handController.transform.TransformPoint(startMovePosition);
+                }
+                else
+                {
+                    //debug nachricht das die leap sichtbar sein muss zum bewegen
+                }
+                break;
+
+            case INTEND.MOVE:
+                if (moveObject == true)
+                {
+
+                }
+                break;
             case INTEND.MOD:
-                Frame frame = m_leapController.Frame();
                 Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
                 if (m_leapController.IsConnected) {
                     
@@ -148,24 +173,27 @@ public class VoxelManager : MonoBehaviour {
                 case StatefulMain.Command.RESET_ALL:
                     {
                         resetAll(true);
+                        voxelObjectGPU.resetTools();
                         Debug.Log("(Servercmd) reseting everything");
                     }
                     break;
                 case StatefulMain.Command.RESET_SCREENSHOTS:
                     {
-                        resetAll(true);
+                        scmanager.ResetScreenshots();
                         Debug.Log("(Servercmd) reseting screenshot-storage");
                     }
                     break;
                 case StatefulMain.Command.RESET_TOOLS:
                     {
-                        resetAll(true);
+                        voxelObjectGPU.resetTools();
                         Debug.Log("(Servercmd) reseting tool parameter");
                     }
                     break;
                 case StatefulMain.Command.NEXT_USER:
                     {
                         resetAll(true);
+                        scmanager.TakeScreenShoot();
+                        voxelObjectGPU.resetTools();
                         Debug.Log("(Servercmd) preparing programm for next user");
                     }
                     break;
@@ -227,6 +255,14 @@ public class VoxelManager : MonoBehaviour {
         initMesh(true);
         voxelObjectGPU.modManager.ResetToolRange();
     }
+
+    private void resetTools()
+    {
+        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+    }
+
 
     // get the Intend of the current action
     private INTEND getIntent()
@@ -305,13 +341,24 @@ public class VoxelManager : MonoBehaviour {
         {
             return INTEND.RESETVIEW;
         }
-        
+
 
         // keyboard shortcuts for debugging
-        
+
+        if (Input.GetButtonDown("ModButton"))
+        {
+            moveObject = true;
+            return INTEND.MOVEINIT;
+        }
+
+        if (Input.GetButtonUp("ModButton"))
+        {
+            moveObject = false;
+        }
+
         if (Input.GetButton("ModButton") || Input.GetButton("Jump"))
         {
-            return INTEND.MOD;
+            return INTEND.MOVE;
         }
         if (Input.GetKeyUp("s"))
         {

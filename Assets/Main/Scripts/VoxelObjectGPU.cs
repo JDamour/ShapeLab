@@ -120,6 +120,10 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     }
 
+    public void resetTools()
+    {
+
+    }
 
     public void exportObject()
     {
