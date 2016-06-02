@@ -7,7 +7,8 @@ using UnityEngine.UI;
 /// Manager of the Sculpting Project
 /// manages all input and modification
 /// </summary>
-public class VoxelManager : MonoBehaviour {
+public class VoxelManager : MonoBehaviour
+{
 
     public float objectSize;
     private float scaling;
@@ -40,12 +41,13 @@ public class VoxelManager : MonoBehaviour {
     private Vector3 rotation;
     private float objectScaling;
 
-
     //scaling and moving
     private bool moveObject = false;
     private Vector3 startMovePosition = new Vector3(0f, 0f, 0f);
-    private Vector3 moveOffset = new Vector3(0f,0f,0f);
-    private Vector3 boundingBoxOffset = new Vector3(0f,0f,0f);
+    private Vector3 lastMoveOffset = new Vector3(0f, 0f, 0f);
+    private Vector3 posOffset = new Vector3(0f, 0f, 0f);
+
+    private Vector3 boundingBoxOffset;
 
     //TODO: create a UI Manager
     // UI elements
@@ -73,8 +75,8 @@ public class VoxelManager : MonoBehaviour {
     void Awake()
     {
         objectScaling = 1.0f;
-        rotation = new Vector3(0f,0f,0f);
-        if(voxelCubeSize%8 != 0)
+        rotation = new Vector3(0f, 0f, 0f);
+        if (voxelCubeSize % 8 != 0)
         {
             Debug.Log("The dimension of the voxelCubeField has to be a multiple of 8");
         }
@@ -82,25 +84,30 @@ public class VoxelManager : MonoBehaviour {
         scaling = objectSize * objectScaling / (float)voxelCubeSize;
         voxelObjectGPU.setInitData(voxelCubeSize, scaling);
         cmdQueue = new System.Collections.Generic.Queue<StatefulMain.Command>();
+        resetBoundingBoxPosition();
     }
 
     // initialization
-    void Start () {
+    void Start()
+    {
         m_leapController = handController.GetLeapController();
-        
+
         radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
         strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh(true);
-        
+
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
         Frame frame = m_leapController.Frame();
-        switch (getIntent()) {
+        Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
+        switch (getIntent())
+        {
 
             case INTEND.CREATESPHERE:
                 voxel.createSphere(voxelFieldSize / 3);
@@ -119,9 +126,12 @@ public class VoxelManager : MonoBehaviour {
                 {
                     startMovePosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
                     startMovePosition = handController.transform.TransformPoint(startMovePosition);
+                    lastMoveOffset = posOffset;
+                    
                 }
                 else
                 {
+                    moveObject = false;
                     //debug nachricht das die leap sichtbar sein muss zum bewegen
                 }
                 break;
@@ -129,23 +139,35 @@ public class VoxelManager : MonoBehaviour {
             case INTEND.MOVE:
                 if (moveObject == true)
                 {
+                    if (frame.Tools.Count == 0)
+                    {
+                        return;
+                    }
+                    tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
+                    tipPosition = handController.transform.TransformPoint(tipPosition);
 
+                    posOffset = lastMoveOffset + (tipPosition - startMovePosition);
+                    resetBoundingBoxPosition();
+                    updateMesh();
                 }
                 break;
             case INTEND.MOD:
-                Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
-                if (m_leapController.IsConnected) {
-                    
+
+                if (m_leapController.IsConnected)
+                {
+
                     if (frame.Tools.Count == 0) //only modify if there is a tool
                         return;
 
                     tipPosition = frame.Tools[0].TipPosition.ToUnityScaled(false);
                     tipPosition = handController.transform.TransformPoint(tipPosition);
-                    
-                } else {
+
+                }
+                else {
                     // for testing purposes
                     Debug.Log("modding at: " + tipPosition.x / scaling + ";" + tipPosition.y / scaling + ";" + tipPosition.z / scaling);
                 }
+                tipPosition -= posOffset;
 
                 //apply modification
                 voxelObjectGPU.applyToolAt(getRotatedPosition(tipPosition / scaling), currentTool);
@@ -164,7 +186,7 @@ public class VoxelManager : MonoBehaviour {
         }
 
         //check, if server has send any commands
-        if(cmdQueue.Count > 0)
+        if (cmdQueue.Count > 0)
         {
             StatefulMain.Command newCommand = cmdQueue.Dequeue();
 
@@ -191,8 +213,9 @@ public class VoxelManager : MonoBehaviour {
                     break;
                 case StatefulMain.Command.NEXT_USER:
                     {
-                        resetAll(true);
                         scmanager.TakeScreenShoot();
+                        resetAll(true);
+                        
                         voxelObjectGPU.resetTools();
                         Debug.Log("(Servercmd) preparing programm for next user");
                     }
@@ -209,13 +232,13 @@ public class VoxelManager : MonoBehaviour {
                     }
                     break;
             }
-            
+
         }
-        
+
         // change tools manualy with keyboard for testing
         if (Input.GetKeyUp("1"))
         {
-            setPullTool(); 
+            setPullTool();
         }
         if (Input.GetKeyUp("2"))
         {
@@ -223,7 +246,7 @@ public class VoxelManager : MonoBehaviour {
         }
         if (Input.GetKeyUp("3"))
         {
-            setSmoothTool();     
+            setSmoothTool();
         }
     }
 
@@ -233,7 +256,7 @@ public class VoxelManager : MonoBehaviour {
         cmdQueue.Enqueue(cmd);
     }
 
-    private void resetAll( bool resetByServer)
+    private void resetAll(bool resetByServer)
     {
         if (resetByServer)
         {
@@ -250,10 +273,12 @@ public class VoxelManager : MonoBehaviour {
         scaling = objectSize * objectScaling / (float)voxelCubeSize;
 
         rotation = Vector3.zero;
+        posOffset = Vector3.zero;
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh(true);
         voxelObjectGPU.modManager.ResetToolRange();
+        resetBoundingBoxPosition();
     }
 
     private void resetTools()
@@ -267,7 +292,7 @@ public class VoxelManager : MonoBehaviour {
     // get the Intend of the current action
     private INTEND getIntent()
     {
-        if (Input.GetAxis("PadStickVertical") > 0.6 || Input.GetAxis("PadStickVertical") <- 0.6)
+        if (Input.GetAxis("PadStickVertical") > 0.6 || Input.GetAxis("PadStickVertical") < -0.6)
         {
             if (Input.GetAxis("PadStickVertical") > 0.6)
             {
@@ -286,23 +311,23 @@ public class VoxelManager : MonoBehaviour {
         {
             if (Input.GetAxis("PadStickHorizontal") > 0.5)
             {
-                rotation.y = (rotation.y + 1 + 360)%360;
+                rotation.y = (rotation.y + 1 + 360) % 360;
             }
-            else if(Input.GetAxis("PadStickHorizontal") < -0.5)
+            else if (Input.GetAxis("PadStickHorizontal") < -0.5)
             {
-                rotation.y = (rotation.y - 1 + 360) %360;
+                rotation.y = (rotation.y - 1 + 360) % 360;
             }
             //Debug.Log("Rotation Y: " + rotation.y);
         }
-        
-            updateBoundaries();
+
+        updateBoundaries();
         if (Input.GetAxis("PadAnalogCrossHorizontal") < 0 ||
             Input.GetKey(KeyCode.LeftArrow))
         {
             // reducing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
-            radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius()*100))/100f;
+            radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
         }
         if (Input.GetAxis("PadAnalogCrossHorizontal") > 0 ||
             Input.GetKey(KeyCode.RightArrow))
@@ -376,7 +401,7 @@ public class VoxelManager : MonoBehaviour {
         // updateMesh if rotation is changed during this frame
         if (Input.GetAxis("PadStickHorizontal") != 0 || Input.GetAxis("PadStickVertical") != 0)
         {
-            voxelObjectGPU.updateMesh(rotation);
+            voxelObjectGPU.updateMesh(rotation, posOffset);
         }
         return INTEND.NONE;
     }
@@ -387,9 +412,11 @@ public class VoxelManager : MonoBehaviour {
     /// <param name="show">set to true, if the modification radius should be shown</param>
     public void showToolRadius(bool show)
     {
-        if (show){
+        if (show)
+        {
             toolMaterial.SetFloat("_Transparency", 1.0f);
-        }else{
+        }
+        else {
             toolMaterial.SetFloat("_Transparency", 0.0f);
         }
     }
@@ -397,6 +424,7 @@ public class VoxelManager : MonoBehaviour {
     private void updateBoundaries()
     {
         boundaries.transform.rotation = Quaternion.Euler(new Vector3(rotation.x, -rotation.y, rotation.z));
+        resetBoundingBoxPosition();
     }
 
     /// <summary>
@@ -415,7 +443,7 @@ public class VoxelManager : MonoBehaviour {
     /// </summary>
     public void updateMesh()
     {
-        voxelObjectGPU.updateMesh(rotation);
+        voxelObjectGPU.updateMesh(rotation, posOffset);
         //voxelObjectGPU.updateMesh(rotation);
     }
 
@@ -424,7 +452,7 @@ public class VoxelManager : MonoBehaviour {
     /// </summary>
     /// <param name="position">The Vector3 that shoul dbe rotated./param>
     /// <returns></returns>
-         
+
     protected Vector3 getRotatedPosition(Vector3 position)
     {
         Vector3 tempPos = position - new Vector3(voxelCubeSize / 2, voxelCubeSize / 2, voxelCubeSize / 2);
@@ -432,13 +460,13 @@ public class VoxelManager : MonoBehaviour {
         //degree >> radians
         float rotationX = -rotation.x / 180 * (float)Math.PI;
         float rotationY = rotation.y / 180 * (float)Math.PI;
-        
+
         //Y-axis rotation
         Vector3 rotationYpos;
         rotationYpos.x = Mathf.Cos(rotationY) * tempPos.x + Mathf.Sin(rotationY) * tempPos.z;
         rotationYpos.y = tempPos.y;
         rotationYpos.z = -Mathf.Sin(rotationY) * tempPos.x + Mathf.Cos(rotationY) * tempPos.z;
-        
+
         //X-axis rotation
         Vector3 rotationXpos;
         rotationXpos.x = rotationYpos.x;
@@ -455,7 +483,7 @@ public class VoxelManager : MonoBehaviour {
     /// </summary>
     public void setPushTool()
     {
-        toolMaterial.SetColor("_Color",pushToolColor);
+        toolMaterial.SetColor("_Color", pushToolColor);
         currentTool = ModificationManager.ACTION.SUBSTRACT;
         Debug.Log("Current tool now is: SUBSTRACT");
     }
@@ -477,7 +505,7 @@ public class VoxelManager : MonoBehaviour {
     {
         toolMaterial.SetColor("_Color", smoothToolColor);
         currentTool = ModificationManager.ACTION.SMOOTH;
-        Debug.Log("Current tool now is: SMOOTH"); 
+        Debug.Log("Current tool now is: SMOOTH");
     }
 
     /// <summary>
@@ -486,5 +514,10 @@ public class VoxelManager : MonoBehaviour {
     public void export()
     {
         voxelObjectGPU.exportObject();
+    }
+
+    private void resetBoundingBoxPosition()
+    {
+        boundaries.transform.position = posOffset + new Vector3((objectSize * objectScaling)/2, (objectSize * objectScaling) / 2, (objectSize * objectScaling) / 2);
     }
 }

@@ -93,7 +93,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     /// call to update the object surface after modification
     /// </summary>
     /// <param name="rotation">current object rotation</param>
-    public void updateMesh(Vector3 rotation)
+    public void updateMesh(Vector3 rotation, Vector3 moveOffset)
     {
 
         //before creating a new vertexBuffer the old one must be disposed
@@ -108,7 +108,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.SetFloat("rotationXaxis", rotationX);
         voxelComputeShader.SetFloat("rotationYaxis", rotationY);
         voxelComputeShader.SetFloat("scale", scaling);
-        voxelComputeShader.SetFloats("positionOffset", 0f, 0f, 0f);
+        voxelComputeShader.SetFloats("positionOffset", moveOffset.x, moveOffset.y, moveOffset.z);
         voxelComputeShader.SetInt("dimension", voxelFieldSize);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
         voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
