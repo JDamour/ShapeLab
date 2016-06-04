@@ -5,6 +5,7 @@ public struct Vert
 {
     public Vector3 position;
     public Vector3 normal;
+    public Vector3 color;
 };
 
 public class VoxelObjectGPU : MonoBehaviour {
@@ -30,7 +31,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     private int voxelFieldSize;
     private int maxVerticesSize;
 
-    private ComputeBuffer voxelBuffer, normalBuffer, vertexBuffer;
+    private ComputeBuffer voxelBuffer, normalBuffer, vertexBuffer, colorBuffer;
     private ComputeBuffer edgeTable, triTable;
 
     private Vector3 modCenter;
@@ -65,6 +66,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         //initiate buffer
         voxelBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(float));
         modManager.setDensityBuffer(voxelBuffer);
+        colorBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(int));
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float)*6);
         //normalBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize* voxelFieldSize, sizeof(float)*3);
     }
@@ -114,6 +116,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
         voxelComputeShader.SetBuffer(0, "triangleConnectionTable", triTable);
         voxelComputeShader.SetBuffer(0, "voxel", voxelBuffer);
+        voxelComputeShader.SetBuffer(0, "color", colorBuffer);
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
         voxelComputeShader.Dispatch(0, voxelCubeSize/8, voxelCubeSize/8, voxelCubeSize/8);
@@ -155,7 +158,9 @@ public class VoxelObjectGPU : MonoBehaviour {
         //before creating a new vertexBuffer the old one must be disposed
         vertexBuffer.Dispose();
         vertexBuffer = new ComputeBuffer(maxVerticesSize, sizeof(float) * 6);
-
+        colorBuffer.Dispose();
+        colorBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(int));
+        colorBuffer.SetData(voxel.getColorField());
         //send the current voxel field to the gpu
         voxelBuffer.Dispose();
         voxelBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(float));
@@ -177,6 +182,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
         voxelComputeShader.SetBuffer(0, "triangleConnectionTable", triTable);
         voxelComputeShader.SetBuffer(0, "voxel", voxelBuffer);
+        voxelComputeShader.SetBuffer(0, "color", colorBuffer);
         //voxelComputeShader.SetBuffer(0, "normals", normalBuffer);
         voxelComputeShader.SetBuffer(0, "vertexBuffer", vertexBuffer);
         voxelComputeShader.Dispatch(0, voxelCubeSize / 8, voxelCubeSize / 8, voxelCubeSize / 8);
@@ -205,6 +211,8 @@ public class VoxelObjectGPU : MonoBehaviour {
         vertexBuffer.Release();
         voxelBuffer.Dispose();
         voxelBuffer.Release();
+        colorBuffer.Dispose();
+        colorBuffer.Release();
         edgeTable.Release();
         triTable.Release();
         modManager.destroy();

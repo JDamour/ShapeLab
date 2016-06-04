@@ -25,6 +25,7 @@ Shader "Custom/DrawBuffer"
 			{
 				float3 position;
 				float3 normal;
+				float3 color;
 			};
 
 			uniform StructuredBuffer<Vert> vertexBuffer;
@@ -33,6 +34,7 @@ Shader "Custom/DrawBuffer"
 			{
 				float4  pos : SV_POSITION;
 				float3 normal : Color;
+				float4 color : Color1;
 			};
 
 			v2f vert(uint id : SV_VertexID)
@@ -42,6 +44,7 @@ Shader "Custom/DrawBuffer"
 				v2f OUT;
 				OUT.pos = mul(UNITY_MATRIX_MVP, float4(vert.position.xyz, 1));
 				OUT.normal = vert.normal;
+				OUT.color = float4(vert.color.r, vert.color.g, vert.color.b,1.0);
 
 				return OUT;
 			}
@@ -55,7 +58,7 @@ Shader "Custom/DrawBuffer"
 				// TODO: specular calculation
 				//float specular = pow(dot(reflect(normalize(ObjSpaceViewDir(IN.pos)), IN.normal),_lightDir),_shininess);
 				float diffuse = dot(IN.normal, normalize(_lightDir));
-				return _color * diffuse;
+				return IN.color * diffuse;
 			}
 
 			ENDCG

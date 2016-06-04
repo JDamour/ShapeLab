@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 /// </summary>
 public class VoxelField{
 
+    private int[,,] colors;
     private float[,,] voxel;
     private int size;
 
@@ -15,6 +16,7 @@ public class VoxelField{
     public VoxelField(int size)
     {
         voxel = new float[size, size, size];
+        colors = new int[size, size, size];
         this.size = size;
     }
 
@@ -29,6 +31,7 @@ public class VoxelField{
             for (int y = 0; y < size; y++)
                 for (int z = 0; z < size; z++)
                 {
+                    colors[x, y, z] = 0xBABABA;
                     if (x == 0 || x == size - 1 || y == 0 || y == size - 1 || z == 0 || z == size - 1)
                     {
                         voxel[x, y, z] = 1f;
@@ -65,7 +68,8 @@ public class VoxelField{
             for (int y = 0; y < size; y++)
                 for (int z = 0; z < size; z++)
                 {
-                    if(Vector3.Distance(new Vector3(size/2, size/2, size/2), new Vector3(x, y, z)) < radius)
+                    colors[x, y, z] = 0xBABABA;
+                    if (Vector3.Distance(new Vector3(size/2, size/2, size/2), new Vector3(x, y, z)) < radius)
                     {
                         voxel[x, y, z] = -1f;
                         inside += 1;
@@ -91,6 +95,7 @@ public class VoxelField{
             for (int y = 0; y < size; y++)
                 for (int z = 0; z < size; z++)
                 {
+                    colors[x, y, z] = 0xBABABA;
                     if (x == 0 || x == size - 1 || y == 0 || y == size - 1 || z == 0 || z == size - 1)
                     {
                         voxel[x, y, z] = 1f;
@@ -108,6 +113,12 @@ public class VoxelField{
     {
         return voxel;
     }
+
+    public int[,,] getColorField()
+    {
+        return colors;
+    }
+
     //returns the desity value for a given position
     public float getValue(int x, int y, int z)
     {
