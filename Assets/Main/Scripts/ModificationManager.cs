@@ -27,6 +27,9 @@ public class ModificationManager {
     private float MAX_TOOL_POWER = 1.5f;
     private float MIN_TOOL_POWER = 0.75f;
 
+    //        Debug.Log(slider1.GetSliderFraction());
+    public RotateXSlider sliderPower, sliderRange;
+
     public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scaling)
     {
         dimension = N;
@@ -163,8 +166,19 @@ public class ModificationManager {
         {
             //run shader
             DensityModShader.Dispatch(DensityModShader.FindKernel("smooth3x3Modificator"), dimension / 8, dimension / 8, dimension / 8);
-        }
-        
+        }    
+    }
+
+    public void updateFromSliders()
+    {
+        Debug.Log("sliderPower: " + this.sliderPower.GetSliderFraction());
+        Debug.Log("old/new modpower: " + this.modPower+" / "+ 
+            this.MIN_TOOL_POWER + 
+            (this.MAX_TOOL_POWER-this.MIN_TOOL_POWER) * this.sliderPower.GetSliderFraction());
+        Debug.Log("sliderRange: " + this.sliderRange.GetSliderFraction());
+        Debug.Log("old/new modRange: " + this.modRange + " / " +
+            this.MIN_RANGE +
+            (this.MAX_RANGE - this.MIN_RANGE) * this.sliderRange.GetSliderFraction());
     }
 
     //

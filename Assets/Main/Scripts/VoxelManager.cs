@@ -9,13 +9,12 @@ using UnityEngine.UI;
 /// </summary>
 public class VoxelManager : MonoBehaviour
 {
-
     public float objectSize;
     private float scaling;
     public int voxelCubeSize;
     public Transform eyePos;
     public Transform boundaries;
-
+    
     public VoxelObjectGPU voxelObjectGPU;
     public SCManager scmanager;
 
@@ -275,7 +274,10 @@ public class VoxelManager : MonoBehaviour
         if(timeRemaining < 60)
         {
             this.CountdownBox.SetActive(true);
-            this.countdownCanvas.text = timeRemaining.ToString();
+            if(timeRemaining > 1)
+                this.countdownCanvas.text = "Countdown:\n"+timeRemaining.ToString("0.00");
+            else
+                this.countdownCanvas.text = "Countdown:\n"+"0.00";
         }
         if(timeRemaining % 30 == 0)
             Debug.Log("time Left:" + timeRemaining);

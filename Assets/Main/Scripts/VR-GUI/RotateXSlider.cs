@@ -13,7 +13,8 @@ public class RotateXSlider : SliderBase
   public RotateXSliderGraphics botLayer = null;
   public GameObject dot = null;
   public int numberOfDots = 0;
-  
+    public ModificationManager modmanager;
+
   public Color BotLayerPressedColor = new Color(0.0f, 1.0f, 1.0f, 1.0f);
   public Color BotLayerReleasedColor = new Color(0.0f, 0.25f, 0.25f, 0.5f);
   public Color DotsOnColor = new Color(0.0f, 1.0f, 1.0f, 1.0f);
@@ -31,6 +32,8 @@ public class RotateXSlider : SliderBase
   {
     base.sliderReleased();
     ReleasedGraphics();
+    modmanager.updateFromSliders();
+    Debug.Log("I have been released and should notify modmanager!");
   }
 
   private void PressedGraphics()
