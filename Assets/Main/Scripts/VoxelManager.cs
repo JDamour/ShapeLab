@@ -269,7 +269,7 @@ public class VoxelManager : MonoBehaviour
 #endregion
         }
 
-        if(timeMax > 0 && timeRemaining > 0)
+        if(timeMax > 0 && timeRemaining >= 0)
             this.timeRemaining -= Time.deltaTime;
         if(timeRemaining < 60)
         {
@@ -281,7 +281,7 @@ public class VoxelManager : MonoBehaviour
         }
         if(timeRemaining % 30 == 0)
             Debug.Log("time Left:" + timeRemaining);
-        if (timeRemaining < 0)
+        if (timeRemaining == 0)
         {
             // TODO alert user
             Debug.Log("time is up, next user!");
