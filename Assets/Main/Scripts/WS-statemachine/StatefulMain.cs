@@ -14,6 +14,10 @@ public class StatefulMain : MonoBehaviour
         RESET_HMD_LOCATION,
         NEXT_USER,
         TAKE_SCREENSHOT,
+        DELETE_LAST_SCREENSHOT,
+        MAX_TIME_3_MINUTES,
+        MAX_TIME_5_MINUTES,
+        MAX_TIME_UNLIMITED,
         UNKNOWN
     }
     private string serverID;
@@ -34,8 +38,16 @@ public class StatefulMain : MonoBehaviour
                     return Command.NEXT_USER;
                 case "take-screenshot":
                     return Command.TAKE_SCREENSHOT;
-                case "reset-hmd":
+                case "resetoculusposition":
                     return Command.RESET_HMD_LOCATION;
+                case "removelastscreenshot":
+                    return Command.DELETE_LAST_SCREENSHOT;
+                case "setmaxtime 3:00":
+                    return Command.MAX_TIME_3_MINUTES;
+                case "setmaxtime 5:00":
+                    return Command.MAX_TIME_5_MINUTES;
+                case "setnocountdown":
+                    return Command.MAX_TIME_UNLIMITED;
                 default:
                     return Command.UNKNOWN;
             }

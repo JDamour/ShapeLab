@@ -53,6 +53,10 @@ public class VoxelManager : MonoBehaviour
     // UI elements
     public Text radiusText;
     public Text strengthText;
+    public GameObject CountdownBox;
+    public Text countdownCanvas;
+    public float timeMax;
+    private float timeRemaining;
 
     private enum INTEND
     {
@@ -98,7 +102,7 @@ public class VoxelManager : MonoBehaviour
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
         initMesh(true);
-
+        timeRemaining = timeMax;
     }
 
     // Update is called once per frame
@@ -108,7 +112,7 @@ public class VoxelManager : MonoBehaviour
         Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
         switch (getIntent())
         {
-
+            #region intend computing
             case INTEND.CREATESPHERE:
                 voxel.createSphere(voxelFieldSize / 3);
                 initMesh(false);
@@ -165,7 +169,7 @@ public class VoxelManager : MonoBehaviour
                 }
                 else {
                     // for testing purposes
-                    Debug.Log("modding at: " + tipPosition.x / scaling + ";" + tipPosition.y / scaling + ";" + tipPosition.z / scaling);
+                    //Debug.Log("modding at: " + tipPosition.x / scaling + ";" + tipPosition.y / scaling + ";" + tipPosition.z / scaling);
                 }
                 tipPosition -= posOffset;
 
@@ -183,11 +187,12 @@ public class VoxelManager : MonoBehaviour
                 break;
             case INTEND.NONE:
                 break;
+                #endregion
         }
-
         //check, if server has send any commands
         if (cmdQueue.Count > 0)
         {
+            #region Webinterface
             StatefulMain.Command newCommand = cmdQueue.Dequeue();
 
             switch (newCommand)
@@ -213,10 +218,13 @@ public class VoxelManager : MonoBehaviour
                     break;
                 case StatefulMain.Command.NEXT_USER:
                     {
+                        //make screenshoot of user generated model
                         scmanager.TakeScreenShoot();
+                        //reset all for next user
                         resetAll(true);
-                        
                         voxelObjectGPU.resetTools();
+                        //reset timer
+                        timeRemaining = timeMax;
                         Debug.Log("(Servercmd) preparing programm for next user");
                     }
                     break;
@@ -226,13 +234,55 @@ public class VoxelManager : MonoBehaviour
                         Debug.Log("(Servercmd) rendering screenshot");
                     }
                     break;
+                case StatefulMain.Command.DELETE_LAST_SCREENSHOT:
+                    {
+                        scmanager.ResetLastScreenshot();
+                        Debug.Log("(Servercmd) rendering screenshot");
+                    }
+                    break;
+                case StatefulMain.Command.RESET_HMD_LOCATION:
+                    {
+                        UnityEngine.VR.InputTracking.Recenter();
+                        Debug.Log("(Servercmd) recenter HMD");
+                    }
+                    break;
+                case StatefulMain.Command.MAX_TIME_3_MINUTES:
+                    {
+                        this.timeMax = 180.0f;
+                    }
+                    break;
+                case StatefulMain.Command.MAX_TIME_5_MINUTES:
+                    {
+                        this.timeMax = 300.0f;
+                    }
+                    break;
+                case StatefulMain.Command.MAX_TIME_UNLIMITED:
+                    {
+                        this.timeMax = -1.0f;
+                    }
+                    break;
                 default:
                     {
                         Debug.Log("I should do something with this \"" + cmdQueue.Dequeue().ToString() + "\"command...");
                     }
                     break;
             }
+#endregion
+        }
 
+        if(timeMax > 0 && timeRemaining > 0)
+            this.timeRemaining -= Time.deltaTime;
+        if(timeRemaining < 60)
+        {
+            this.CountdownBox.SetActive(true);
+            this.countdownCanvas.text = timeRemaining.ToString();
+        }
+        if(timeRemaining % 30 == 0)
+            Debug.Log("time Left:" + timeRemaining);
+        if (timeRemaining < 0)
+        {
+            // TODO alert user
+            Debug.Log("time is up, next user!");
         }
 
         // change tools manualy with keyboard for testing
@@ -292,6 +342,8 @@ public class VoxelManager : MonoBehaviour
     // get the Intend of the current action
     private INTEND getIntent()
     {
+        //controler actions
+        #region Controller parsing
         if (Input.GetAxis("PadStickVertical") > 0.6 || Input.GetAxis("PadStickVertical") < -0.6)
         {
             if (Input.GetAxis("PadStickVertical") > 0.6)
@@ -366,6 +418,12 @@ public class VoxelManager : MonoBehaviour
         {
             return INTEND.RESETVIEW;
         }
+        // updateMesh if rotation is changed during this frame
+        if (Input.GetAxis("PadStickHorizontal") != 0 || Input.GetAxis("PadStickVertical") != 0)
+        {
+            voxelObjectGPU.updateMesh(rotation, posOffset);
+        }
+        #endregion
 
 
         // keyboard shortcuts for debugging
@@ -397,12 +455,7 @@ public class VoxelManager : MonoBehaviour
         {
             return INTEND.CREATERND;
         }
-
-        // updateMesh if rotation is changed during this frame
-        if (Input.GetAxis("PadStickHorizontal") != 0 || Input.GetAxis("PadStickVertical") != 0)
-        {
-            voxelObjectGPU.updateMesh(rotation, posOffset);
-        }
+        
         return INTEND.NONE;
     }
 
@@ -506,6 +559,39 @@ public class VoxelManager : MonoBehaviour
         toolMaterial.SetColor("_Color", smoothToolColor);
         currentTool = ModificationManager.ACTION.SMOOTH;
         Debug.Log("Current tool now is: SMOOTH");
+    }
+
+    /// <summary>
+    /// Set current Tool to Spray tool with color red
+    /// </summary>
+    public void setRedSprayTool()
+    {
+        // TODO set colors
+        // toolMaterial.SetColor("_Color", smoothToolColor);
+        currentTool = ModificationManager.ACTION.SPRAY_RED;
+        Debug.Log("Current tool now is: SPRAY_RED");
+    }
+
+    /// <summary>
+    /// Set current Tool to Spray tool with color red
+    /// </summary>
+    public void setGreenSprayTool()
+    {
+        // TODO set colors
+        // toolMaterial.SetColor("_Color", smoothToolColor);
+        currentTool = ModificationManager.ACTION.SPRAY_GREEN;
+        Debug.Log("Current tool now is: SPRAY_GREEN");
+    }
+
+    /// <summary>
+    /// Set current Tool to Spray tool with color red
+    /// </summary>
+    public void setBlueSprayTool()
+    {
+        // TODO set colors
+        // toolMaterial.SetColor("_Color", smoothToolColor);
+        currentTool = ModificationManager.ACTION.SPRAY_BLUE;
+        Debug.Log("Current tool now is: SPRAY_BLUE");
     }
 
     /// <summary>

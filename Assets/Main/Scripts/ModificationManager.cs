@@ -8,6 +8,9 @@ public class ModificationManager {
         SUBSTRACT,
         ADD,
         SMOOTH,
+        SPRAY_RED,
+        SPRAY_GREEN,
+        SPRAY_BLUE,
         NONE
     };
 

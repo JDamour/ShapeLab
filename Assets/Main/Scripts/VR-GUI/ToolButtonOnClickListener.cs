@@ -34,6 +34,18 @@ public class ToolButtonOnClickListener : MonoBehaviour {
         {
             toolButtons.setSmoothTool();
         }
+        if( tool == "SprayBlue")
+        {
+            toolButtons.setSprayBlue();
+        }
+        if (tool == "SprayGreen")
+        {
+            toolButtons.setSprayGreen();
+        }
+        if (tool == "SprayRed")
+        {
+            toolButtons.setSprayRed();
+        }
     }
 
     public void changeState(bool active)

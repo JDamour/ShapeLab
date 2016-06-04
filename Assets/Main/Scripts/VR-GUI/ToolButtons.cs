@@ -15,7 +15,7 @@ public class ToolButtons : MonoBehaviour {
 
     public void setPullTool()
     {
-        Debug.Log("Set Pull Tool");
+        //Debug.Log("Set Pull Tool");
         pullToolButton.changeState(true);
         pushToolButton.changeState(false);
         smoothToolButton.changeState(false);
@@ -41,4 +41,28 @@ public class ToolButtons : MonoBehaviour {
         manager.setSmoothTool();
     }
 
+    public void setSprayBlue()
+    {
+        pullToolButton.changeState(false);
+        pushToolButton.changeState(false);
+        smoothToolButton.changeState(false);
+
+        manager.setBlueSprayTool();
+    }
+    public void setSprayRed()
+    {
+        pullToolButton.changeState(false);
+        pushToolButton.changeState(false);
+        smoothToolButton.changeState(false);
+
+        manager.setRedSprayTool();
+    }
+    public void setSprayGreen()
+    {
+        pullToolButton.changeState(false);
+        pushToolButton.changeState(false);
+        smoothToolButton.changeState(false);
+
+        manager.setGreenSprayTool();
+    }
 }
