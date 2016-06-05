@@ -23,10 +23,10 @@ public class ModificationManager {
     private float objectScaling = 1f;
     private float modRange = 5.0f;
     private float modPower = 1.0f;
-    private float MAX_RANGE = 50.0f;
+    private float MAX_RANGE = 20.0f;
     private float MIN_RANGE = 1.0f;
     private float MAX_TOOL_POWER = 1.5f;
-    private float MIN_TOOL_POWER = 0.75f;
+    private float MIN_TOOL_POWER = 0.9f;
 
     //        Debug.Log(slider1.GetSliderFraction());
     //public RotateXSlider sliderPower, sliderRange;

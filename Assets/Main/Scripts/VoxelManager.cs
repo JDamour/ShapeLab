@@ -493,7 +493,7 @@ public class VoxelManager : MonoBehaviour
             toolMaterial.SetFloat("_Transparency", 1.0f);
         }
         else {
-            toolMaterial.SetFloat("_Transparency", 0.0f);
+            toolMaterial.SetFloat("_Transparency", 0.25f);
         }
     }
 
@@ -598,26 +598,28 @@ public class VoxelManager : MonoBehaviour
         {
             case ModificationManager.ACTION.ADD_POWER:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
                     updateStrengthText();
                 }
                 break;
             case ModificationManager.ACTION.SUB_POWER:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.005f);
                     updateStrengthText();
                 }
                 break;
             case ModificationManager.ACTION.ADD_RANGE:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.03f);
                     updateRadiusText();
+                    toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
                 }
                 break;
             case ModificationManager.ACTION.SUB_RANGE:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.03f);
                     updateRadiusText();
+                    toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
                 }
                 break;
         }
