@@ -40,29 +40,5 @@ public class ToolButtons : MonoBehaviour {
 
         manager.setSmoothTool();
     }
-
-    public void setSprayBlue()
-    {
-        pullToolButton.changeState(false);
-        pushToolButton.changeState(false);
-        smoothToolButton.changeState(false);
-
-        manager.setBlueSprayTool();
-    }
-    public void setSprayRed()
-    {
-        pullToolButton.changeState(false);
-        pushToolButton.changeState(false);
-        smoothToolButton.changeState(false);
-
-        manager.setRedSprayTool();
-    }
-    public void setSprayGreen()
-    {
-        pullToolButton.changeState(false);
-        pushToolButton.changeState(false);
-        smoothToolButton.changeState(false);
-
-        manager.setGreenSprayTool();
-    }
+    
 }

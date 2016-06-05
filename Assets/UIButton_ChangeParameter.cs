@@ -1,46 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ToolButtonOnClickListener : MonoBehaviour {
-
-    public ToolButtons toolButtons;
-    public string tool;
+public class UIButton_ChangeParameter : MonoBehaviour
+{
+    public VoxelManager mymanager;
+    public ModificationManager.ACTION myAction;
     private ToolButtonToggle toolButtonToggle;
 
     // Use this for initialization
-    void Awake () {
+    void Awake()
+    {
         toolButtonToggle = this.GetComponent<ToolButtonToggle>();
     }
-
+    // Use this for initialization
     void Start()
     {
-        if (tool == "Pull")
-        {
-            changeState(true);
-        }
+
     }
-	
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if(tool == "Push")
-        {
-            toolButtons.setPushTool();
-        }
-        if (tool == "Pull")
-        {
-            toolButtons.setPullTool();
-        }
-        if (tool == "Smooth")
-        {
-            toolButtons.setSmoothTool();
-        }
+        mymanager.ChangeToolParameter(myAction);
     }
 
     public void changeState(bool active)
     {
         bool toggleState = toolButtonToggle.ToggleState;
 
-        if(toggleState == active)
+        if (toggleState == active)
         {
             return;
         }

@@ -564,36 +564,34 @@ public class VoxelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Set current Tool to Spray tool with color red
+    /// called by buttons in VR-UI
     /// </summary>
-    public void setRedSprayTool()
+    public void ChangeToolParameter(ModificationManager.ACTION action)
     {
-        // TODO set colors
-        // toolMaterial.SetColor("_Color", smoothToolColor);
-        currentTool = ModificationManager.ACTION.SPRAY_RED;
-        Debug.Log("Current tool now is: SPRAY_RED");
-    }
-
-    /// <summary>
-    /// Set current Tool to Spray tool with color red
-    /// </summary>
-    public void setGreenSprayTool()
-    {
-        // TODO set colors
-        // toolMaterial.SetColor("_Color", smoothToolColor);
-        currentTool = ModificationManager.ACTION.SPRAY_GREEN;
-        Debug.Log("Current tool now is: SPRAY_GREEN");
-    }
-
-    /// <summary>
-    /// Set current Tool to Spray tool with color red
-    /// </summary>
-    public void setBlueSprayTool()
-    {
-        // TODO set colors
-        // toolMaterial.SetColor("_Color", smoothToolColor);
-        currentTool = ModificationManager.ACTION.SPRAY_BLUE;
-        Debug.Log("Current tool now is: SPRAY_BLUE");
+        switch (action)
+        {
+            case ModificationManager.ACTION.ADD_POWER:
+                {
+                    //float valChange = (this.MAX_TOOL_POWER - this.MIN_TOOL_POWER) * 0.05f;
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.1f);
+                }
+                break;
+            case ModificationManager.ACTION.SUB_POWER:
+                {
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.1f);
+                }
+                break;
+            case ModificationManager.ACTION.ADD_RANGE:
+                {
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
+                }
+                break;
+            case ModificationManager.ACTION.SUB_RANGE:
+                {
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
+                }
+                break;
+        }
     }
 
     /// <summary>

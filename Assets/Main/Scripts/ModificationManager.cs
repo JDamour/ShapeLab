@@ -8,9 +8,10 @@ public class ModificationManager {
         SUBSTRACT,
         ADD,
         SMOOTH,
-        SPRAY_RED,
-        SPRAY_GREEN,
-        SPRAY_BLUE,
+        ADD_POWER,
+        SUB_POWER,
+        ADD_RANGE,
+        SUB_RANGE,
         NONE
     };
 
@@ -28,7 +29,7 @@ public class ModificationManager {
     private float MIN_TOOL_POWER = 0.75f;
 
     //        Debug.Log(slider1.GetSliderFraction());
-    public RotateXSlider sliderPower, sliderRange;
+    //public RotateXSlider sliderPower, sliderRange;
 
     public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scaling)
     {
@@ -169,6 +170,7 @@ public class ModificationManager {
         }    
     }
 
+    /*
     public void updateFromSliders()
     {
         Debug.Log("sliderPower: " + this.sliderPower.GetSliderFraction());
@@ -180,7 +182,7 @@ public class ModificationManager {
             this.MIN_RANGE +
             (this.MAX_RANGE - this.MIN_RANGE) * this.sliderRange.GetSliderFraction());
     }
-
+    */
     //
     public void ChangeToolRange(float rangeChange)
     {
@@ -189,10 +191,14 @@ public class ModificationManager {
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
     }
 
-    public void ChangeToolStrength(float powerChange)
+    /// <summary>
+    /// Adds given float to modPower
+    /// </summary>
+    /// <param name="valChange"></param>
+    public void ChangeToolStrength(float valChange)
     {
-        //Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
-        this.modPower += powerChange;
+        //Debug.Log("Strength changed by " + valChange+", \tnew Value: "+this.modPower);
+        this.modPower += valChange;
         this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
     }
 

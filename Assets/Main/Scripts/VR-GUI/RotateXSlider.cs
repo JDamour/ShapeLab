@@ -32,8 +32,6 @@ public class RotateXSlider : SliderBase
   {
     base.sliderReleased();
     ReleasedGraphics();
-    modmanager.updateFromSliders();
-    Debug.Log("I have been released and should notify modmanager!");
   }
 
   private void PressedGraphics()
