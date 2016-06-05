@@ -125,11 +125,11 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     }
 
-    public void exportObject()
+    public void exportObject(string id)
     {
         vertexBuffer.GetData(vertexData);
         
-        Export.exportSTLfromBuffer(vertexData, "exportTest");
+        Export.exportSTLfromBuffer(vertexData, id);
     }
 
     /// <summary>

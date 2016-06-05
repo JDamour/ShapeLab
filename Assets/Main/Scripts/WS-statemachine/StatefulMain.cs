@@ -132,6 +132,7 @@ public class StatefulMain : MonoBehaviour
             {
                 //erste Meldung des Servers mit Id
                 serverID = e.Data.Substring(13).Replace("\"}", "");
+                voxelmanager.setSessionID(serverID);
                 Debug.Log("My ID is: " + serverID);
             } else
             {

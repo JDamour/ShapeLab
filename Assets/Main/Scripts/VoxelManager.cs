@@ -57,6 +57,9 @@ public class VoxelManager : MonoBehaviour
     public float timeMax;
     private float timeRemaining;
 
+    private string sessionID;
+    private int userID = 0;
+
     private enum INTEND
     {
         MOD,
@@ -217,6 +220,7 @@ public class VoxelManager : MonoBehaviour
                     break;
                 case StatefulMain.Command.NEXT_USER:
                     {
+                        userID += 1;
                         //make screenshoot of user generated model
                         scmanager.TakeScreenShoot();
                         //reset all for next user
@@ -476,6 +480,11 @@ public class VoxelManager : MonoBehaviour
         }
     }
 
+    public void setSessionID(string id)
+    {
+        sessionID = id;
+    }
+
     private void updateBoundaries()
     {
         boundaries.transform.rotation = Quaternion.Euler(new Vector3(rotation.x, -rotation.y, rotation.z));
@@ -599,7 +608,7 @@ public class VoxelManager : MonoBehaviour
     /// </summary>
     public void export()
     {
-        voxelObjectGPU.exportObject();
+        voxelObjectGPU.exportObject(sessionID + "_" + userID);
     }
 
     private void resetBoundingBoxPosition()
