@@ -6,13 +6,14 @@ public class SCManager : MonoBehaviour
     public Texture defaultTex;
     public Camera SCCam;
     public MeshRenderer[] SCScreenList;
-    public RenderTexture[] SCTextureList;
-    public RenderTexture[] SCTextureStartList;
+    private RenderTexture[] SCTextureList;
+    private RenderTexture[] SCTextureStartList;
 
     private int currentIndex = 0;
     // Use this for initialization
     void Start()
     {
+        SCTextureList = new RenderTexture[SCScreenList.Length];
         for (int i = 0; i < SCScreenList.Length; i++)
         {
             SCTextureList[i] = new RenderTexture(SCCam.pixelWidth, SCCam.pixelHeight, 16);
