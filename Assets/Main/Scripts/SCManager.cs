@@ -8,8 +8,9 @@ public class SCManager : MonoBehaviour
     public MeshRenderer[] SCScreenList;
     private RenderTexture[] SCTextureList;
     private RenderTexture[] SCTextureStartList;
-
+    
     private int currentScreenIndex = 0;
+
     // Use this for initialization
     void Start()
     {
@@ -38,6 +39,7 @@ public class SCManager : MonoBehaviour
         SCCam.Render();
         SCScreenList[currentScreenIndex].material.mainTexture = SCTextureList[currentScreenIndex];
     }
+
     public void ResetScreenshots()
     {
         // delete old texture list
@@ -47,14 +49,18 @@ public class SCManager : MonoBehaviour
             SCTextureList[i] = createRenderTexture(SCCam.pixelWidth, SCCam.pixelHeight);
         }
         currentScreenIndex = 0;
+
+        // delete old screenshots
         for (int i = 0; i < SCScreenList.Length; i++)
         {
-            SCScreenList[i].material.SetTexture("", SCTextureList[i]);
+            SCScreenList[i].material.mainTexture = defaultTex;
         }
     }
+
     public void ResetLastScreenshot()
     {
         //SCScreenList[currentIndex].material.mainTexture = SCTextureStartList[currentIndex];
         SCScreenList[currentScreenIndex].material.mainTexture = defaultTex;
+        currentScreenIndex--;
     }
 }
