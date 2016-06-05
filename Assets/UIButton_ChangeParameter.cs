@@ -7,6 +7,8 @@ public class UIButton_ChangeParameter : MonoBehaviour
     public ModificationManager.ACTION myAction;
     private ToolButtonToggle toolButtonToggle;
 
+    private bool active = false;
+
     // Use this for initialization
     void Awake()
     {
@@ -21,12 +23,22 @@ public class UIButton_ChangeParameter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (active)
+        {
+            mymanager.ChangeToolParameter(myAction);
+        }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        mymanager.ChangeToolParameter(myAction);
+        active = true;
+        changeState(true);
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        changeState(false);
+        active = false;
     }
 
     public void changeState(bool active)

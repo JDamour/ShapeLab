@@ -98,8 +98,8 @@ public class VoxelManager : MonoBehaviour
     {
         m_leapController = handController.GetLeapController();
 
-        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
-        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+        updateRadiusText();
+        updateStrengthText();
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
         voxel.createSphere(voxelFieldSize / 3);
@@ -221,6 +221,7 @@ public class VoxelManager : MonoBehaviour
                 case StatefulMain.Command.NEXT_USER:
                     {
                         userID += 1;
+                        resetObjectTransformForScreeshot();
                         //make screenshoot of user generated model
                         scmanager.TakeScreenShoot();
                         //reset all for next user
@@ -233,6 +234,7 @@ public class VoxelManager : MonoBehaviour
                     break;
                 case StatefulMain.Command.TAKE_SCREENSHOT:
                     {
+                        resetObjectTransformForScreeshot();
                         scmanager.TakeScreenShoot();
                         Debug.Log("(Servercmd) rendering screenshot");
                     }
@@ -321,27 +323,39 @@ public class VoxelManager : MonoBehaviour
             //todo answer to server "all okay"?
         }
         Debug.Log("Reseting environment");
-        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
-        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+        updateRadiusText();
+        updateStrengthText();
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
 
+        objectScaling = 1.0f;
+        scaling = objectSize * objectScaling / (float)voxelCubeSize;
+        
+        rotation = Vector3.zero;
+        posOffset = Vector3.zero;
+        resetBoundingBoxPosition();
+        voxel = new VoxelField(voxelFieldSize);
+        voxel.createSphere(voxelFieldSize / 3);
+        initMesh(true);
+        voxelObjectGPU.modManager.ResetToolRange();
+        
+    }
+
+    private void resetTools()
+    {
+        updateRadiusText();
+        updateStrengthText();
+        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+    }
+
+    private void resetObjectTransformForScreeshot()
+    {
         objectScaling = 1.0f;
         scaling = objectSize * objectScaling / (float)voxelCubeSize;
 
         rotation = Vector3.zero;
         posOffset = Vector3.zero;
-        voxel = new VoxelField(voxelFieldSize);
-        voxel.createSphere(voxelFieldSize / 3);
-        initMesh(true);
-        voxelObjectGPU.modManager.ResetToolRange();
         resetBoundingBoxPosition();
-    }
-
-    private void resetTools()
-    {
-        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
-        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
-        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+        updateMesh();
     }
 
 
@@ -385,7 +399,7 @@ public class VoxelManager : MonoBehaviour
             // reducing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
-            radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+            updateRadiusText();
         }
         if (Input.GetAxis("PadAnalogCrossHorizontal") > 0 ||
             Input.GetKey(KeyCode.RightArrow))
@@ -393,21 +407,21 @@ public class VoxelManager : MonoBehaviour
             // increasing tool range
             voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
             toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
-            radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+            updateRadiusText();
         }
         if (Input.GetAxis("PadAnalogCrossVertical") < 0 ||
             Input.GetKey(KeyCode.DownArrow))
         {
             // reducing tool strength
             voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.005f);
-            strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+            updateStrengthText();
         }
         if (Input.GetAxis("PadAnalogCrossVertical") > 0 ||
             Input.GetKey(KeyCode.UpArrow))
         {
             // increasing tool strength
             voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
-            strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+            updateStrengthText();
         }
         if (Input.GetAxis("PadTrigger") != 0)
         {
@@ -581,26 +595,40 @@ public class VoxelManager : MonoBehaviour
         {
             case ModificationManager.ACTION.ADD_POWER:
                 {
-                    //float valChange = (this.MAX_TOOL_POWER - this.MIN_TOOL_POWER) * 0.05f;
-                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.1f);
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
+                    updateStrengthText();
                 }
                 break;
             case ModificationManager.ACTION.SUB_POWER:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.1f);
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
+                    updateStrengthText();
                 }
                 break;
             case ModificationManager.ACTION.ADD_RANGE:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.1f);
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.01f);
+                    updateRadiusText();
                 }
                 break;
             case ModificationManager.ACTION.SUB_RANGE:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.1f);
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.01f);
+                    updateRadiusText();
                 }
                 break;
         }
+    }
+
+    private void updateRadiusText()
+    {
+        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+        
+    }
+
+    private void updateStrengthText()
+    {
+        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
     }
 
     /// <summary>
