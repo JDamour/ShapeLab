@@ -2,6 +2,7 @@
 using System;
 using Leap;
 using UnityEngine.UI;
+using System.Collections;
 
 /// <summary>
 /// Manager of the Sculpting Project
@@ -52,12 +53,13 @@ public class VoxelManager : MonoBehaviour
     // UI elements
     public Text radiusText;
     public Text strengthText;
+    public Text sessionIDText;
     public GameObject CountdownBox;
     public Text countdownCanvas;
     public float timeMax;
     private float timeRemaining;
 
-    private string sessionID;
+    private string sessionID = "placeholder";
     private int userID = 0;
 
     private enum INTEND
@@ -110,6 +112,7 @@ public class VoxelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        updateSessionIDText();
         Frame frame = m_leapController.Frame();
         Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
         switch (getIntent())
@@ -629,6 +632,11 @@ public class VoxelManager : MonoBehaviour
     private void updateStrengthText()
     {
         strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+    }
+
+    private void updateSessionIDText()
+    {
+        sessionIDText.text = "Session ID: " + sessionID.Substring(0,3).ToUpper() + userID.ToString();
     }
 
     /// <summary>
