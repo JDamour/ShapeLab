@@ -3320,7 +3320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectSize: 1
-  voxelCubeSize: 128
+  voxelCubeSize: 96
   eyePos: {fileID: 439116206}
   boundaries: {fileID: 1928218137}
   voxelObjectGPU: {fileID: 723655124}
