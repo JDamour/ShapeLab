@@ -638,7 +638,7 @@ public class VoxelManager : MonoBehaviour
 
     private void updateSessionIDText()
     {
-        sessionIDText.text = "Session ID: " + sessionID.Substring(0,3).ToUpper() + userID.ToString();
+        sessionIDText.text = "Session ID: " + sessionID.Substring(0,3).ToUpper() + userID.ToString("000");
     }
 
     /// <summary>
