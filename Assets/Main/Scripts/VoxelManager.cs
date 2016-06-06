@@ -354,9 +354,9 @@ public class VoxelManager : MonoBehaviour
     {
         objectScaling = 1.0f;
         scaling = objectSize * objectScaling / (float)voxelCubeSize;
-
-        rotation = Vector3.zero;
-        posOffset = Vector3.zero;
+        voxelObjectGPU.setScale(scaling);
+        rotation = new Vector3(0f,0f,0f);
+        posOffset = new Vector3(0f, 0f, 0f);
         resetBoundingBoxPosition();
         updateMesh();
     }
@@ -444,7 +444,7 @@ public class VoxelManager : MonoBehaviour
         // updateMesh if rotation is changed during this frame
         if (Input.GetAxis("PadStickHorizontal") != 0 || Input.GetAxis("PadStickVertical") != 0)
         {
-            voxelObjectGPU.updateMesh(rotation, posOffset);
+            updateMesh();
         }
         #endregion
 
@@ -652,5 +652,6 @@ public class VoxelManager : MonoBehaviour
     private void resetBoundingBoxPosition()
     {
         boundaries.transform.position = posOffset + new Vector3((objectSize * objectScaling)/2, (objectSize * objectScaling) / 2, (objectSize * objectScaling) / 2);
+        boundaries.localScale = new Vector3(objectScaling, objectScaling, objectScaling);
     }
 }
