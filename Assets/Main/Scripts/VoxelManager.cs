@@ -104,8 +104,8 @@ public class VoxelManager : MonoBehaviour
         updateStrengthText();
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
-        voxel.createSphere(voxelFieldSize / 3);
-        initMesh(true);
+        voxel.createNoisyGround();
+        initMesh(false);
         timeRemaining = timeMax;
     }
 
@@ -338,7 +338,7 @@ public class VoxelManager : MonoBehaviour
         posOffset = Vector3.zero;
         resetBoundingBoxPosition();
         voxel = new VoxelField(voxelFieldSize);
-        voxel.createSphere(voxelFieldSize / 3);
+        voxel.createNoisyGround();
         initMesh(true);
         voxelObjectGPU.modManager.ResetToolRange();
         

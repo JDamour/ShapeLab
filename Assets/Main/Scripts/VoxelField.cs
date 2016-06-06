@@ -6,7 +6,8 @@ using Random = UnityEngine.Random;
 /// <summary>
 /// class for a 3d voxelfield
 /// </summary>
-public class VoxelField{
+public class VoxelField
+{
 
     private float[,,] voxel;
     private int size;
@@ -38,7 +39,7 @@ public class VoxelField{
                         voxel[x, y, z] = Random.Range(-1f, 1f);
                     }
 
-                    if(voxel[x, y, z] >= 0)
+                    if (voxel[x, y, z] >= 0)
                     {
                         outside += 1;
                     }
@@ -50,6 +51,32 @@ public class VoxelField{
 
         //Debug.Log("VOXEL: Generated Random Grid");
     }
+
+    public void createNoisyGround()
+    {
+        int maxHeight = (int)(size / 18);
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                for (int z = 0; z < size; z++)
+                {
+                    if (x == 0 || x == size - 1 || y == 0 || y == size - 1 || z == 0 || z == size - 1)
+                    {
+                        voxel[x, y, z] = 1f;
+                    }
+                    else if (y > maxHeight)
+                    {
+                        voxel[x, y, z] = 1f;
+                    }
+                    else if(y == maxHeight )
+                    {
+                        voxel[x, y, z] = Mathf.PerlinNoise(x/30f ,z/30f)*2-1;
+                    }
+                    else{
+                        voxel[x, y, z] = -1f;
+                    }
+                }
+    }
+
 
     /// <summary>
     /// creates a sphere in the voxel field
@@ -65,7 +92,7 @@ public class VoxelField{
             for (int y = 0; y < size; y++)
                 for (int z = 0; z < size; z++)
                 {
-                    if(Vector3.Distance(new Vector3(size/2, size/2, size/2), new Vector3(x, y, z)) < radius)
+                    if (Vector3.Distance(new Vector3(size / 2, size / 2, size / 2), new Vector3(x, y, z)) < radius)
                     {
                         voxel[x, y, z] = -1f;
                         inside += 1;
@@ -100,7 +127,7 @@ public class VoxelField{
                         voxel[x, y, z] = -1f;
                     }
                 }
-                    
+
     }
 
     // returnsd the voxelfield als 3d array
@@ -117,7 +144,7 @@ public class VoxelField{
     public float getValue(Vector3 vec)
     {
 
-        return voxel[(int)vec.x,(int)vec.y, (int)vec.z];
+        return voxel[(int)vec.x, (int)vec.y, (int)vec.z];
     }
 
     //TODO: remove unused code
@@ -167,10 +194,10 @@ public class VoxelField{
             {
                 for (int z = boundingIndices[2, 0]; z < boundingIndices[2, 1]; z++)
                 {
-                    float dist = Vector3.Distance(new Vector3(x,y,z), position);
+                    float dist = Vector3.Distance(new Vector3(x, y, z), position);
                     if (dist <= radius)
                     {
-                        voxel[x,y,z] = manipulationFunction(voxel[x, y, z], dist);
+                        voxel[x, y, z] = manipulationFunction(voxel[x, y, z], dist);
                     }
                 }
             }

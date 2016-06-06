@@ -5,7 +5,7 @@ public class StatefulMain : MonoBehaviour
 {
     public StateMachine stateMachine;
     public VoxelManager voxelmanager;
-    public string hostadresse;
+    public string[] hostadresse;
     public enum Command
     {
         RESET_ALL,
@@ -56,27 +56,19 @@ public class StatefulMain : MonoBehaviour
 
     void Awake()
     {
-        //ws = new WebSocket("ws://echo.websocket.org");
-        //ws = new WebSocket("ws://127.0.0.1:8080/");
-        //ws = new WebSocket("ws://shapelab.kasanzew.de:8080/");
-        //ws = new WebSocket("ws://141.64.64.251/websocket");
-        ws = new WebSocket(hostadresse);
+        
+        /*
+        0 - ws://shapelab.kasanzew.de:8080/
+        1 - ws://ausst04.beuth-hochschule.de:8080/
+        2 - ws://141.64.52.54:8080/
+        */
+        ws = new WebSocket(hostadresse[0]);
 
         ws.OnOpen += OnOpenHandler;
         ws.OnMessage += OnMessageHandler;
         ws.OnClose += OnCloseHandler;
-        /*
-        //----FOR TESTING-----
-        stateMachine.AddHandler(State.Connected, () =>
-        {
-            new Wait(this, 3, () =>
-            { // 3sec after connecting, send "testrun" to server
-                //Debug.Log("running test sequence...");
-                ws.Send("testrun");
-            });
-        });
-        //---------
-        */
+
+
         stateMachine.AddHandler(State.Running, () =>
         {
             new Wait(this, 3, () =>

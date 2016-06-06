@@ -3320,7 +3320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectSize: 1
-  voxelCubeSize: 96
+  voxelCubeSize: 128
   eyePos: {fileID: 439116206}
   boundaries: {fileID: 1928218137}
   voxelObjectGPU: {fileID: 723655124}
@@ -8427,7 +8427,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 2016526105}
   voxelmanager: {fileID: 787525643}
-  hostadresse: ws://shapelab.kasanzew.de:8080/
+  hostadresse:
+  - ws://shapelab.kasanzew.de:8080/
+  - ws://ausst04.beuth-hochschule.de:8080/
+  - ws://141.64.52.54:8080/
 --- !u!114 &2016526105
 MonoBehaviour:
   m_ObjectHideFlags: 0
