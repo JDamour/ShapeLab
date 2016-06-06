@@ -219,7 +219,10 @@ public class VoxelManager : MonoBehaviour
                 case StatefulMain.Command.RESET_TOOLS:
                     {
                         voxelObjectGPU.resetTools();
-                        //Debug.Log("(Servercmd) reseting tool parameter");
+                        updateRadiusText();
+                        updateStrengthText();
+                        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+                        Debug.Log("(Servercmd) reseting tool parameter");
                     }
                     break;
                 case StatefulMain.Command.NEXT_USER:

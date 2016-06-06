@@ -212,6 +212,12 @@ public class ModificationManager {
         return modPower;
     }
 
+    public void resetTools()
+    {
+        ResetToolRange();
+        ResetToolStrength();
+    }
+
     public void SetToolPower(float newPower)
     {
         this.modPower = this.MIN_TOOL_POWER + newPower*0.3f;
@@ -225,6 +231,11 @@ public class ModificationManager {
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
         //Debug.Log("Range reset to " + this.modRange);
 
+    }
+
+    public void ResetToolStrength()
+    {
+        this.modPower = 1f;
     }
 
     internal void destroy()

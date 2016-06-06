@@ -8429,8 +8429,8 @@ MonoBehaviour:
   voxelmanager: {fileID: 787525643}
   hostadresse:
   - ws://shapelab.kasanzew.de:8080/
-  - ws://ausst04.beuth-hochschule.de:8080/
-  - ws://141.64.52.54:8080/
+  - ws://ausst01.beuth-hochschule.de:8080/
+  - ws://141.64.52.32:8080/
 --- !u!114 &2016526105
 MonoBehaviour:
   m_ObjectHideFlags: 0

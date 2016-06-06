@@ -122,7 +122,7 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     public void resetTools()
     {
-
+        modManager.resetTools();
     }
 
     public void exportObject(string id)
@@ -160,10 +160,12 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelBuffer.Dispose();
         voxelBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(float));
         voxelBuffer.SetData(voxel.getField());
+        modManager.setDensityBuffer(voxelBuffer);
+
         if (withSmooth) {
-            modManager.setDensityBuffer(voxelBuffer);
             modManager.InitialSmooth(10); // 10 shader passes with smooth
         }
+
         rotation.x = rotation.x / 180 * (float)Math.PI;
         rotation.y = rotation.y / 180 * (float)Math.PI;
         //calculate new vertices in vertexBuffer
