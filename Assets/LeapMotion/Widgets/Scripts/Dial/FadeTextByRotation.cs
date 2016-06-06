@@ -65,7 +65,7 @@ public class FadeTextByRotation : MonoBehaviour {
     m_textLabels = GetComponentsInChildren<Text>(true);
 
     if(m_textLabels.Length == 0) { 
-      Debug.LogWarning("No text labels detected. Nothing to fade.");
+      //Debug.LogWarning("No text labels detected. Nothing to fade.");
       return; 
     }
 
@@ -87,7 +87,7 @@ public class FadeTextByRotation : MonoBehaviour {
     if (ReferenceTransform_AutoDiscovered == null) {
       bool registered = registerReferenceTransform();
       if (!registered) {
-        Debug.LogError("No reference transform. Exiting.");
+        //Debug.LogError("No reference transform. Exiting.");
         return;
       }
     }

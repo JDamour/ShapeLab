@@ -80,8 +80,8 @@ public class VoxelObject : MonoBehaviour {
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
 
-        Debug.Log("MESH VERTICES: " + mesh.vertexCount);
-        Debug.Log("TRIANGLES: " + triangles.Count / 3);
+        //Debug.Log("MESH VERTICES: " + mesh.vertexCount);
+        //Debug.Log("TRIANGLES: " + triangles.Count / 3);
         meshFilter.mesh = mesh;
 
     }

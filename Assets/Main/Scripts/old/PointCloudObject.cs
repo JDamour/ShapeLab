@@ -40,7 +40,7 @@ public class PointCloudObject : MonoBehaviour {
         mesh.SetIndices(indices.ToArray(), MeshTopology.Points,0);
         mesh.RecalculateBounds();
 
-        Debug.Log("MESH VERTICES: " + mesh.vertexCount);
+        //Debug.Log("MESH VERTICES: " + mesh.vertexCount);
         meshFilter.mesh = mesh;
     }
 

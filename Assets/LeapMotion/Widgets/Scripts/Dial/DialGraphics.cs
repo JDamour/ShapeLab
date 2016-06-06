@@ -30,7 +30,7 @@ namespace LMWidgets
           dialIndex = parseDialString(value); 
         }
         catch (ArgumentException e) { // Thrown if 'value' isn't a valid label;
-          Debug.LogException(e);
+          //Debug.LogException(e);
           return;
         }
 
@@ -59,7 +59,7 @@ namespace LMWidgets
           m_currentDialValue = DialLabels[m_currentDialInt];
         }
         catch (System.ArgumentOutOfRangeException e ){
-          Debug.LogException(e);
+          //Debug.LogException(e);
         }
 			}
 		}

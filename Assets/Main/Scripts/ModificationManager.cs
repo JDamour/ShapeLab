@@ -28,7 +28,7 @@ public class ModificationManager {
     private float MAX_TOOL_POWER = 1.5f;
     private float MIN_TOOL_POWER = 0.9f;
 
-    //        Debug.Log(slider1.GetSliderFraction());
+    //        //Debug.Log(slider1.GetSliderFraction());
     //public RotateXSlider sliderPower, sliderRange;
 
     public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scaling)
@@ -119,7 +119,7 @@ public class ModificationManager {
         offset[0] = (int)(modCenter.x - modRange);
         offset[1] = (int)(modCenter.y - modRange);
         offset[2] = (int)(modCenter.z - modRange);
-        Debug.Log("modcenter is: "+ modCenter);
+        //Debug.Log("modcenter is: "+ modCenter);
         return offset;
     }
 
@@ -143,8 +143,8 @@ public class ModificationManager {
 
     private void clearVertexArea(int[] offset, int size, ComputeBuffer vertexBuffer)
     {
-        Debug.Log("offset is: " + offset[0] + " " + offset[1] + " " + offset[2]);
-        Debug.Log("range is: " + modRange + " size is: " + size);
+        //Debug.Log("offset is: " + offset[0] + " " + offset[1] + " " + offset[2]);
+        //Debug.Log("range is: " + modRange + " size is: " + size);
         clearVertexAreaShader.SetInt("cubeDimension", dimension);
         clearVertexAreaShader.SetInt("offsetX", offset[0]);
         clearVertexAreaShader.SetInt("offsetY", offset[1]);
@@ -173,12 +173,12 @@ public class ModificationManager {
     /*
     public void updateFromSliders()
     {
-        Debug.Log("sliderPower: " + this.sliderPower.GetSliderFraction());
-        Debug.Log("old/new modpower: " + this.modPower+" / "+ 
+        //Debug.Log("sliderPower: " + this.sliderPower.GetSliderFraction());
+        //Debug.Log("old/new modpower: " + this.modPower+" / "+ 
             this.MIN_TOOL_POWER + 
             (this.MAX_TOOL_POWER-this.MIN_TOOL_POWER) * this.sliderPower.GetSliderFraction());
-        Debug.Log("sliderRange: " + this.sliderRange.GetSliderFraction());
-        Debug.Log("old/new modRange: " + this.modRange + " / " +
+        //Debug.Log("sliderRange: " + this.sliderRange.GetSliderFraction());
+        //Debug.Log("old/new modRange: " + this.modRange + " / " +
             this.MIN_RANGE +
             (this.MAX_RANGE - this.MIN_RANGE) * this.sliderRange.GetSliderFraction());
     }
@@ -223,7 +223,7 @@ public class ModificationManager {
     {
         this.modRange = 5.0f;
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
-        Debug.Log("Range reset to " + this.modRange);
+        //Debug.Log("Range reset to " + this.modRange);
 
     }
 

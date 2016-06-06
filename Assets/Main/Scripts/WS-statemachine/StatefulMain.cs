@@ -71,7 +71,7 @@ public class StatefulMain : MonoBehaviour
         {
             new Wait(this, 3, () =>
             { // 3sec after connecting, send "testrun" to server
-                Debug.Log("running test sequence...");
+                //Debug.Log("running test sequence...");
                 ws.Send("testrun");
             });
         });
@@ -87,7 +87,7 @@ public class StatefulMain : MonoBehaviour
 
         stateMachine.AddHandler(State.Recover, () =>
         {
-            Debug.Log("trying to recover connection...");
+            //Debug.Log("trying to recover connection...");
             new Wait(this, 3, () =>
             {
                 ws.ConnectAsync();
@@ -118,7 +118,7 @@ public class StatefulMain : MonoBehaviour
 
     private void OnOpenHandler(object sender, System.EventArgs e)
     {
-        Debug.Log("WebSocket connected to " + ws.Url);
+        //Debug.Log("WebSocket connected to " + ws.Url);
         stateMachine.Transition(State.Connected);
     }
 
@@ -133,10 +133,10 @@ public class StatefulMain : MonoBehaviour
                 //erste Meldung des Servers mit Id
                 serverID = e.Data.Substring(13).Replace("\"}", "");
                 voxelmanager.setSessionID(serverID);
-                Debug.Log("My ID is: " + serverID);
+                //Debug.Log("My ID is: " + serverID);
             } else
             {
-                Debug.Log(cmd.ToString()+ " received: " + e.Data);
+                //Debug.Log(cmd.ToString()+ " received: " + e.Data);
             }
         }
         else
@@ -148,32 +148,32 @@ public class StatefulMain : MonoBehaviour
 
     private void OnCloseHandler(object sender, CloseEventArgs e)
     {
-        Debug.Log("WebSocket closed with reason: " + e.Reason + "(code:" + e.Code + ")");
+        //Debug.Log("WebSocket closed with reason: " + e.Reason + "(code:" + e.Code + ")");
         if (e.Code.Equals(1006))
         {
             stateMachine.Transition(State.LongRecovery);
         }
         else
         {
-            Debug.Log("Remote Server killed Connection, retry in 1 minute");
+            //Debug.Log("Remote Server killed Connection, retry in 1 minute");
             stateMachine.Transition(State.Recover);
         }
     }
 
     private void OnSendComplete(bool success)
     {
-        Debug.Log("Message sent successfully? " + success);
+        //Debug.Log("Message sent successfully? " + success);
     }
 
     private void OnErrorHandler(object sender, ErrorEventArgs e)
     {
-        Debug.Log("An error occurred:" + e.Message);
+        //Debug.Log("An error occurred:" + e.Message);
         stateMachine.Transition(State.Recover);
     }
 
     void OnApplicationQuit()
     {
-        Debug.Log("Application ended, killing socket");
+        //Debug.Log("Application ended, killing socket");
         stateMachine.Transition(State.Terminate);
     }
 }

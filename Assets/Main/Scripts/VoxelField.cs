@@ -48,7 +48,7 @@ public class VoxelField{
                     }
                 }
 
-        Debug.Log("VOXEL: Generated Random Grid");
+        //Debug.Log("VOXEL: Generated Random Grid");
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class VoxelField{
                     }
                 }
 
-        Debug.Log("VOXEL: Generated (Almost) Sphere");
+        //Debug.Log("VOXEL: Generated (Almost) Sphere");
     }
 
     /// <summary>

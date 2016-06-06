@@ -222,14 +222,14 @@ public class BugReporter : MonoBehaviour {
   {
     if (handController == null)
     {
-      Debug.LogWarning("HandController reference is null. Bug Recording -> Inactive");
+      //Debug.LogWarning("HandController reference is null. Bug Recording -> Inactive");
       gameObject.SetActive(false);
       return;
     }
     leap_controller_ = handController.GetLeapController();
     if (leap_controller_ == null)
     {
-      Debug.LogWarning("Leap Controller was not found. Bug Recording -> Blocked until found");
+      //Debug.LogWarning("Leap Controller was not found. Bug Recording -> Blocked until found");
       InterfaceEnabled = false;
       return;
     }

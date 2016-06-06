@@ -50,6 +50,6 @@ public class DebugHand : HandModel {
     Debug.DrawLine(hand.GetWristPosition(), hand.GetPalmPosition(), Color.white);
     Debug.DrawLine(hand.GetPalmPosition(),
                    hand.GetPalmPosition() + hand.GetPalmNormal(), Color.black);
-    Debug.Log(Vector3.Dot(hand.GetPalmDirection(), hand.GetPalmNormal()));
+    //Debug.Log(Vector3.Dot(hand.GetPalmDirection(), hand.GetPalmNormal()));
   }
 }

@@ -55,7 +55,7 @@ public class MovementManager : MonoBehaviour {
 
   private void handleKeyboardInput() {
     if (Input.GetKey(_forwardKey)) {
-      Debug.Log("Move me forward: " + (_moveSpeed * Time.deltaTime));
+      //Debug.Log("Move me forward: " + (_moveSpeed * Time.deltaTime));
       leapMotionOVRController.transform.localPosition += leapMotionOVRController.transform.forward * _moveSpeed * Time.deltaTime;
     }
 
@@ -82,7 +82,7 @@ public class MovementManager : MonoBehaviour {
     Vector2 mousePosition = Input.mousePosition;
     Vector2 mouseVelocity = (mousePosition - _lastMousePosition) * Time.deltaTime;
     Quaternion playerRotation = Quaternion.Euler(0.0f, mouseVelocity.x * _mouseLookSensitivity, 0.0f);
-    Debug.Log("rotate me: " + (mouseVelocity.x * _mouseLookSensitivity));
+    //Debug.Log("rotate me: " + (mouseVelocity.x * _mouseLookSensitivity));
     leapMotionOVRController.transform.localRotation *= playerRotation;
     _lastMousePosition = mousePosition;
   }

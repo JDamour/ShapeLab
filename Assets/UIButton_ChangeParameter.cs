@@ -14,11 +14,6 @@ public class UIButton_ChangeParameter : MonoBehaviour
     {
         toolButtonToggle = this.GetComponent<ToolButtonToggle>();
     }
-    // Use this for initialization
-    void Start()
-    {
-
-    }
 
     // Update is called once per frame
     void Update()
@@ -26,6 +21,10 @@ public class UIButton_ChangeParameter : MonoBehaviour
         if (active)
         {
             mymanager.ChangeToolParameter(myAction);
+        }
+        else
+        {
+            changeState(false);
         }
     }
 
