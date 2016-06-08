@@ -33,14 +33,14 @@ public class SCManager : MonoBehaviour
 
     public void TakeScreenShoot()
     {
-        currentScreenIndex++;
-        if (currentScreenIndex >= SCScreenList.Length)
-            currentScreenIndex = 0;
         SCCam.gameObject.SetActive(true);
         SCCam.targetTexture = SCTextureList[currentScreenIndex];
         SCCam.Render();
         SCCam.gameObject.SetActive(false);
         SCScreenList[currentScreenIndex].material.mainTexture = SCTextureList[currentScreenIndex];
+        currentScreenIndex++;
+        if (currentScreenIndex >= SCScreenList.Length)
+            currentScreenIndex = 0;
     }
 
     public void ResetScreenshots()
@@ -62,8 +62,11 @@ public class SCManager : MonoBehaviour
 
     public void ResetLastScreenshot()
     {
+        if (currentScreenIndex <= 0)
+            currentScreenIndex = SCScreenList.Length - 1;
+        else
+            currentScreenIndex--;
         //SCScreenList[currentIndex].material.mainTexture = SCTextureStartList[currentIndex];
-        SCScreenList[currentScreenIndex].material.mainTexture = defaultTex;
-        currentScreenIndex--;
+        SCScreenList[currentScreenIndex].material.mainTexture = defaultTex;      
     }
 }
