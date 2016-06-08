@@ -79,9 +79,30 @@ public class VoxelManager : MonoBehaviour
         NONE
     }
 
+    private Boolean DebugMode = false;
+    public Text debugText;
+    public GameObject debugWindow;
+    private System.Collections.Generic.Queue<String> debugTextQueue;
+
+    public void addDebugText(string text)
+    {
+        if(DebugMode)
+            debugTextQueue.Enqueue(text);
+    }
+
     // initialization before the start() methods are called
     void Awake()
     {
+        if (DebugMode)
+        {
+            debugText.text = "";
+            debugTextQueue = new System.Collections.Generic.Queue<String>();
+            addDebugText("VoxelCube size:\t" + this.voxelCubeSize);
+        } else
+        {
+            debugWindow.SetActive(false);
+        }
+        
         objectScaling = 1.0f;
         rotation = new Vector3(0f, 0f, 0f);
         if (voxelCubeSize % 8 != 0)
@@ -99,6 +120,7 @@ public class VoxelManager : MonoBehaviour
     void Start()
     {
         m_leapController = handController.GetLeapController();
+        addDebugText("Leap connected:\t" + m_leapController.IsConnected);
 
         updateRadiusText();
         updateStrengthText();
@@ -112,6 +134,11 @@ public class VoxelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (DebugMode)
+            if (debugTextQueue.Count > 0)
+                debugText.text += '\n' + debugTextQueue.Dequeue();
+        
+        
         updateSessionIDText();
         Frame frame = m_leapController.Frame();
         Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
@@ -199,7 +226,7 @@ public class VoxelManager : MonoBehaviour
         {
             #region Webinterface
             StatefulMain.Command newCommand = cmdQueue.Dequeue();
-
+            addDebugText("Server Command recieved:" + newCommand.ToString());
             switch (newCommand)
             {
                 case StatefulMain.Command.RESET_ALL:
@@ -222,7 +249,7 @@ public class VoxelManager : MonoBehaviour
                         updateRadiusText();
                         updateStrengthText();
                         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
-                        Debug.Log("(Servercmd) reseting tool parameter");
+                        //Debug.Log("(Servercmd) reseting tool parameter");
                     }
                     break;
                 case StatefulMain.Command.NEXT_USER:
