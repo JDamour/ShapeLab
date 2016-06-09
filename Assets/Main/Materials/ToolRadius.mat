@@ -134,7 +134,7 @@ Material:
       data:
         first:
           name: _Transparency
-        second: 0.25
+        second: 1
     m_Colors:
       data:
         first:

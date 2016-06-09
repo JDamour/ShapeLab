@@ -5,6 +5,7 @@ public class StatefulMain : MonoBehaviour
 {
     public StateMachine stateMachine;
     public VoxelManager voxelmanager;
+    public int useAdressIndex;
     public string[] hostadresse;
     public enum Command
     {
@@ -62,7 +63,7 @@ public class StatefulMain : MonoBehaviour
         1 - ws://ausst04.beuth-hochschule.de:8080/
         2 - ws://141.64.52.54:8080/
         */
-        ws = new WebSocket(hostadresse[0]);
+        ws = new WebSocket(hostadresse[useAdressIndex]);
 
         ws.OnOpen += OnOpenHandler;
         ws.OnMessage += OnMessageHandler;
@@ -105,12 +106,14 @@ public class StatefulMain : MonoBehaviour
 
     void Start()
     {
+        voxelmanager.addDebugText("WebSocket trying to connect to " + ws.Url);
         stateMachine.Run();
     }
 
     private void OnOpenHandler(object sender, System.EventArgs e)
     {
         //Debug.Log("WebSocket connected to " + ws.Url);
+        voxelmanager.addDebugText("WebSocket connected to " + ws.Url);
         stateMachine.Transition(State.Connected);
     }
 
@@ -125,8 +128,11 @@ public class StatefulMain : MonoBehaviour
                 //erste Meldung des Servers mit Id
                 serverID = e.Data.Substring(13).Replace("\"}", "");
                 voxelmanager.setSessionID(serverID);
+                voxelmanager.addDebugText("My ID is: " + serverID);
+
                 //Debug.Log("My ID is: " + serverID);
-            } else
+            }
+            else
             {
                 //Debug.Log(cmd.ToString()+ " received: " + e.Data);
             }

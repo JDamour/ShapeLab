@@ -17,6 +17,9 @@ public class ToolButtonOnClickListener : MonoBehaviour {
         if (tool == "Pull")
         {
             changeState(true);
+        } else
+        {
+            changeState(false);
         }
     }
 	
