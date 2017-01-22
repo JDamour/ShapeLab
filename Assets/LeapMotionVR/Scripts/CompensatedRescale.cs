@@ -43,19 +43,19 @@ public class CompensatedRescale : MonoBehaviour {
     }
     if (Input.GetKeyDown (increaseScale)) {
       IncreaseScale();
-      Debug.Log ("IncreaseScale");
+      //Debug.Log ("IncreaseScale");
       return;
     }
     if (Input.GetKeyDown (decreaseScale)) {
       DecreaseScale();
-      Debug.Log ("DecreaseScale");
+      //Debug.Log ("DecreaseScale");
       return;
     }
 
     if (oldScaleFactor != newScaleFactor) {
       ApplyRescale (newScaleFactor / oldScaleFactor);
       oldScaleFactor = newScaleFactor;
-      Debug.Log("newScaleFactor = " + newScaleFactor);
+      //Debug.Log("newScaleFactor = " + newScaleFactor);
     }
   }
 

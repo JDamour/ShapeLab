@@ -46,7 +46,7 @@
 				v2f o;
 				o.normal = v.normal;
 				o.uv = v.uv;
-				float radius = _Radius / 5.0;
+				float radius = _Radius / 12.0;
 				o.vertex = mul(UNITY_MATRIX_MVP, float4(v.vertex.rgb*radius,1.0));
 				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;

@@ -62,14 +62,20 @@ void densityModificator (uint3 id : SV_DispatchThreadID)
 //---------------------------------------------------------------------------------------------
 #pragma kernel smooth3x3Modificator
 
-[numthreads(8,8,8)]
+[numthreads(4,4,4)]
 void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 {
-    if (id.x == 0 || id.x == dimension - 1 || id.y == 0 || id.y == dimension - 1 || id.z == 0 || id.z == dimension - 1)
+
+	uint idX = id.x + offsetX;
+	uint idY = id.y + offsetY;
+	uint idZ = id.z + offsetZ; 
+
+    if (idX <= 0 || idX >= dimension - 1 || idY <= 0 || idY >= dimension - 1 || idZ <= 0 || idZ >= dimension - 1){
 		return;
+	}
 	
-	uint voxelIndex = id.x + id.y * (dimension) + id.z * (dimension) * (dimension);
-	float4 voxelPos = {id.x, id.y, id.z, 1.0};
+	uint voxelIndex = idX + idY * (dimension) + idZ * (dimension) * (dimension);
+	float4 voxelPos = {idX, idY, idZ, 1.0};
 	float dist = distance(voxelPos, modCenter);
 
 	if(dist > modRange){
@@ -78,43 +84,43 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 
 	//get sourrounding voxels desities
 	uint indecies[3*3*3] = {
-		(id.x+1) + (id.y+1) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x) + (id.y+1) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x-1) + (id.y+1) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(idX+1) + (idY+1) * (dimension) + (idZ+1) * (dimension) * (dimension),
+		(idX) + (idY+1) * (dimension) + (idZ+1) * (dimension) * (dimension),
+		(idX-1) + (idY+1) * (dimension) + (idZ+1) * (dimension) * (dimension),
 
-		(id.x+1) + (id.y) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x) + (id.y) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x-1) + (id.y) * (dimension) + (id.z+1) * (dimension) * (dimension),
+		(idX+1) + (idY) * (dimension) + (idZ+1) * (dimension) * (dimension),
+		(idX) + (idY) * (dimension) + (idZ+1) * (dimension) * (dimension),
+		(idX-1) + (idY) * (dimension) + (idZ+1) * (dimension) * (dimension),
 
-		(id.x+1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
-		(id.x-1) + (id.y-1) * (dimension) + (id.z+1) * (dimension) * (dimension),
-
-
-		(id.x+1) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x-1) + (id.y+1) * (dimension) + (id.z) * (dimension) * (dimension),
-
-		(id.x+1) + (id.y) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x) + (id.y) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x-1) + (id.y) * (dimension) + (id.z) * (dimension) * (dimension),
-
-		(id.x+1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
-		(id.x-1) + (id.y-1) * (dimension) + (id.z) * (dimension) * (dimension),
+		(idX+1) + (idY-1) * (dimension) + (idZ+1) * (dimension) * (dimension),
+		(idX) + (idY-1) * (dimension) + (idZ+1) * (dimension) * (dimension),
+		(idX-1) + (idY-1) * (dimension) + (idZ+1) * (dimension) * (dimension),
 
 
-		(id.x+1) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x-1) + (id.y+1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(idX+1) + (idY+1) * (dimension) + (idZ) * (dimension) * (dimension),
+		(idX) + (idY+1) * (dimension) + (idZ) * (dimension) * (dimension),
+		(idX-1) + (idY+1) * (dimension) + (idZ) * (dimension) * (dimension),
 
-		(id.x+1) + (id.y) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x) + (id.y) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x-1) + (id.y) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(idX+1) + (idY) * (dimension) + (idZ) * (dimension) * (dimension),
+		(idX) + (idY) * (dimension) + (idZ) * (dimension) * (dimension),
+		(idX-1) + (idY) * (dimension) + (idZ) * (dimension) * (dimension),
 
-		(id.x+1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
-		(id.x-1) + (id.y-1) * (dimension) + (id.z-1) * (dimension) * (dimension),
+		(idX+1) + (idY-1) * (dimension) + (idZ) * (dimension) * (dimension),
+		(idX) + (idY-1) * (dimension) + (idZ) * (dimension) * (dimension),
+		(idX-1) + (idY-1) * (dimension) + (idZ) * (dimension) * (dimension),
+
+
+		(idX+1) + (idY+1) * (dimension) + (idZ-1) * (dimension) * (dimension),
+		(idX) + (idY+1) * (dimension) + (idZ-1) * (dimension) * (dimension),
+		(idX-1) + (idY+1) * (dimension) + (idZ-1) * (dimension) * (dimension),
+
+		(idX+1) + (idY) * (dimension) + (idZ-1) * (dimension) * (dimension),
+		(idX) + (idY) * (dimension) + (idZ-1) * (dimension) * (dimension),
+		(idX-1) + (idY) * (dimension) + (idZ-1) * (dimension) * (dimension),
+
+		(idX+1) + (idY-1) * (dimension) + (idZ-1) * (dimension) * (dimension),
+		(idX) + (idY-1) * (dimension) + (idZ-1) * (dimension) * (dimension),
+		(idX-1) + (idY-1) * (dimension) + (idZ-1) * (dimension) * (dimension),
 	};
 	
 	float indexWeight[3*3*3] = {
@@ -132,7 +138,7 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 		1.0f,
 		0.5f,
 		1.0f,
-		1.0f+sin(dist/(modRange))*50.0f * toolPower, //dist==0:sin(0)=>max influence of sourrounding voxels
+		1.0f+cos(dist/(modRange)*2*PI)*400.0f * toolPower, //dist==0:sin(0)=>max influence of sourrounding voxels
 		1.0f,
 		0.5f,
 		1.0f,
@@ -157,11 +163,11 @@ void smooth3x3Modificator (uint3 id : SV_DispatchThreadID)
 	}
 	newDensity /= allWeights;
 	if(newDensity > 0 && voxel[voxelIndex] < 0){
-		voxel[voxelIndex] = 0.001f;
+		voxel[voxelIndex] = 0.0001f;
 		return;
 	}
 	if(newDensity < 0 && voxel[voxelIndex] > 0){
-		voxel[voxelIndex] = -0.001f;
+		voxel[voxelIndex] = -0.0001f;
 		return;
 	}
 	

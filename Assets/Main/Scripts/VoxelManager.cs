@@ -2,6 +2,7 @@
 using System;
 using Leap;
 using UnityEngine.UI;
+using System.Collections;
 
 /// <summary>
 /// Manager of the Sculpting Project
@@ -52,12 +53,13 @@ public class VoxelManager : MonoBehaviour
     // UI elements
     public Text radiusText;
     public Text strengthText;
+    public Text sessionIDText;
     public GameObject CountdownBox;
     public Text countdownCanvas;
     public float timeMax;
     private float timeRemaining;
 
-    private string sessionID;
+    private string sessionID = "placeholder";
     private int userID = 0;
 
     private enum INTEND
@@ -77,14 +79,35 @@ public class VoxelManager : MonoBehaviour
         NONE
     }
 
+    private Boolean DebugMode = false;
+    public Text debugText;
+    public GameObject debugWindow;
+    private System.Collections.Generic.Queue<String> debugTextQueue;
+
+    public void addDebugText(string text)
+    {
+        if(DebugMode)
+            debugTextQueue.Enqueue(text);
+    }
+
     // initialization before the start() methods are called
     void Awake()
     {
+        if (DebugMode)
+        {
+            debugText.text = "";
+            debugTextQueue = new System.Collections.Generic.Queue<String>();
+            addDebugText("VoxelCube size:\t" + this.voxelCubeSize);
+        } else
+        {
+            debugWindow.SetActive(false);
+        }
+        
         objectScaling = 1.0f;
         rotation = new Vector3(0f, 0f, 0f);
         if (voxelCubeSize % 8 != 0)
         {
-            Debug.Log("The dimension of the voxelCubeField has to be a multiple of 8");
+            //Debug.Log("The dimension of the voxelCubeField has to be a multiple of 8");
         }
         voxelFieldSize = voxelCubeSize + 1;
         scaling = objectSize * objectScaling / (float)voxelCubeSize;
@@ -97,19 +120,26 @@ public class VoxelManager : MonoBehaviour
     void Start()
     {
         m_leapController = handController.GetLeapController();
+        addDebugText("Leap connected:\t" + m_leapController.IsConnected);
 
         updateRadiusText();
         updateStrengthText();
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
         voxel = new VoxelField(voxelFieldSize);
-        voxel.createSphere(voxelFieldSize / 3);
-        initMesh(true);
+        voxel.createNoisyGround();
+        initMesh(false);
         timeRemaining = timeMax;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (DebugMode)
+            if (debugTextQueue.Count > 0)
+                debugText.text += '\n' + debugTextQueue.Dequeue();
+        
+        
+        updateSessionIDText();
         Frame frame = m_leapController.Frame();
         Vector3 tipPosition = new Vector3(0.5f, 0.5f, 0.0f);
         switch (getIntent())
@@ -196,26 +226,30 @@ public class VoxelManager : MonoBehaviour
         {
             #region Webinterface
             StatefulMain.Command newCommand = cmdQueue.Dequeue();
-
+            addDebugText("Server Command recieved:" + newCommand.ToString());
             switch (newCommand)
             {
                 case StatefulMain.Command.RESET_ALL:
                     {
+                        resetObjectTransformForScreeshot(); 
                         resetAll(true);
                         voxelObjectGPU.resetTools();
-                        Debug.Log("(Servercmd) reseting everything");
+                        //Debug.Log("(Servercmd) reseting everything");
                     }
                     break;
                 case StatefulMain.Command.RESET_SCREENSHOTS:
                     {
                         scmanager.ResetScreenshots();
-                        Debug.Log("(Servercmd) reseting screenshot-storage");
+                        //Debug.Log("(Servercmd) reseting screenshot-storage");
                     }
                     break;
                 case StatefulMain.Command.RESET_TOOLS:
                     {
                         voxelObjectGPU.resetTools();
-                        Debug.Log("(Servercmd) reseting tool parameter");
+                        updateRadiusText();
+                        updateStrengthText();
+                        toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
+                        //Debug.Log("(Servercmd) reseting tool parameter");
                     }
                     break;
                 case StatefulMain.Command.NEXT_USER:
@@ -229,26 +263,26 @@ public class VoxelManager : MonoBehaviour
                         voxelObjectGPU.resetTools();
                         //reset timer
                         timeRemaining = timeMax;
-                        Debug.Log("(Servercmd) preparing programm for next user");
+                        //Debug.Log("(Servercmd) preparing programm for next user");
                     }
                     break;
                 case StatefulMain.Command.TAKE_SCREENSHOT:
                     {
                         resetObjectTransformForScreeshot();
                         scmanager.TakeScreenShoot();
-                        Debug.Log("(Servercmd) rendering screenshot");
+                        //Debug.Log("(Servercmd) rendering screenshot");
                     }
                     break;
                 case StatefulMain.Command.DELETE_LAST_SCREENSHOT:
                     {
                         scmanager.ResetLastScreenshot();
-                        Debug.Log("(Servercmd) rendering screenshot");
+                        //Debug.Log("(Servercmd) rendering screenshot");
                     }
                     break;
                 case StatefulMain.Command.RESET_HMD_LOCATION:
                     {
                         UnityEngine.VR.InputTracking.Recenter();
-                        Debug.Log("(Servercmd) recenter HMD");
+                        //Debug.Log("(Servercmd) recenter HMD");
                     }
                     break;
                 case StatefulMain.Command.MAX_TIME_3_MINUTES:
@@ -268,7 +302,7 @@ public class VoxelManager : MonoBehaviour
                     break;
                 default:
                     {
-                        Debug.Log("I should do something with this \"" + cmdQueue.Dequeue().ToString() + "\"command...");
+                        //Debug.Log("I should do something with this \"" + cmdQueue.Dequeue().ToString() + "\"command...");
                     }
                     break;
             }
@@ -286,11 +320,11 @@ public class VoxelManager : MonoBehaviour
                 this.countdownCanvas.text = "Countdown:\n"+"0.00";
         }
         if(timeRemaining % 30 == 0)
-            Debug.Log("time Left:" + timeRemaining);
+            //Debug.Log("time Left:" + timeRemaining);
         if (timeRemaining == 0)
         {
             // TODO alert user
-            Debug.Log("time is up, next user!");
+            //Debug.Log("time is up, next user!");
         }
 
         // change tools manualy with keyboard for testing
@@ -322,7 +356,7 @@ public class VoxelManager : MonoBehaviour
             export(); // transmit current id?
             //todo answer to server "all okay"?
         }
-        Debug.Log("Reseting environment");
+        //Debug.Log("Reseting environment");
         updateRadiusText();
         updateStrengthText();
         toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
@@ -334,7 +368,7 @@ public class VoxelManager : MonoBehaviour
         posOffset = Vector3.zero;
         resetBoundingBoxPosition();
         voxel = new VoxelField(voxelFieldSize);
-        voxel.createSphere(voxelFieldSize / 3);
+        voxel.createNoisyGround();
         initMesh(true);
         voxelObjectGPU.modManager.ResetToolRange();
         
@@ -351,9 +385,9 @@ public class VoxelManager : MonoBehaviour
     {
         objectScaling = 1.0f;
         scaling = objectSize * objectScaling / (float)voxelCubeSize;
-
-        rotation = Vector3.zero;
-        posOffset = Vector3.zero;
+        voxelObjectGPU.setScale(scaling);
+        rotation = new Vector3(0f,0f,0f);
+        posOffset = new Vector3(0f, 0f, 0f);
         resetBoundingBoxPosition();
         updateMesh();
     }
@@ -368,7 +402,7 @@ public class VoxelManager : MonoBehaviour
         {
             if (Input.GetAxis("PadStickVertical") > 0.6)
             {
-                objectScaling = objectScaling + 0.02f;
+                objectScaling = Mathf.Min(objectScaling + 0.02f, 20);
             }
             else if (Input.GetAxis("PadStickVertical") < -0.6)
             {
@@ -441,7 +475,7 @@ public class VoxelManager : MonoBehaviour
         // updateMesh if rotation is changed during this frame
         if (Input.GetAxis("PadStickHorizontal") != 0 || Input.GetAxis("PadStickVertical") != 0)
         {
-            voxelObjectGPU.updateMesh(rotation, posOffset);
+            updateMesh();
         }
         #endregion
 
@@ -490,7 +524,7 @@ public class VoxelManager : MonoBehaviour
             toolMaterial.SetFloat("_Transparency", 1.0f);
         }
         else {
-            toolMaterial.SetFloat("_Transparency", 0.0f);
+            toolMaterial.SetFloat("_Transparency", 0.25f);
         }
     }
 
@@ -563,7 +597,7 @@ public class VoxelManager : MonoBehaviour
     {
         toolMaterial.SetColor("_Color", pushToolColor);
         currentTool = ModificationManager.ACTION.SUBSTRACT;
-        Debug.Log("Current tool now is: SUBSTRACT");
+        //Debug.Log("Current tool now is: SUBSTRACT");
     }
 
     /// <summary>
@@ -573,7 +607,7 @@ public class VoxelManager : MonoBehaviour
     {
         toolMaterial.SetColor("_Color", pullToolColor);
         currentTool = ModificationManager.ACTION.ADD;
-        Debug.Log("Current tool now is: ADD");
+        //Debug.Log("Current tool now is: ADD");
     }
 
     /// <summary>
@@ -583,7 +617,7 @@ public class VoxelManager : MonoBehaviour
     {
         toolMaterial.SetColor("_Color", smoothToolColor);
         currentTool = ModificationManager.ACTION.SMOOTH;
-        Debug.Log("Current tool now is: SMOOTH");
+        //Debug.Log("Current tool now is: SMOOTH");
     }
 
     /// <summary>
@@ -595,26 +629,28 @@ public class VoxelManager : MonoBehaviour
         {
             case ModificationManager.ACTION.ADD_POWER:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(0.005f);
                     updateStrengthText();
                 }
                 break;
             case ModificationManager.ACTION.SUB_POWER:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolStrength(-0.005f);
                     updateStrengthText();
                 }
                 break;
             case ModificationManager.ACTION.ADD_RANGE:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(0.03f);
                     updateRadiusText();
+                    toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
                 }
                 break;
             case ModificationManager.ACTION.SUB_RANGE:
                 {
-                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.01f);
+                    voxelObjectGPU.getModificationManager().ChangeToolRange(-0.03f);
                     updateRadiusText();
+                    toolMaterial.SetFloat("_Radius", voxelObjectGPU.modManager.getToolRadius());
                 }
                 break;
         }
@@ -622,13 +658,18 @@ public class VoxelManager : MonoBehaviour
 
     private void updateRadiusText()
     {
-        radiusText.text = "Radius: " + ((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f;
+        radiusText.text = "Radius: " + (((int)(voxelObjectGPU.getModificationManager().getToolRadius() * 100)) / 100f).ToString("0.00");
         
     }
 
     private void updateStrengthText()
     {
-        strengthText.text = "Strength: " + ((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f;
+        strengthText.text = "Stärke: " + (((int)(voxelObjectGPU.getModificationManager().getToolStrength() * 100)) / 100f).ToString("0.00");
+    }
+
+    private void updateSessionIDText()
+    {
+        sessionIDText.text = "Session ID: " + sessionID.Substring(0,3).ToUpper() + userID.ToString("000");
     }
 
     /// <summary>
@@ -642,5 +683,6 @@ public class VoxelManager : MonoBehaviour
     private void resetBoundingBoxPosition()
     {
         boundaries.transform.position = posOffset + new Vector3((objectSize * objectScaling)/2, (objectSize * objectScaling) / 2, (objectSize * objectScaling) / 2);
+        boundaries.localScale = new Vector3(objectScaling, objectScaling, objectScaling);
     }
 }

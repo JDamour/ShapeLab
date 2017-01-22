@@ -20,6 +20,7 @@ public class SCManager : MonoBehaviour
             SCTextureList[i] = createRenderTexture(SCCam.pixelWidth, SCCam.pixelHeight);
             SCScreenList[i].material.mainTexture = defaultTex;
         }
+        SCCam.targetTexture = SCTextureList[0];
     }
 
     public RenderTexture createRenderTexture(int width, int height)
@@ -32,12 +33,14 @@ public class SCManager : MonoBehaviour
 
     public void TakeScreenShoot()
     {
+        SCCam.gameObject.SetActive(true);
+        SCCam.targetTexture = SCTextureList[currentScreenIndex];
+        SCCam.Render();
+        SCCam.gameObject.SetActive(false);
+        SCScreenList[currentScreenIndex].material.mainTexture = SCTextureList[currentScreenIndex];
         currentScreenIndex++;
         if (currentScreenIndex >= SCScreenList.Length)
             currentScreenIndex = 0;
-        SCCam.targetTexture = SCTextureList[currentScreenIndex];
-        SCCam.Render();
-        SCScreenList[currentScreenIndex].material.mainTexture = SCTextureList[currentScreenIndex];
     }
 
     public void ResetScreenshots()
@@ -59,8 +62,11 @@ public class SCManager : MonoBehaviour
 
     public void ResetLastScreenshot()
     {
+        if (currentScreenIndex <= 0)
+            currentScreenIndex = SCScreenList.Length - 1;
+        else
+            currentScreenIndex--;
         //SCScreenList[currentIndex].material.mainTexture = SCTextureStartList[currentIndex];
-        SCScreenList[currentScreenIndex].material.mainTexture = defaultTex;
-        currentScreenIndex--;
+        SCScreenList[currentScreenIndex].material.mainTexture = defaultTex;      
     }
 }

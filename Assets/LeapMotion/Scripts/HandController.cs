@@ -147,8 +147,7 @@ public class HandController : MonoBehaviour {
     smoothedFixedUpdateOffset_.delay = FIXED_UPDATE_OFFSET_SMOOTHING_DELAY;
 
     if (leap_controller_ == null) {
-      Debug.LogWarning(
-          "Cannot connect to controller. Make sure you have Leap Motion v2.0+ installed");
+      //Debug.LogWarning("Cannot connect to controller. Make sure you have Leap Motion v2.0+ installed");
     }
 
     if (enableRecordPlayback && recordingAsset != null)
