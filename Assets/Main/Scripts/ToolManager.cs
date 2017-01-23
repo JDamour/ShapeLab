@@ -44,21 +44,21 @@ public class ToolManager : MonoBehaviour
     {
         currentTool = TOOL.PUSH_TOOL;
         handController.toolModel = toolModels[0];
-        Debug.Log("Push Tool Selected");
+        //Debug.Log("Push Tool Selected");
     }
 
     public void setPullTool()
     {
         currentTool = TOOL.PULL_TOOL;
         handController.toolModel = toolModels[1];
-        Debug.Log("Pull Tool Selected");
+        //Debug.Log("Pull Tool Selected");
     }
 
     public void setSmoothingTool()
     {
         currentTool = TOOL.SMOOTH_TOOL;
         handController.toolModel = toolModels[2];
-        Debug.Log("Smoothing Tool Selected");
+        //Debug.Log("Smoothing Tool Selected");
     }
 
 }

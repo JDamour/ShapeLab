@@ -77,11 +77,11 @@ public class OVRSceneSampleController : MonoBehaviour
 
         if (cameraControllers.Length == 0)
         {
-            Debug.LogWarning("OVRMainMenu: No OVRCameraRig attached.");
+            //Debug.LogWarning("OVRMainMenu: No OVRCameraRig attached.");
         }
         else if (cameraControllers.Length > 1)
         {
-            Debug.LogWarning("OVRMainMenu: More then 1 OVRCameraRig attached.");
+            //Debug.LogWarning("OVRMainMenu: More then 1 OVRCameraRig attached.");
         }
         else
         {
@@ -94,11 +94,11 @@ public class OVRSceneSampleController : MonoBehaviour
 
         if (playerControllers.Length == 0)
         {
-            Debug.LogWarning("OVRMainMenu: No OVRPlayerController attached.");
+            //Debug.LogWarning("OVRMainMenu: No OVRPlayerController attached.");
         }
         else if (playerControllers.Length > 1)
         {
-            Debug.LogWarning("OVRMainMenu: More then 1 OVRPlayerController attached.");
+            //Debug.LogWarning("OVRMainMenu: More then 1 OVRPlayerController attached.");
         }
         else
         {

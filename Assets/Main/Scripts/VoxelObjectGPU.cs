@@ -40,9 +40,12 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     private Vert[] vertexData;
 
+
+
     //data set by the voxelmanager --> needs to be set before the Start() - method by the voxelmanager
     public void setInitData(int dimension, float scaling)
     {
+
         voxelCubeSize = dimension;
         voxelFieldSize = voxelCubeSize + 1;
         maxVerticesSize = voxelCubeSize * voxelCubeSize * voxelCubeSize * 3 * 5;
@@ -90,7 +93,7 @@ public class VoxelObjectGPU : MonoBehaviour {
     /// call to update the object surface after modification
     /// </summary>
     /// <param name="rotation">current object rotation</param>
-    public void updateMesh(Vector3 rotation)
+    public void updateMesh(Vector3 rotation, Vector3 moveOffset)
     {
 
         //before creating a new vertexBuffer the old one must be disposed
@@ -105,6 +108,7 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelComputeShader.SetFloat("rotationXaxis", rotationX);
         voxelComputeShader.SetFloat("rotationYaxis", rotationY);
         voxelComputeShader.SetFloat("scale", scaling);
+        voxelComputeShader.SetFloats("positionOffset", moveOffset.x, moveOffset.y, moveOffset.z);
         voxelComputeShader.SetInt("dimension", voxelFieldSize);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
         voxelComputeShader.SetBuffer(0, "cubeEdgeFlags", edgeTable);
@@ -116,12 +120,16 @@ public class VoxelObjectGPU : MonoBehaviour {
 
     }
 
+    public void resetTools()
+    {
+        modManager.resetTools();
+    }
 
-    public void exportObject()
+    public void exportObject(string id)
     {
         vertexBuffer.GetData(vertexData);
         
-        Export.exportSTLfromBuffer(vertexData, "exportTest");
+        Export.exportSTLfromBuffer(vertexData, id);
     }
 
     /// <summary>
@@ -129,9 +137,9 @@ public class VoxelObjectGPU : MonoBehaviour {
     /// </summary>
     /// <param name="modCenter">center of the modification</param>
     /// <param name="useKernelIndex"modification action defines the kernel used in the computer shader></param>
-    internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex)
+    internal void applyToolAt(Vector3 modCenter, ModificationManager.ACTION useKernelIndex, float objectScaling)
     {
-        modManager.modify(modCenter, useKernelIndex, vertexBuffer);
+        modManager.modify(modCenter, useKernelIndex, vertexBuffer, objectScaling);
     }
 
     /// <summary>
@@ -152,16 +160,19 @@ public class VoxelObjectGPU : MonoBehaviour {
         voxelBuffer.Dispose();
         voxelBuffer = new ComputeBuffer(voxelFieldSize * voxelFieldSize * voxelFieldSize, sizeof(float));
         voxelBuffer.SetData(voxel.getField());
+        modManager.setDensityBuffer(voxelBuffer);
+
         if (withSmooth) {
-            modManager.setDensityBuffer(voxelBuffer);
             modManager.InitialSmooth(10); // 10 shader passes with smooth
         }
+
         rotation.x = rotation.x / 180 * (float)Math.PI;
         rotation.y = rotation.y / 180 * (float)Math.PI;
         //calculate new vertices in vertexBuffer
         voxelComputeShader.SetFloat("rotationXaxis", rotation.x);
         voxelComputeShader.SetFloat("rotationYaxis", rotation.y);
         voxelComputeShader.SetFloat("scale", scaling);
+        voxelComputeShader.SetFloats("positionOffset", 0f,0f,0f);
         voxelComputeShader.SetInt("cubeDimension", voxelCubeSize);
         voxelComputeShader.SetInt("dimension", voxelCubeSize + 1);
         voxelComputeShader.SetFloat("isolevel", 0.0f);
@@ -182,6 +193,11 @@ public class VoxelObjectGPU : MonoBehaviour {
         //todo? https://scrawkblog.com/2014/07/02/directcompute-tutorial-for-unity-buffers/
         // not sure maxVerticesSize is supposed to be send here
         Graphics.DrawProcedural(MeshTopology.Triangles, maxVerticesSize);
+    }
+
+    public void setScale(float scale)
+    {
+        this.scaling = scale;
     }
 
     // The buffer must be released

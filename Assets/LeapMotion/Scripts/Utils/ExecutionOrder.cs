@@ -272,7 +272,7 @@ public class ExecutionOrderSolver {
     string beforeAfter = isBefore ? "before" : "after";
 
     if (!typeof(Behaviour).IsAssignableFrom(relativeType)) {
-      Debug.LogWarning(node + " can not execute " + beforeAfter + " " + relativeType.Name + " because " + relativeType + " is not a Behaviour");
+      //Debug.LogWarning(node + " can not execute " + beforeAfter + " " + relativeType.Name + " because " + relativeType + " is not a Behaviour");
       return;
     }
 
@@ -520,7 +520,7 @@ public class ExecutionOrderSolver {
      * should never be hit if everything is working as it should.
      */
     if (edges.Values.Any(l => l.Count != 0)) {
-      Debug.LogError("Topological sort failed for unknown reason!  Execution Order cannot be enforced!");
+      //Debug.LogError("Topological sort failed for unknown reason!  Execution Order cannot be enforced!");
       return false;
     }
 
@@ -577,7 +577,7 @@ public class ExecutionOrderSolver {
           break;
         case NodeType.LOCKED:
           if (minIndex < node.executionIndex) {
-            Debug.LogError("Note enough execution indexes to fit all of the scripts!");
+            //Debug.LogError("Note enough execution indexes to fit all of the scripts!");
             return false;
           }
           minIndex = node.executionIndex;
@@ -605,7 +605,7 @@ public class ExecutionOrderSolver {
           break;
         case NodeType.LOCKED:
           if (maxIndex > node.executionIndex) {
-            Debug.LogError("Note enough execution indexes to fit all of the scripts!");
+            //Debug.LogError("Note enough execution indexes to fit all of the scripts!");
             return false;
           }
           maxIndex = node.executionIndex;

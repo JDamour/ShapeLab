@@ -8,6 +8,10 @@ public class ModificationManager {
         SUBSTRACT,
         ADD,
         SMOOTH,
+        ADD_POWER,
+        SUB_POWER,
+        ADD_RANGE,
+        SUB_RANGE,
         NONE
     };
 
@@ -16,14 +20,18 @@ public class ModificationManager {
     private ComputeShader clearVertexAreaShader;
 
     private int dimension;
+    private float objectScaling = 1f;
     private float modRange = 5.0f;
     private float modPower = 1.0f;
-    private float MAX_RANGE = 50.0f;
+    private float MAX_RANGE = 20.0f;
     private float MIN_RANGE = 1.0f;
     private float MAX_TOOL_POWER = 1.5f;
-    private float MIN_TOOL_POWER = 0.75f;
+    private float MIN_TOOL_POWER = 0.9f;
 
-    public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scale)
+    //        //Debug.Log(slider1.GetSliderFraction());
+    //public RotateXSlider sliderPower, sliderRange;
+
+    public ModificationManager(ComputeShader modShader, ComputeShader clearShader, int N, float scaling)
     {
         dimension = N;
         DensityModShader = modShader;
@@ -34,7 +42,7 @@ public class ModificationManager {
         DensityModShader.SetFloat("MIN_DENSITY", -1.0f);
         DensityModShader.SetFloat("MAX_DENSITY", 1.0f);
         DensityModShader.SetFloat("cosStrength", 20.0f);
-        DensityModShader.SetFloat("modRange", modRange);
+        DensityModShader.SetFloat("modRange", getModRange());
         DensityModShader.SetInt("dimension", dimension + 1);
     }
 
@@ -48,15 +56,16 @@ public class ModificationManager {
     /// </summary>
     /// <param name="modCenter">center of the modification</param>
     /// <param name="modAction">type of modification</param>
-    internal void modify(Vector3 modCenter, ACTION modAction, ComputeBuffer vertexBuffer)
+    internal void modify(Vector3 modCenter, ACTION modAction, ComputeBuffer vertexBuffer, float objectScaling)
     {
-        int[] offset = calculateOffset(modCenter, modRange);
-        int boundingBoxSize = calculateModifySize(modRange);
+        this.objectScaling = objectScaling;
+        int[] offset = calculateOffset(modCenter, getModRange());
+        int boundingBoxSize = calculateModifySize(getModRange());
 
-        DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, modRange));
+        DensityModShader.SetVector("Bounding_offSet", calculateBoundingBox(modCenter, getModRange()));
         DensityModShader.SetVector("modCenter", new Vector4(modCenter.x, modCenter.y, modCenter.z, 1));
         DensityModShader.SetFloat("toolPower", modPower);
-        DensityModShader.SetFloat("modRange", modRange);
+        DensityModShader.SetFloat("modRange", getModRange());
         DensityModShader.SetInt("offsetX", offset[0]);
         DensityModShader.SetInt("offsetY", offset[1]);
         DensityModShader.SetInt("offsetZ", offset[2]);
@@ -99,13 +108,18 @@ public class ModificationManager {
         return offset;
     }
 
+    private float getModRange()
+    {
+        return modRange / objectScaling;
+    }
+
     private int[] calculateOffset(Vector3 modCenter, float modRange)
     {
         int[] offset = new int[3];
-        offset[0] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.x - modRange), dimension), 0f);
-        offset[1] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.y - modRange), dimension), 0f);
-        offset[2] = (int)Mathf.Max(Mathf.Min((float)Math.Floor(modCenter.z - modRange), dimension), 0f);
-        Debug.Log("modcenter is: "+ modCenter);
+        offset[0] = (int)(modCenter.x - modRange);
+        offset[1] = (int)(modCenter.y - modRange);
+        offset[2] = (int)(modCenter.z - modRange);
+        //Debug.Log("modcenter is: "+ modCenter);
         return offset;
     }
 
@@ -129,8 +143,8 @@ public class ModificationManager {
 
     private void clearVertexArea(int[] offset, int size, ComputeBuffer vertexBuffer)
     {
-        Debug.Log("offset is: " + offset[0] + " " + offset[1] + " " + offset[2]);
-        Debug.Log("range is: " + modRange + " size is: " + size);
+        //Debug.Log("offset is: " + offset[0] + " " + offset[1] + " " + offset[2]);
+        //Debug.Log("range is: " + modRange + " size is: " + size);
         clearVertexAreaShader.SetInt("cubeDimension", dimension);
         clearVertexAreaShader.SetInt("offsetX", offset[0]);
         clearVertexAreaShader.SetInt("offsetY", offset[1]);
@@ -153,10 +167,22 @@ public class ModificationManager {
         {
             //run shader
             DensityModShader.Dispatch(DensityModShader.FindKernel("smooth3x3Modificator"), dimension / 8, dimension / 8, dimension / 8);
-        }
-        
+        }    
     }
 
+    /*
+    public void updateFromSliders()
+    {
+        //Debug.Log("sliderPower: " + this.sliderPower.GetSliderFraction());
+        //Debug.Log("old/new modpower: " + this.modPower+" / "+ 
+            this.MIN_TOOL_POWER + 
+            (this.MAX_TOOL_POWER-this.MIN_TOOL_POWER) * this.sliderPower.GetSliderFraction());
+        //Debug.Log("sliderRange: " + this.sliderRange.GetSliderFraction());
+        //Debug.Log("old/new modRange: " + this.modRange + " / " +
+            this.MIN_RANGE +
+            (this.MAX_RANGE - this.MIN_RANGE) * this.sliderRange.GetSliderFraction());
+    }
+    */
     //
     public void ChangeToolRange(float rangeChange)
     {
@@ -165,10 +191,14 @@ public class ModificationManager {
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
     }
 
-    public void ChangeToolStrength(float powerChange)
+    /// <summary>
+    /// Adds given float to modPower
+    /// </summary>
+    /// <param name="valChange"></param>
+    public void ChangeToolStrength(float valChange)
     {
-        //Debug.Log("Strength changed by " + powerChange+", \tnew Value: "+this.modPower);
-        this.modPower += powerChange;
+        //Debug.Log("Strength changed by " + valChange+", \tnew Value: "+this.modPower);
+        this.modPower += valChange;
         this.modPower = Math.Max(Math.Min(this.modPower, this.MAX_TOOL_POWER), this.MIN_TOOL_POWER);
     }
 
@@ -182,6 +212,12 @@ public class ModificationManager {
         return modPower;
     }
 
+    public void resetTools()
+    {
+        ResetToolRange();
+        ResetToolStrength();
+    }
+
     public void SetToolPower(float newPower)
     {
         this.modPower = this.MIN_TOOL_POWER + newPower*0.3f;
@@ -193,8 +229,13 @@ public class ModificationManager {
     {
         this.modRange = 5.0f;
         this.modRange = Math.Max(Math.Min(this.modRange, this.MAX_RANGE), this.MIN_RANGE);
-        Debug.Log("Range reset to " + this.modRange);
+        //Debug.Log("Range reset to " + this.modRange);
 
+    }
+
+    public void ResetToolStrength()
+    {
+        this.modPower = 1f;
     }
 
     internal void destroy()

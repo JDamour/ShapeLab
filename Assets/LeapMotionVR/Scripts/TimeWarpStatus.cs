@@ -17,7 +17,7 @@ public class TimeWarpStatus : MonoBehaviour {
 	// Update is called once per frame
   void Update () {
     if (cameraAlignment == null) {
-      Debug.Log ("TimeWarpStatus requires LeapCameraAlignment reference -> status will be disabled");
+      //Debug.Log ("TimeWarpStatus requires LeapCameraAlignment reference -> status will be disabled");
       gameObject.SetActive(false);
       return;
     }

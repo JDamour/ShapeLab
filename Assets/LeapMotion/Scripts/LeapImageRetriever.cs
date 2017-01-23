@@ -92,7 +92,7 @@ public class LeapImageRetriever : MonoBehaviour
       material.DisableKeyword (IR_SHADER_VARIANT_NAME);
       break;
     default:
-      Debug.LogWarning ("Unexpected format type " + _currentFormat);
+      //Debug.LogWarning ("Unexpected format type " + _currentFormat);
       break;
     }
 
@@ -238,7 +238,7 @@ public class LeapImageRetriever : MonoBehaviour
   void Start ()
   {
     if (handController == null) {
-      Debug.LogWarning ("Cannot use LeapImageRetriever if there is no HandController!");
+      //Debug.LogWarning ("Cannot use LeapImageRetriever if there is no HandController!");
       enabled = false;
       return;
     }
@@ -258,9 +258,9 @@ public class LeapImageRetriever : MonoBehaviour
     if (syncMode == SYNC_MODE.SYNC_WITH_HANDS) {
       _imageList = frame.Images;
       /*if (!_imageList.IsEmpty) {
-        Debug.Log (name + " SYNC_WITH_HANDS: frame.Timestamp: " + frame.Timestamp + " - imageList.Timestamp: " + _imageList[0].Timestamp + " = " + (frame.Timestamp - _imageList[0].Timestamp));
+        //Debug.Log (name + " SYNC_WITH_HANDS: frame.Timestamp: " + frame.Timestamp + " - imageList.Timestamp: " + _imageList[0].Timestamp + " = " + (frame.Timestamp - _imageList[0].Timestamp));
       } else {
-        Debug.LogWarning (name + " SYNC_WITH_HANDS -> NO FRAMES: frame.Timestamp: " + frame.Timestamp);
+        //Debug.LogWarning (name + " SYNC_WITH_HANDS -> NO FRAMES: frame.Timestamp: " + frame.Timestamp);
       }*/
     }
 
@@ -286,9 +286,9 @@ public class LeapImageRetriever : MonoBehaviour
     if (syncMode == SYNC_MODE.LOW_LATENCY) {
       _imageList = _controller.Images;
       /*if (!_imageList.IsEmpty) {
-        Debug.Log (name + " LOW_LATENCY: controller.Now(): " + _controller.Now() + " - imageList.Timestamp: " + _imageList[0].Timestamp + " = " + (_controller.Now() - _imageList[0].Timestamp));
+        //Debug.Log (name + " LOW_LATENCY: controller.Now(): " + _controller.Now() + " - imageList.Timestamp: " + _imageList[0].Timestamp + " = " + (_controller.Now() - _imageList[0].Timestamp));
       } else {
-        Debug.LogWarning(name + " LOW_LATENCY -> NO FRAMES");
+        //Debug.LogWarning(name + " LOW_LATENCY -> NO FRAMES");
       }*/
     }
 
@@ -312,10 +312,10 @@ public class LeapImageRetriever : MonoBehaviour
     if (referenceImage.Width == 0 || referenceImage.Height == 0) {
       _missedImages++;
       if (_missedImages == IMAGE_WARNING_WAIT) {
-        Debug.LogWarning ("Can't find any images. " +
-          "Make sure you enabled 'Allow Images' in the Leap Motion Settings, " +
-          "you are on tracking version 2.1+ and " +
-          "your Leap Motion device is plugged in.");
+        //Debug.LogWarning ("Can't find any images. " +
+        //  "Make sure you enabled 'Allow Images' in the Leap Motion Settings, " +
+        //  "you are on tracking version 2.1+ and " +
+        //  "your Leap Motion device is plugged in.");
       }
       return;
     }
@@ -356,12 +356,12 @@ public class LeapImageRetriever : MonoBehaviour
   public long ImageNow ()
   {
     if (_imageList == null) { 
-      Debug.LogWarning ("Images have not been initialized -> defaulting to LeapNow");
+      //Debug.LogWarning ("Images have not been initialized -> defaulting to LeapNow");
       return LeapNow ();
     }
 
     if (_imageList.IsEmpty) {
-      Debug.LogWarning ("ImageNow has no images -> defaulting to LeapNow");
+      //Debug.LogWarning ("ImageNow has no images -> defaulting to LeapNow");
       return LeapNow ();
     }
     return _imageList [0].Timestamp;

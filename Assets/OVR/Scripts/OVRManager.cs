@@ -330,7 +330,7 @@ public class OVRManager : MonoBehaviour
         isSupportedPlatform |= currPlatform == RuntimePlatform.WindowsPlayer;
         if (!isSupportedPlatform)
         {
-            Debug.LogWarning("This platform is unsupported");
+            //Debug.LogWarning("This platform is unsupported");
             return;
         }
 

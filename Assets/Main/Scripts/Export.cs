@@ -53,7 +53,7 @@ public static class Export {
         streamWriter.WriteLine("endsolid " + name);
         //Close File
         streamWriter.Close();
-        Debug.Log("STL Export finished");
+        //Debug.Log("STL Export finished");
     }
 
     public static void exportSTLfromBuffer(Vert[] vertexData, string name)
@@ -92,7 +92,7 @@ public static class Export {
         streamWriter.WriteLine("endsolid " + name);
         //Close File
         streamWriter.Close();
-        Debug.Log("STL Export finished");
+        //Debug.Log("STL Export finished");
     }
 
 }

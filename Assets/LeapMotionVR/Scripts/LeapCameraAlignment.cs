@@ -131,7 +131,7 @@ public class LeapCameraAlignment : MonoBehaviour {
   /// </returns>
   protected TransformData TransformAtTime(long time) {
     if (history.Count < 1) {
-      Debug.LogWarning ("NO HISTORY!");
+      //Debug.LogWarning ("NO HISTORY!");
       return new TransformData () {
         leapTime = 0,
         position = Vector3.zero,
@@ -208,7 +208,7 @@ public class LeapCameraAlignment : MonoBehaviour {
       }
     }
     if (handController == null) {
-      Debug.LogWarning ("Camera alignment requires an active HandController in the scene -> enabled = false");
+      //Debug.LogWarning ("Camera alignment requires an active HandController in the scene -> enabled = false");
       enabled = false;
       return;
     }
@@ -220,7 +220,7 @@ public class LeapCameraAlignment : MonoBehaviour {
       }
     }
     /*if (imageRetriever == null) {
-      Debug.LogWarning ("Camera alignment requires an active LeapImageRetriever in the scene -> enabled = false");
+      //Debug.LogWarning ("Camera alignment requires an active LeapImageRetriever in the scene -> enabled = false");
       enabled = false;
       return;
     }*/
@@ -241,13 +241,13 @@ public class LeapCameraAlignment : MonoBehaviour {
       }
     }
     if (hasCameras == VRCameras.NONE) {
-      Debug.LogWarning ("Either a central Camera for both eyes, or a Left and Right cameras must be referenced -> enabled = false");
+      //Debug.LogWarning ("Either a central Camera for both eyes, or a Left and Right cameras must be referenced -> enabled = false");
       enabled = false;
       return;
     }
 
     if (transform.parent == null) {
-      Debug.LogWarning ("Alignment requires a parent object to define the location of the player in the world. enabled -> false");
+      //Debug.LogWarning ("Alignment requires a parent object to define the location of the player in the world. enabled -> false");
       enabled = false;
       return;
     }
@@ -255,14 +255,14 @@ public class LeapCameraAlignment : MonoBehaviour {
     if (transform != leftCamera.parent ||
         transform != centerCamera.parent ||
         transform != rightCamera.parent) {
-      Debug.LogWarning ("LeapCameraAlignment must be a component of the parent of the camera tranasforms -> enabled = false");
+      //Debug.LogWarning ("LeapCameraAlignment must be a component of the parent of the camera tranasforms -> enabled = false");
       enabled = false;
       return;
     }
 
     deviceInfo = (overrideDeviceType) ? new LeapDeviceInfo(overrideDeviceTypeWith) : handController.GetDeviceInfo ();
     if (deviceInfo.type == LeapDeviceType.Invalid) {
-      Debug.LogWarning ("Invalid Leap Device -> enabled = false");
+      //Debug.LogWarning ("Invalid Leap Device -> enabled = false");
       enabled = false;
       return;
     }
@@ -275,7 +275,7 @@ public class LeapCameraAlignment : MonoBehaviour {
         eyeDepth = OVRPlugin.eyeDepth,
         eyeHeight = OVRPlugin.eyeHeight
       };
-      Debug.Log ("Unity VR Support with Oculus");
+      //Debug.Log ("Unity VR Support with Oculus");
     } else {
       eyeAlignment = new UserEyeAlignment() {
         use = false,
@@ -283,7 +283,7 @@ public class LeapCameraAlignment : MonoBehaviour {
         eyeDepth = 0f,
         eyeHeight = 0f
       };
-      Debug.Log ("Two-camera stereoscopic alignment");
+      //Debug.Log ("Two-camera stereoscopic alignment");
     }
   }
 
@@ -325,7 +325,7 @@ public class LeapCameraAlignment : MonoBehaviour {
           IsFinite (centerCamera.position) && IsFinite (centerCamera.rotation) &&
           IsFinite (rightCamera.position) && IsFinite (rightCamera.rotation))) {
       // Uninitialized camera positions
-      Debug.LogWarning ("Uninitialized transforms -> skip alignment");
+      //Debug.LogWarning ("Uninitialized transforms -> skip alignment");
       return;
     }
 

@@ -144,7 +144,7 @@ namespace LMWidgets
     {
       if (GetComponent<Collider>() == null)
       {
-        Debug.LogWarning("This Widget lacks a collider. Will not function as expected.");
+        //Debug.LogWarning("This Widget lacks a collider. Will not function as expected.");
       }
     }
 

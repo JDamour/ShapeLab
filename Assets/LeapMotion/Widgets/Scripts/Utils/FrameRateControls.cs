@@ -21,7 +21,7 @@ public class FrameRateControls : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		if (QualitySettings.vSyncCount != 0) {
-      Debug.LogWarning ("vSync will override target frame rate. vSyncCount = " + QualitySettings.vSyncCount);
+      //Debug.LogWarning ("vSync will override target frame rate. vSyncCount = " + QualitySettings.vSyncCount);
 		}
 
     Application.targetFrameRate = targetRenderRate;

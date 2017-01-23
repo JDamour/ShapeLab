@@ -15,7 +15,7 @@ public class ToolButtons : MonoBehaviour {
 
     public void setPullTool()
     {
-        Debug.Log("Set Pull Tool");
+        //Debug.Log("Set Pull Tool");
         pullToolButton.changeState(true);
         pushToolButton.changeState(false);
         smoothToolButton.changeState(false);
@@ -40,5 +40,5 @@ public class ToolButtons : MonoBehaviour {
 
         manager.setSmoothTool();
     }
-
+    
 }
